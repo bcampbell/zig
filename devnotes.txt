@@ -1,0 +1,117 @@
+Dev notes for Wil
+2006-06-20
+
+
+Getting Started
+===============
+
+I guess first stop is compiling it under windows. Many years ago I compiled
+the windows version under visual C, but these days I just use gcc on
+windows, linux and mac (and a shared makefile).
+I'm pretty sure it'll compile under more recent Visual Studio releases with
+very little mucking about (you'll have to make up a project file).
+
+
+Required libraries
+------------------
+
+SDL (http://www.libsdl.org)
+SDL_mixer (http://www.libsdl.org/projects/SDL_mixer/)
+STK (http://ccrma.stanford.edu/software/stk/)
+libpng
+zlib
+
+STK is probably the fiddliest.
+
+Easiest thing might be to stub out the sound code to begin with.
+this'll remove the need for SDL_Mixer and STK.
+
+
+Retromat
+--------
+
+At startup, the game tries to synthesize all the sound effects using the
+code in retromat/. The retromat requires the following files in the data
+directory:
+ - sawtooth.raw
+ - sine.raw
+ - square.raw
+ - triangle.raw
+These files are generated using tools/makewaves.c (or you could just
+copy them over from an existing installation).
+
+The retromat code uses the STK library.
+
+
+Stubbing out the sound
+----------------------
+
+The sound playing code is in soundmgr.[h|cpp]. It uses SDL_mixer to actually
+send sounddata to the hardware.
+It uses the retromat code to generate the sound effects upon startup.
+
+There is already a NullSoundMgr class you can use, which doesn't require
+the retromat code, STK or SDL_Mixer.
+
+So, to stub out the sound:
+
+1) in soundmgr.[h|cpp], #ifdef out the RealSoundManager class
+2) remove the retromat files from the project
+3) #ifdef out the RealSoundManager creation in zig.cpp
+
+That's it!
+
+
+
+
+Coding Stuff
+============
+
+
+Files of interest
+-----------------
+
+zig.cpp holds the main() function. The main 'flow' of the game is
+pretty obvious here.
+zig.h has all the global vars defined.
+
+There isn't really a main loop in main(). Instead, I'll create a
+Scene-derived object (eg titlescreen, level, gameover screen etc...),
+and call Run() on it. When Run() finishes, I'll examine the result and
+go on to the next scene.
+
+So the main loop actually lives in Scene::Run() (in scene.cpp).
+
+Most of the bad dudes live in dudes.[h|cpp], but some have their own files
+(eg boss.[h|cpp]).
+
+Base entity class is Agent, in agent.[h|cpp]. Lots of comments in there.
+
+level.[h|cpp] defines the Level class (derived from Scene), which drives most
+of the main game action.
+
+background.[h|cpp] defines the in-game backgrounds (purplish perlin noise or
+retro grid).
+
+See data/levels for descriptions of all the bad dudes - in the source it can
+sometimes be a little hard to tell which dude is which unless you know the
+names. Also, there are a few experimental/obsolete dudes still in the
+source which aren't used (eg boids).
+
+
+Texture Management
+------------------
+
+There isn't really any :-)
+All textures are passed to Display::AddTexture() to register them with
+the display system.
+
+Most of the textures are global - created at startup, destroyed at shutdown.
+Snowflake (in dudes.[h|cpp] is an example of a more transient texture - each
+snowflake dude has its own procedural texture which lasts as long as the
+snowflake does.
+
+If the display mode is changed the textures are flushed from GL and
+reloaded by running through each one in turn and calling its virtual
+UploadToGL() function.
+

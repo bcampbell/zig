@@ -1,0 +1,292 @@
+# Zig level definitions
+
+# this file is case sensitive
+ 
+# Amoeba - blobby thing, homes in on player, divides when shot.
+# Flanker - tries to fly around behind player, then shoots in for the kill.
+# Grunt - mindlessly moves toward player
+# HeavyThing - invincible, gains speed when shot
+# Obstacle - non-moving flashing square to annoy player
+# Pacman - ...wackawackawacka...
+# Rock - asteroids-style rock
+# Snowflake - pretty snowflake
+# Tank - homes in on player whilst firing
+# UFO - asteroids-style UFO
+# WallHugger - moves around edge of arena, firing inward.
+# Wiggler - Wiggles toward player
+# Zipper - Moves in straight line, periodically picks a new random direction
+# ZipperMat - generates Zippers
+# Invader - An invader. Possibly from space.
+# Snake - Multi-segmented homing snake
+# MineLayer - Mine-laying dude
+# FatZapper - Green and mean, fires a big energy beam
+# EdgePuller
+# Divider - double-beam thingy
+# Agitator - gets mad when you shoot it
+
+
+#1
+LEVEL
+	Grunt 10
+	Obstacle 5
+
+LEVEL
+	Snowflake 20
+	Obstacle 8
+
+LEVEL
+	Wiggler 7
+	Obstacle 10
+
+LEVEL
+	Grunt 12
+	Amoeba 1
+	Obstacle 5
+
+#5
+LEVEL
+	@retro
+	Rock 6
+	Obstacle 8
+#	@ufo_probability 0.0015
+
+
+LEVEL
+	HeavyThing 4
+	Wiggler 16
+	Obstacle 8
+
+LEVEL
+	Grunt 20
+	Spiker 1
+	Obstacle 10
+
+LEVEL
+	Zipper 10
+	Wiggler 10
+	Obstacle 8
+
+LEVEL
+	Snowflake 20
+	Spiker 3
+	Obstacle 8
+
+#10
+LEVEL
+	@retro
+	Obstacle 10
+	Pacman 10
+
+LEVEL
+	Obstacle 8
+	Amoeba 2
+	Flanker 2
+	Wiggler 5
+
+LEVEL
+	Tank 1
+	Obstacle 8
+	Spiker 4
+
+LEVEL
+	Agitator 5
+	Grunt 20
+	Obstacle 10
+
+LEVEL
+	Spiker 4
+	Flanker 4
+	Wiggler 12
+	Obstacle 10
+#15
+LEVEL
+	@retro
+	Obstacle 5
+	Invader 50
+
+LEVEL
+	ZipperMat 1
+	Zipper 4
+	Obstacle 8
+
+LEVEL
+	Obstacle 10
+	Grunt 8
+	WallHugger 1
+
+LEVEL
+	FatZapper 1
+	Obstacle 10
+	Grunt 30
+
+LEVEL
+	Agitator 5
+	ZipperMat 1
+	Zipper 5
+	Obstacle 10
+
+#20
+LEVEL
+	Obstacle 10
+	Amoeba 3
+	Wiggler 10
+	Tank 1
+
+LEVEL
+	MineLayer 2
+	Obstacle 10
+	Grunt 10
+
+LEVEL
+	Grunt 10
+	Wiggler 5
+	Obstacle 8
+	Flanker 5
+
+LEVEL
+	Grunt 30
+	Spiker 12
+
+LEVEL
+	MineLayer 1
+	Flanker 10
+	Obstacle 5
+
+#25
+LEVEL
+	Snake 1
+	Obstacle 8
+	@baiter_start 20
+
+LEVEL
+	Obstacle 20
+	Tank 2
+	WallHugger 1
+
+LEVEL
+	Spiker 30
+	Obstacle 10
+
+LEVEL
+	Divider 1
+	Grunt 30
+	Obstacle 10
+
+LEVEL
+	FatZapper 1
+	Obstacle 20
+	HeavyThing 8
+
+#30
+LEVEL
+	@retro
+	Rock 16
+	@arena_radius 350
+
+
+LEVEL
+	Snowflake 60
+	Spiker 10
+	@arena_radius 325
+
+LEVEL
+	Divider 1
+	Wiggler 20
+	Zipper 10
+	Obstacle 20
+
+LEVEL
+	WallHugger 1
+	Wiggler 25
+	Obstacle 15
+
+LEVEL
+	Spiker 10
+	Wiggler 10
+	Obstacle 10
+
+#35
+LEVEL
+	@retro
+	Rock 5
+	Invader 30
+	Pacman 10
+
+LEVEL
+	Obstacle 10
+	WallHugger 1
+	ZipperMat 1
+	Zipper 10
+
+LEVEL
+	FatZapper 4
+
+
+LEVEL
+	Grunt 80
+	@arena_radius 350
+
+
+LEVEL
+	WallHugger 4
+	Obstacle 10
+
+#40
+LEVEL
+	@retro
+	Pacman 40
+
+LEVEL
+	Flanker 40
+	Obstacle 10
+
+LEVEL
+	Divider 2
+	Obstacle 10
+	Amoeba 5
+
+LEVEL
+	Spiker 8
+	ZipperMat 1
+	Zipper 4
+	Obstacle 8
+
+LEVEL
+	Snake 2
+	Obstacle 20
+	@baiter_start 35
+
+# 45
+LEVEL
+	@retro
+	Invader 200
+
+LEVEL
+	FatZapper 1
+	Obstacle 20
+	WallHugger 1
+
+
+LEVEL
+	Divider 3
+	Obstacle 10
+	Agitator 10
+
+
+LEVEL
+	Obstacle 200
+	Tank 4
+	@arena_radius 400
+	@baiter_start 30
+
+LEVEL
+	Rock 40
+	@arena_radius 500
+	@baiter_start 40
+
+#50
+LEVEL
+	Boss 1
+	Agitator 10
+	Obstacle 20
+	@baiter_start 20
