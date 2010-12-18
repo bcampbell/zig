@@ -12,7 +12,7 @@ static MemPool* s_AgentPool = 0;
 
 void Agent_Startup()
 {
-	s_AgentPool = new MemPool( 128, 500 );
+	s_AgentPool = new MemPool( 256, 500 );
 }
 
 void Agent_Shutdown()
