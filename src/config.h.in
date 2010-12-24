@@ -1,0 +1,13 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// configuration settings set up by CMake
+
+// path to static data files for unix-style installation)
+// (eg "/usr/share/games/zig")
+// not used for win32 installers and osx bundles
+// see resources.cpp for details
+#define DATA_PATH "${DATA_PATH}"
+
+#endif
+
