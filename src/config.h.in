@@ -9,5 +9,8 @@
 // see resources.cpp for details
 #define DATA_PATH "${DATA_PATH}"
 
+// can use <stdint.h>?
+#define HAVE_STDINT_H ${HAVE_STDINT_H}
+
 #endif
 

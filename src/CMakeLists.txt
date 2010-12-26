@@ -1,4 +1,5 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#include(CheckIncludeFiles)
 
 # we've got our own module to find STK
 set(CMAKE_MODULE_PATH ${zig_SOURCE_DIR})
@@ -9,6 +10,9 @@ find_package(OpenGL REQUIRED)
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(STK REQUIRED)
+
+check_include_files( "stdint.h" HAVE_STDINT_H )
+
 
 if( UNIX )
     # don't want this on OSX if we're building a bundle...
