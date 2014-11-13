@@ -72,7 +72,7 @@ float SIDStyle::Tick()
 	float releasetime = m_Conf.Duration - m_Conf.Release;
 	if( m_Elapsed>=releasetime &&
 		m_ADSR->getState() != ADSR::RELEASE &&
-		m_ADSR->getState() != ADSR::DONE )
+		m_ADSR->getState() != ADSR::IDLE )
 	{
 		m_ADSR->keyOff();
 	}
