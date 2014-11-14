@@ -8,6 +8,7 @@ struct ZigConfig;
 #include <vector>
 #include <list>
 
+#include <SDL.h>
 
 class Texture;
 
@@ -25,18 +26,14 @@ struct Res
 class Display
 {
 public:
-	Display( Res res, int depth, bool fullscreen );
+    SDL_Window *m_Window;
+	Display( bool fullscreen );
 	virtual ~Display();
 
-	void ChangeSettings( Res res, int depth, bool fullscreen );
+	void ChangeSettings( bool fullscreen );
 
-	std::vector<Res> const& Resolutions() const
-		{ return m_Resolutions; }
-	int MatchRes( Res const& r ) const;
-
-	Res CurrentRes() const;
-	int CurrentDepth() const;
-	bool IsFullscreen() const;
+	bool IsFullscreen() const
+        { return false;}
 
 	void AddTexture( Texture* t );
 	void RemoveTexture( Texture* t);	// OK to pass in null
@@ -44,9 +41,9 @@ public:
 	void TakeScreenshot();
 private:
 	void OpenMode( Res res, int depth, bool fullscreen );
-	void CalcAvailableResolutions();
-	SDL_Surface* m_Screen;
-	std::vector<Res> m_Resolutions;
+
+    SDL_GLContext m_GLContext;
+
 
 	std::list< Texture* > m_Textures;
 };

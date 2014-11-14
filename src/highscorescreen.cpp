@@ -93,7 +93,7 @@ bool HighScoreScreen::IsFinished()
 
 
 
-void HighScoreScreen::KeyDown( SDL_keysym& keysym )
+void HighScoreScreen::KeyDown( SDL_Keysym& keysym )
 {
 	if( m_EntryTarget == -1 )
 	{
@@ -107,7 +107,8 @@ void HighScoreScreen::KeyDown( SDL_keysym& keysym )
 		m_EntryTarget = -1;
 		return;
 	}
-
+    // TODO SDL2
+#if 0
 	// ignore international chars for now
 	if( keysym.unicode & 0xFF80 )
 		return;
@@ -135,6 +136,7 @@ void HighScoreScreen::KeyDown( SDL_keysym& keysym )
 		}
 	}
 	m_Scores.SetName( m_EntryTarget, name );
+#endif
 }
 
 

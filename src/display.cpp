@@ -14,33 +14,28 @@
 //------------------------------------------------
 // Display class
 
-Display::Display( Res res, int depth, bool fullscreen )
-{
-	CalcAvailableResolutions();
-	OpenMode( res, depth, fullscreen );
-}
-
 
 Display::~Display()
 {
+    if(m_Window) {
+        SDL_DestroyWindow(m_Window);
+    }
 	assert( m_Textures.empty() );
 }
 
 
-void Display::ChangeSettings( Res res, int depth, bool fullscreen )
+void Display::ChangeSettings(bool fullscreen )
 {
-	// quick sanity check:
-	int sdlflags = SDL_OPENGL;
-	if( fullscreen )
-		sdlflags |= SDL_FULLSCREEN;
-	int bpp = SDL_VideoModeOK( res.w, res.h, depth, sdlflags );
-	if( !bpp )
-		return;	// can't do it. leave mode as is.
+    if(fullscreen)
+    {
+        SDL_SetWindowFullscreen(m_Window,SDL_WINDOW_FULLSCREEN_DESKTOP);
+    }
+    else
+    {
+        SDL_SetWindowFullscreen(m_Window,0);
+    }
 
-//	if( depth != bpp )
-//		printf("Can't do depth %d, using %d instead\n", depth, bpp );
-
-
+#if 0
 	// unload all textures
 	std::list< Texture* >::iterator it;
 	for( it=m_Textures.begin(); it!=m_Textures.end(); ++it )
@@ -62,30 +57,41 @@ void Display::ChangeSettings( Res res, int depth, bool fullscreen )
 		(*it)->SetID( id );
 		(*it)->UploadToGL();
 	}
+#endif
 }
 
 
 
 
-// helper fn - set up display, make sure textures are OK
-void Display::OpenMode(Res res, int depth, bool fullscreen )
+Display::Display( bool fullscreen ) : m_Window(0)
 {
+    Uint32  flags = SDL_WINDOW_OPENGL;
+    if(fullscreen) {
+//        flags |= SDL_WINDOW_FULLSCREEN;
+        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    }
+    m_Window = SDL_CreateWindow("Zig",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        640, 480,
+        SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+	if( !m_Window )
+	{
+		Wobbly e("SDL_CreateWindow() failed");	//: %s\n", SDL_GetError() );
+		throw e;
+	}
+
+    m_GLContext = SDL_GL_CreateContext(m_Window);
+
+    // TODO: call SDL_GL_SetSwapInterval()
+/*
 	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
 	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
 	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
-	int sdlflags = SDL_OPENGL;
-	if( fullscreen )
-		sdlflags |= SDL_FULLSCREEN;
-	m_Screen =	SDL_SetVideoMode( res.w, res.h, depth, sdlflags );
-	if( !m_Screen )
-	{
-		Wobbly e("SDL_SetVideoMode() failed");	//: %s\n", SDL_GetError() );
-		throw e;
-	}
-	SDL_ShowCursor(SDL_DISABLE);	// hide the mouse
+*/
+//	SDL_ShowCursor(SDL_DISABLE);	// hide the mouse
 
 
 	//----------------------------------------------
@@ -97,88 +103,10 @@ void Display::OpenMode(Res res, int depth, bool fullscreen )
 	glOrtho( -VW/2.0f, VW/2.0f, -VH/2.0f, VH/2.0f, -1.0, 1.0 );
 	glMatrixMode( GL_MODELVIEW );
 
-	glViewport( 0,0, res.w, res.h );
+	//glViewport( 0,0, res.w, res.h );
+	glViewport( 0,0, 640,480 );
 	
 }
-
-
-
-
-// build up internal list of resolutions we allow.
-void Display::CalcAvailableResolutions()
-{
-	std::vector<Res>& reslist = m_Resolutions;
-	assert( reslist.empty() );
-
-	SDL_Rect **modes;
-	modes = SDL_ListModes( 0, SDL_FULLSCREEN|SDL_OPENGL );
-
-	if( modes==(SDL_Rect **)0 )
-		throw Wobbly( "No video modes available!" );
-	if( modes!=(SDL_Rect **)-1 )
-	{
-		int i=0;
-		while( modes[i] )
-		{
-			Res r( (int)modes[i]->w,(int)modes[i]->h );
-			++i;
-
-			if( find( reslist.begin(), reslist.end(), r ) != reslist.end() )
-				continue;	// aldready got this mode!
-
-			reslist.push_back( r );
-		}
-	}
-
-	if( reslist.empty() )
-	{
-		// uh-oh. Lets add some safe defaults...
-		reslist.push_back( Res( 640,480 ) );
-		reslist.push_back( Res( 800,600 ) );
-		reslist.push_back( Res( 1024,768 ) );
-	}
-
-	// sort it.
-	std::sort( reslist.begin(), reslist.end() );
-}
-
-
-
-
-
-Res Display::CurrentRes() const
-{
-	return Res( m_Screen->w, m_Screen->h );
-}
-
-int Display::CurrentDepth() const
-{
-	int depth = m_Screen->format->BitsPerPixel;
-	if( depth == 32 || depth == 24 )
-		return 32;
-	else
-		return 16;
-}
-
-
-bool Display::IsFullscreen() const
-{
-	return (m_Screen->flags & SDL_FULLSCREEN) ? true:false;
-}
-
-
-// find index of res r (-1 if no match)
-int Display::MatchRes( Res const& r ) const
-{
-	unsigned int i;
-	for( i=0; i<m_Resolutions.size(); ++i )
-	{
-		if( r == m_Resolutions[i] )
-			return i;
-	}
-	return -1;
-}
-
 
 
 
@@ -186,6 +114,7 @@ int Display::MatchRes( Res const& r ) const
 
 void Display::TakeScreenshot()
 {
+#if 0
 	char filename[256];
 	int id=0;
 	while( true )
@@ -221,6 +150,7 @@ void Display::TakeScreenshot()
 
 	printf("Screenshot '%s'\n", filename );
 	fflush( stdout );
+#endif
 }
 
 

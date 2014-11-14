@@ -34,12 +34,11 @@ StandardController::~StandardController()
 float StandardController::XAxis()
 {
 	int numkeys;
-	Uint8* keys;
-	keys = SDL_GetKeyState(&numkeys);
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
 	
-	if( keys[SDLK_LEFT] || keys[SDLK_a] )
+	if( keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A] )
 		return -1.0f;
-	if( keys[SDLK_RIGHT] || keys[SDLK_d] )
+	if( keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D] )
 		return 1.0f;
 
 	if( m_Joystick )
@@ -55,12 +54,11 @@ float StandardController::XAxis()
 float StandardController::YAxis()
 {
 	int numkeys;
-	Uint8* keys;
-	keys = SDL_GetKeyState(&numkeys);
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
 	
-	if( keys[SDLK_UP] || keys[SDLK_w] )
+	if( keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W] )
 		return 1.0f;
-	if( keys[SDLK_DOWN] || keys[SDLK_s] )
+	if( keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] )
 		return -1.0f;
 
 	if( m_Joystick )
@@ -78,15 +76,14 @@ float StandardController::YAxis()
 bool StandardController::Button()
 {
 	int numkeys;
-	Uint8* keys;
-	keys = SDL_GetKeyState(&numkeys);
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
 
-	if( keys[SDLK_RCTRL] ||
-		keys[SDLK_LCTRL] ||
-		keys[SDLK_RSHIFT] ||
-		keys[SDLK_LSHIFT] ||
-		keys[SDLK_SPACE] ||
-		keys[SDLK_RETURN] )
+	if( keys[SDL_SCANCODE_RCTRL] ||
+		keys[SDL_SCANCODE_LCTRL] ||
+		keys[SDL_SCANCODE_RSHIFT] ||
+		keys[SDL_SCANCODE_LSHIFT] ||
+		keys[SDL_SCANCODE_SPACE] ||
+		keys[SDL_SCANCODE_RETURN] )
 	{
 		return true;
 	}

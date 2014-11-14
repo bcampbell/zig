@@ -402,7 +402,7 @@ void Level::Restart()
 }
 
 
-void Level::KeyDown( SDL_keysym& keysym )
+void Level::KeyDown( SDL_Keysym& keysym )
 {
 	if( m_AttractMode )
 	{
@@ -419,12 +419,14 @@ void Level::KeyDown( SDL_keysym& keysym )
 
 
 	// screenshot?
+#if 0
 	if( keysym.sym == SDLK_PRINT ||
 		keysym.sym == SDLK_SYSREQ ||
 		keysym.sym == SDLK_F12 )
 	{
 		m_ScreenshotFlag = true;
 	}
+#endif
 
 #ifdef ENABLE_CHEATS
 	// CHEAT KEYS

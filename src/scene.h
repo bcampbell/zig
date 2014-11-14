@@ -42,7 +42,7 @@ protected:
 	virtual bool IsFinished()=0;
 
 	// if the derived scene wants to handle key events it can override this.
-	virtual void KeyDown( SDL_keysym& keysym )
+	virtual void KeyDown( SDL_Keysym& keysym )
 	{}
 
 private:

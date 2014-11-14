@@ -60,7 +60,7 @@ bool GameOver::IsFinished()
 	return m_Done;
 }
 
-void GameOver::KeyDown( SDL_keysym& keysym )
+void GameOver::KeyDown( SDL_Keysym& keysym )
 {
 	// bail out early if a key is pressed
 	if( m_Timer > 0.5f )

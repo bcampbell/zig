@@ -83,8 +83,8 @@ int main( int argc, char*argv[] )
 			throw e;
 		}
 
-		SDL_WM_SetCaption( "Zig", 0 );
-
+//		SDL_WM_SetCaption( "Zig", 0 );
+// TODO: SDL_SetWindowTitle(
 
 #ifdef ZIG_INSTALL_DIR
 		if( chdir( ZIG_INSTALL_DIR ) < 0 )
@@ -94,9 +94,7 @@ int main( int argc, char*argv[] )
 #endif
 
 
-		g_Display = new Display(
-			Res( g_Config.width, g_Config.height ),
-			g_Config.depth, g_Config.fullscreen );
+		g_Display = new Display( g_Config.fullscreen );
 
 		g_Font = new FileTexture( Resources::Map( "font.png" ).c_str() );
 		g_Display->AddTexture( g_Font );
@@ -316,9 +314,9 @@ static void PlayGame( HighScores& highscores )
 
 				// This makes sure that keypresses are correctly
 				// mapped to characters (needed only for name entry).
-				SDL_EnableUNICODE(1);
+//				SDL_EnableUNICODE(1);
 				scorescreen.Run();
-				SDL_EnableUNICODE(0);
+//				SDL_EnableUNICODE(0);
 			}
 		}
 	}

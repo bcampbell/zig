@@ -73,7 +73,7 @@ bool CompletionScreen::IsFinished()
 }
 
 
-void CompletionScreen::KeyDown( SDL_keysym& keysym )
+void CompletionScreen::KeyDown( SDL_Keysym& keysym )
 {
 	if( m_Elapsed > 2.0f )
 		m_Done = true;

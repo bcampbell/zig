@@ -16,11 +16,11 @@ OptionsMenu::OptionsMenu() :
 	AddItem( new MenuItem( ID_ACCEPT, vec2(0.0f,-80.0f), "ACCEPT" ) );
 	AddItem( new MenuItem( ID_CANCEL, vec2(0.0f,-110.0f), "CANCEL" ) );
 
-	int i = g_Display->MatchRes( g_Display->CurrentRes() );
-	if( i==-1 )
-		i=0;
-	m_SelectedRes = i;
-	m_BitDepth = g_Display->CurrentDepth();
+//	int i = g_Display->MatchRes( g_Display->CurrentRes() );
+//	if( i==-1 )
+//		i=0;
+	m_SelectedRes = 0;
+	m_BitDepth = 0;
 	m_Fullscreen = g_Display->IsFullscreen();
 }
 
@@ -55,6 +55,7 @@ void OptionsMenu::RightArrow( vec2 const& offset )
 
 void OptionsMenu::Draw()
 {
+#if 0
 	std::vector<Res> const& rlist = g_Display->Resolutions();
 
 	// display current res
@@ -102,7 +103,7 @@ void OptionsMenu::Draw()
 		}
 		glPopMatrix();
 	}
-
+#endif
 	// display fullscreen
 	{
 		glPushMatrix();
@@ -143,7 +144,8 @@ void OptionsMenu::OnSelect( int id )
 	case ID_ACCEPT:
 		{
 			m_Done = true;
-
+			g_Display->ChangeSettings(m_Fullscreen);
+#if 0
 			Res const& r = g_Display->Resolutions()[m_SelectedRes];
 			g_Config.fullscreen = m_Fullscreen;
 			g_Config.width = r.w;
@@ -151,10 +153,10 @@ void OptionsMenu::OnSelect( int id )
 			g_Config.depth = m_BitDepth;
 
 			g_Display->ChangeSettings(
-				Res( g_Config.width, g_Config.height ),
-				g_Config.depth, g_Config.fullscreen );
+				g_Config.fullscreen );
 
 			g_Config.Save();
+#endif
 		}
 		break;
 	case ID_CANCEL:
@@ -202,9 +204,11 @@ void OptionsMenu::OnRight( int id )
 	switch( (ItemID)id )
 	{
 	case ID_RES:
+#if 0
 		if( m_SelectedRes < (int)g_Display->Resolutions().size()-1 )
 			++m_SelectedRes;
 		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
+#endif
 		break;
 	case ID_FULLSCREEN:
 		m_Fullscreen = m_Fullscreen ? false : true;

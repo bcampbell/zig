@@ -19,7 +19,7 @@ protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();
-	virtual void KeyDown( SDL_keysym& keysym );
+	virtual void KeyDown( SDL_Keysym& keysym );
 public:
 	HighScoreScreen();
 
