@@ -121,13 +121,7 @@ OriginalBackground::~OriginalBackground()
 
 void OriginalBackground::Draw( vec2 const& pos, float orient )
 {
-	vec2 xy[4] =
-	{
-		vec2(-VW/2.0f,VH/2.0f),
-		vec2(VW/2.0f,VH/2.0f),
-		vec2(VW/2.0f,-VH/2.0f),
-		vec2(-VW/2.0f,-VH/2.0f)
-	};
+	const vec2* xy = g_Display->m_Extent;
 	vec2 uv[4];
 	vec2 uvtoo[4];
 
@@ -213,13 +207,7 @@ RetroBackground::~RetroBackground()
 
 void RetroBackground::Draw( vec2 const& pos, float orient )
 {
-	vec2 xy[4] =
-	{
-		vec2(-VW/2.0f,VH/2.0f),
-		vec2(VW/2.0f,VH/2.0f),
-		vec2(VW/2.0f,-VH/2.0f),
-		vec2(-VW/2.0f,-VH/2.0f)
-	};
+	const vec2* xy = g_Display->m_Extent;
 
 	vec2 uv[4];
 	vec2 uvtoo[4];

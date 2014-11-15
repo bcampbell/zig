@@ -9,7 +9,7 @@ struct ZigConfig;
 #include <list>
 
 #include <SDL.h>
-
+#include "vec2.h"
 class Texture;
 
 struct Res
@@ -27,6 +27,7 @@ class Display
 {
 public:
     SDL_Window *m_Window;
+    vec2 m_Extent[4];
 	Display( bool fullscreen );
 	virtual ~Display();
 
@@ -34,11 +35,13 @@ public:
 
 	bool IsFullscreen() const
         { return false;}
+    void HandleResize( int winw, int winh );
 
 	void AddTexture( Texture* t );
 	void RemoveTexture( Texture* t);	// OK to pass in null
 
 	void TakeScreenshot();
+
 private:
 	void OpenMode( Res res, int depth, bool fullscreen );
 

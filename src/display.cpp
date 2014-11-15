@@ -65,16 +65,16 @@ void Display::ChangeSettings(bool fullscreen )
 
 Display::Display( bool fullscreen ) : m_Window(0)
 {
-    Uint32  flags = SDL_WINDOW_OPENGL;
+    Uint32  flags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE;
     if(fullscreen) {
 //        flags |= SDL_WINDOW_FULLSCREEN;
-        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+//        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
     m_Window = SDL_CreateWindow("Zig",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         640, 480,
-        SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+        flags);
 	if( !m_Window )
 	{
 		Wobbly e("SDL_CreateWindow() failed");	//: %s\n", SDL_GetError() );
@@ -104,12 +104,41 @@ Display::Display( bool fullscreen ) : m_Window(0)
 	glMatrixMode( GL_MODELVIEW );
 
 	//glViewport( 0,0, res.w, res.h );
-	glViewport( 0,0, 640,480 );
-	
+	//glViewport( 0,0, 640,480 );
+    int w,h;	
+    SDL_GetWindowSize(m_Window,&w,&h);
+    HandleResize(w,h);
 }
 
+void Display::HandleResize( int winw, int winh )
+{
+    const float target_aspect = (float)VW/(float)VH;
+    float r = ((float)winw/(float)winh) / target_aspect;
+    float vw = VW;
+    float vh = VH;
+    if(r >= 1.0f) {
+        // widescreen
+        vw *= r;
+    } else {
+        // tallscreen
+        vh *= (1.0f/r);
+    }
+    float xmag = vw/2.0;
+    float ymag = vh/2.0;
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
 
+    glOrtho( -xmag, xmag, -ymag,ymag, -1.0, 1.0 );
+	glMatrixMode( GL_MODELVIEW );
+	glViewport( 0,0, winw, winh );
 
+    m_Extent[0] = vec2(-xmag,ymag);
+    m_Extent[1] = vec2(xmag,ymag);
+    m_Extent[2] = vec2(xmag,-ymag);
+    m_Extent[3] = vec2(-xmag,-ymag);
+
+   // printf("resize %dx%d (%f) -> %fx%f\n",winw,winh,r,vw,vh);
+}
 
 
 void Display::TakeScreenshot()

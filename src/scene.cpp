@@ -40,6 +40,7 @@ void Scene::Run()
 			switch( event.type )
 			{
 				case SDL_QUIT:
+                    // TODO: kill.
 					throw QuitNotification();
 					break;
 				case SDL_KEYDOWN:
@@ -50,6 +51,13 @@ void Scene::Run()
 							break;
 					}
 					break;
+                case SDL_WINDOWEVENT:
+                    if( event.window.event==SDL_WINDOWEVENT_RESIZED) {
+                        int w=event.window.data1;
+                        int h=event.window.data2;
+                        g_Display->HandleResize(w,h);
+                    }
+                    break;
 			}
 		}
 
