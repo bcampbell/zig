@@ -258,12 +258,14 @@ void Level::DrawHUD()
 {
 	char buf[128];
 
+    vec2 tl = g_Display->TopLeft();
+
 	glPushMatrix();
 	sprintf( buf, "LEVEL: %d  SCORE: %d  LIVES: %d",
 		m_LevelNum,
 		g_Player->Score(),
 		g_Player->SpareLives() );
-	glTranslatef( (-VW/2.0f)+20.0f, (VH/2.0f)-20.0f, 0.0f );
+	glTranslatef( tl.x+20.0f, tl.y-20.0f, 0.0f );
 
 	glColor4f( 1.0f, 1.0f, 1.0f, 0.8f );
 	PlonkText( *g_Font, buf, false, 10.f, 10.0f );

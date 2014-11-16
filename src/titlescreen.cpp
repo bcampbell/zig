@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <string>
 
+#include "display.h"
 #include "drawing.h"
 #include "mathutil.h"
 #include "soundmgr.h"
@@ -36,11 +37,7 @@ static const char* facetiouscrap[] = {
 	"SHARE AND ENJOY.",
 	"MUST... DESTROY... MANKIND...",
 	"WE'RE ALL GOING TO DIE.",
-	"IT ROCKS. AND IT'S XTREME.",
 	"JUST ONE MICROSCOPIC COG IN A CATASTROPHIC PLAN",
-//	"SECURE THAT SHIT!",
-//	"THIS AGGRESSION WILL NOT STAND, MAN.",
-//	"NICE MARMOT.",
 	"HAPPINESS IS BACK IN STYLE",
 	"ENTERPRISE EDITION"
 };
@@ -68,13 +65,15 @@ void TitleScreen::Render()
 		PlonkText( *g_Font, "ZIG", true, 64, 64 );
 	glPopMatrix();
 
+    vec2 tl = g_Display->TopLeft();
+    vec2 tr = g_Display->TopRight();
 	glColor4f( 0.4f, 0.4f, 0.4f, 1.0f );
 	glPushMatrix();
-		glTranslatef( -VW/2 + 8.0f, (VH/2.0f)-12.0f, 0.0f );
-		PlonkText( *g_Font, "WWW.ITSAGAMEWHEREYOUSHOOTSTUFF.COM", false, 8, 10 );
+		glTranslatef( tl.x + 8.0f, tl.y-12.0f, 0.0f );
+		PlonkText( *g_Font, "HTTP://ITSAGAMEWHEREYOUSHOOTSTUFF.COM", false, 8, 10 );
 	glPopMatrix();
 	glPushMatrix();
-		glTranslatef( (VW/2)-40.0f, (VH/2.0f)-12.0f, 0.0f );
+		glTranslatef( tr.x-40.0f, tr.y-12.0f, 0.0f );
 		PlonkText( *g_Font, "V"ZIGVERSION, false, 8, 10 );
 	glPopMatrix();
 /*

@@ -42,6 +42,8 @@ public:
 
     // return the corners of the visible playfield
     void Extent(vec2 (&out)[4]);
+    vec2 const& TopLeft() const { return m_Extent[0]; }
+    vec2 const& TopRight() const { return m_Extent[1]; }
 private:
     vec2 m_Extent[4];
     SDL_Window *m_Window;
