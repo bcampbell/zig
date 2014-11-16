@@ -23,6 +23,20 @@ Display::~Display()
 	assert( m_Textures.empty() );
 }
 
+void Display::Present()
+{
+    glFlush();
+    SDL_GL_SwapWindow(m_Window);
+}
+
+void Display::Extent(vec2 (&out)[4])
+{
+    int i;
+    for (i=0; i<4; ++i)
+    {
+        out[i] = m_Extent[i];
+    }
+}
 
 void Display::ChangeSettings(bool fullscreen )
 {

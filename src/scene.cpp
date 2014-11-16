@@ -29,9 +29,8 @@ void Scene::Run()
 		CrippleClock::Render();
 #endif //CRIPPLED
 
-		glFlush();
 
-        SDL_GL_SwapWindow(g_Display->m_Window);
+        g_Display->Present();
 
 		SDL_PumpEvents();
 		SDL_Event event;

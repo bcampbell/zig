@@ -26,8 +26,6 @@ struct Res
 class Display
 {
 public:
-    SDL_Window *m_Window;
-    vec2 m_Extent[4];
 	Display( bool fullscreen );
 	virtual ~Display();
 
@@ -36,18 +34,18 @@ public:
 	bool IsFullscreen() const
         { return false;}
     void HandleResize( int winw, int winh );
-
+    void Present();
 	void AddTexture( Texture* t );
 	void RemoveTexture( Texture* t);	// OK to pass in null
 
 	void TakeScreenshot();
 
+    // return the corners of the visible playfield
+    void Extent(vec2 (&out)[4]);
 private:
-	void OpenMode( Res res, int depth, bool fullscreen );
-
+    vec2 m_Extent[4];
+    SDL_Window *m_Window;
     SDL_GLContext m_GLContext;
-
-
 	std::list< Texture* > m_Textures;
 };
 
