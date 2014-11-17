@@ -6,6 +6,7 @@
 #include <string>
 
 #include <SDL_keyboard.h>
+#include <SDL_events.h>
 
 // Scene encapsulates the main timing and event loop.
 // Derived classes handle the main game action (the Level class), titlescreen
@@ -44,6 +45,10 @@ protected:
 	// if the derived scene wants to handle key events it can override this.
 	virtual void KeyDown( SDL_Keysym& keysym )
 	{}
+
+    // incoming text, cooked into utf-8
+    virtual void OnTextInput( SDL_TextInputEvent& ev)
+    {}
 
 private:
 };

@@ -42,6 +42,9 @@ void Scene::Run()
                     // TODO: kill.
 					throw QuitNotification();
 					break;
+				case SDL_TEXTINPUT:
+                    OnTextInput(event.text);
+                    break;
 				case SDL_KEYDOWN:
 					switch( event.key.keysym.sym )
 					{

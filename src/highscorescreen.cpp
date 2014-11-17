@@ -26,6 +26,10 @@ void HighScoreScreen::EntryMode( int scoreidx )
 	m_EntryTarget = scoreidx;
 }
 
+HighScoreScreen::~HighScoreScreen()
+{
+}
+
 void HighScoreScreen::Render()
 {
 	glClear( GL_COLOR_BUFFER_BIT );
@@ -92,9 +96,9 @@ bool HighScoreScreen::IsFinished()
 }
 
 
-
 void HighScoreScreen::KeyDown( SDL_Keysym& keysym )
 {
+
 	if( m_EntryTarget == -1 )
 	{
 		// not in edit mode
@@ -102,20 +106,17 @@ void HighScoreScreen::KeyDown( SDL_Keysym& keysym )
 		return;
 	}
 
-	if( keysym.sym == SDLK_RETURN )
+    SDL_Keycode code = keysym.sym;   // as opposed to hw scancode
+
+	if (code == SDLK_RETURN)
 	{
-		m_EntryTarget = -1;
+        EntryMode(-1);
 		return;
 	}
-    // TODO SDL2
-#if 0
-	// ignore international chars for now
-	if( keysym.unicode & 0xFF80 )
-		return;
 
 	std::string name = m_Scores.Name( m_EntryTarget );
 
-	if( keysym.sym == SDLK_LEFT || keysym.sym == SDLK_BACKSPACE )
+	if (code==SDLK_LEFT || code==SDLK_BACKSPACE)
 	{
 		// delete last char
 		if( !name.empty() )
@@ -123,20 +124,24 @@ void HighScoreScreen::KeyDown( SDL_Keysym& keysym )
 	}
 	else
 	{
-		char c = keysym.unicode & 0x7f;
+        // Cheesiness - SDL keycode values tend to correspond to
+        // ascii(/unicode).
+        // TODO: use utf-8, input via SDL_TextInputEvent
+		char c = (char)code;
 
 		// TODO: get more chars into the font!
-		c = toupper(c);
-		if( isalnum(c) ||
+		if ((c>='a' && c<='z') ||
+            (c>='0' && c<='9') ||
 			c=='-' || c=='\'' || c=='!' ||
-			c==':' || c=='.' || c==',' || c==' ' )
+			c==':' || c=='.' || c==',' || c==' ')
 		{
+            c = toupper(c);
 			if( name.size() < HighScores::MAX_NAME_SIZE )
 				name += c;
 		}
 	}
 	m_Scores.SetName( m_EntryTarget, name );
-#endif
 }
+
 
 

@@ -12,6 +12,7 @@ class HighScoreScreen : public Scene
 {
 public:
 	HighScoreScreen( HighScores& scores );
+	virtual ~HighScoreScreen();
 	
 	void EntryMode( int scoreidx );
 
