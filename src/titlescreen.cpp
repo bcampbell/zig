@@ -70,7 +70,7 @@ void TitleScreen::Render()
 	glColor4f( 0.4f, 0.4f, 0.4f, 1.0f );
 	glPushMatrix();
 		glTranslatef( tl.x + 8.0f, tl.y-12.0f, 0.0f );
-		PlonkText( *g_Font, "HTTP://ITSAGAMEWHEREYOUSHOOTSTUFF.COM", false, 8, 10 );
+		PlonkText( *g_Font, "ITSAGAMEWHEREYOUSHOOTSTUFF.COM", false, 8, 10 );
 	glPopMatrix();
 	glPushMatrix();
 		glTranslatef( tr.x-40.0f, tr.y-12.0f, 0.0f );
