@@ -40,7 +40,7 @@ protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();
-	virtual void KeyDown( SDL_Keysym& keysym );
+	virtual void HandleKeyDown( SDL_Keysym& keysym );
 private:
 
 	Level();

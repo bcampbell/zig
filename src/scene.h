@@ -43,11 +43,11 @@ protected:
 	virtual bool IsFinished()=0;
 
 	// if the derived scene wants to handle key events it can override this.
-	virtual void KeyDown( SDL_Keysym& keysym )
+	virtual void HandleKeyDown( SDL_Keysym& keysym )
 	{}
 
     // incoming text, cooked into utf-8
-    virtual void OnTextInput( SDL_TextInputEvent& ev)
+    virtual void HandleTextInput( SDL_TextInputEvent& ev)
     {}
 
 private:

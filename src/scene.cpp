@@ -43,13 +43,13 @@ void Scene::Run()
 					throw QuitNotification();
 					break;
 				case SDL_TEXTINPUT:
-                    OnTextInput(event.text);
+                    HandleTextInput(event.text);
                     break;
 				case SDL_KEYDOWN:
 					switch( event.key.keysym.sym )
 					{
 						default:
-							KeyDown( event.key.keysym );
+							HandleKeyDown( event.key.keysym );
 							break;
 					}
 					break;

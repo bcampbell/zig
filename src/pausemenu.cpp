@@ -8,8 +8,7 @@ PauseMenu::PauseMenu()
 {
 	m_Done = false;
 	AddItem( new MenuItem( (int)ResumeGame, vec2(0.0f,15.0f), "RESUME" ) );
-	
-	AddItem( new MenuItem( (int)AbortGame, vec2(0.0f,-15.0f), "QUIT" ) );
+	AddItem( new MenuItem( (int)AbortGame, vec2(0.0f,-15.0f), "QUIT", true, SDLK_ESCAPE ) );
 }
 
 

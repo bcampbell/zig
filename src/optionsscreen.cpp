@@ -23,6 +23,10 @@ void OptionsScreen::Tick()
 	m_Menu.Tick();
 }
 	
+void OptionsScreen::HandleKeyDown( SDL_Keysym& keysym )
+{
+    m_Menu.HandleKeyDown(keysym);
+}
 
 bool OptionsScreen::IsFinished()
 {

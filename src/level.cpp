@@ -404,7 +404,7 @@ void Level::Restart()
 }
 
 
-void Level::KeyDown( SDL_Keysym& keysym )
+void Level::HandleKeyDown( SDL_Keysym& keysym )
 {
 	if( m_AttractMode )
 	{
@@ -418,6 +418,10 @@ void Level::KeyDown( SDL_Keysym& keysym )
 			keysym.sym == SDLK_PAUSE )
 			m_PauseMenu = new PauseMenu();
 	}
+    else
+    {
+        m_PauseMenu->HandleKeyDown(keysym);
+    }
 
 
 	// screenshot?

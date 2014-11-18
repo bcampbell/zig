@@ -10,11 +10,11 @@
 OptionsMenu::OptionsMenu() :
 	m_Done( false )
 {
-	AddItem( new MenuItem( ID_RES, vec2(-100.0f,45.0f), "RESOLUTION" ) );
-	AddItem( new MenuItem( ID_DEPTH, vec2(-100.0f,15.0f), "BIT DEPTH" ) );
+//	AddItem( new MenuItem( ID_RES, vec2(-100.0f,45.0f), "RESOLUTION" ) );
+//	AddItem( new MenuItem( ID_DEPTH, vec2(-100.0f,15.0f), "BIT DEPTH" ) );
 	AddItem( new MenuItem( ID_FULLSCREEN, vec2(-100.0f,-15.0f), "FULLSCREEN" ) );
 	AddItem( new MenuItem( ID_ACCEPT, vec2(0.0f,-80.0f), "ACCEPT" ) );
-	AddItem( new MenuItem( ID_CANCEL, vec2(0.0f,-110.0f), "CANCEL" ) );
+	AddItem( new MenuItem( ID_CANCEL, vec2(0.0f,-110.0f), "CANCEL", true, SDLK_ESCAPE ) );
 
 //	int i = g_Display->MatchRes( g_Display->CurrentRes() );
 //	if( i==-1 )

@@ -60,9 +60,12 @@ bool GameOver::IsFinished()
 	return m_Done;
 }
 
-void GameOver::KeyDown( SDL_Keysym& keysym )
+void GameOver::HandleKeyDown( SDL_Keysym& keysym )
 {
-	// bail out early if a key is pressed
+    if (keysym.sym==SDLK_ESCAPE)
+        m_Done = true;
+
+	// bail out early if a any key is pressed
 	if( m_Timer > 0.5f )
 		m_Done = true;
 }

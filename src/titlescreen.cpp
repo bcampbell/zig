@@ -103,6 +103,10 @@ void TitleScreen::Tick()
 	m_Menu.Tick();
 }
 
+void TitleScreen::HandleKeyDown( SDL_Keysym& keysym )
+{
+    m_Menu.HandleKeyDown(keysym);
+}
 
 bool TitleScreen::IsFinished()
 {
@@ -138,7 +142,7 @@ TitleMenu::TitleMenu() :
 {
 	AddItem( new MenuItem( ID_PLAY, vec2(0.0f,-20.0f), "PLAY" ) );
 	AddItem( new MenuItem( ID_OPTIONS, vec2(0.0f,-50.0f), "OPTIONS" ) );
-	AddItem( new MenuItem( ID_QUIT, vec2(0.0f,-80.0f), "EXIT" ) );
+	AddItem( new MenuItem( ID_QUIT, vec2(0.0f,-80.0f), "EXIT", true, SDLK_ESCAPE ) );
 }
 
 TitleMenu::ResultID TitleMenu::GetResult() const

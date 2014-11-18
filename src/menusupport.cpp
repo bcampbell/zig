@@ -6,6 +6,7 @@
 #include "soundmgr.h"
 #include "zig.h"
 #include <SDL_opengl.h>
+#include <SDL_keyboard.h>
 
 
 
@@ -21,14 +22,15 @@ static const ColourRange focusrange( focuscolours, 2 );
 
 
 
-MenuItem::MenuItem( int id, vec2 const& pos, std::string const& text, bool centre ) :
+MenuItem::MenuItem( int id, vec2 const& pos, std::string const& text, bool centre, SDL_Keycode shortcut ) :
 	m_ID(id),
 	m_Pos( pos ),
 	m_Text( text ),
 	m_State( Normal ),
 	m_Wibble( 0.0f ),
 	m_Cyc( 0.0f ),
-	m_Centre( centre )
+	m_Centre( centre ),
+    m_Shortcut(shortcut)
 {
 }
 
@@ -164,6 +166,27 @@ void Menu::Tick()
 		OnSelect( (*m_Current)->GetID() );
 }
 
+void Menu::HandleKeyDown( SDL_Keysym& keysym )
+{
+    if (keysym.sym==SDLK_UNKNOWN)
+        return;
+
+	itemlist::const_iterator end = m_Items.end();
+	itemlist::iterator it;
+	for( it=m_Items.begin(); it!=end; ++it )
+    {
+        SDL_Keycode k = (*it)->Shortcut();
+        if (k==keysym.sym)
+        {
+            SoundMgr::Inst().Play( SFX_DULLBLAST );
+            (*m_Current)->SetFocus( false );
+            m_Current = it;
+            (*m_Current)->SetFocus( true );
+            OnSelect( (*m_Current)->GetID() );
+            return;
+        }
+    }
+}
 
 void Menu::Draw()
 {

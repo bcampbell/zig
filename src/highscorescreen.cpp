@@ -96,7 +96,7 @@ bool HighScoreScreen::IsFinished()
 }
 
 
-void HighScoreScreen::KeyDown( SDL_Keysym& keysym )
+void HighScoreScreen::HandleKeyDown( SDL_Keysym& keysym )
 {
 
 	if( m_EntryTarget == -1 )
