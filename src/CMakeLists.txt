@@ -1,11 +1,13 @@
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#include(CheckIncludeFiles)
-
 # we've got our own module to find STK
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${zig_SOURCE_DIR})
 
-find_package(SDL2 REQUIRED)
-find_package(SDL2_mixer REQUIRED)
+include(FindPkgConfig)
+
+pkg_search_module(SDL2 REQUIRED sdl2)
+pkg_search_module(SDL2MIXER REQUIRED SDL2_mixer)
+#find_package(SDL2 REQUIRED)
+#find_package(SDL2_mixer REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
@@ -24,14 +26,16 @@ endif( UNIX)
 
 configure_file( config.h.in config.h )
 
-include_directories(${OPENGL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${SDL2MIXER_INCLUDE_DIR} ${STK_INCLUDE_DIR})
+#include_directories(${OPENGL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${SDL2MIXER_INCLUDE_DIR} ${STK_INCLUDE_DIR})
+include_directories(${OPENGL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS} ${SDL2MIXER_INCLUDE_DIRS} ${STK_INCLUDE_DIR})
 
 # actually probably a few unused .cpp files we should zap, but hey.
 file(GLOB SRCS *.cpp)
 set( SRCS ${SRCS} retromat/retromat.cpp retromat/sidstyle.cpp )
 
 add_executable(zig ${SRCS})
-target_link_libraries( zig ${OPENGL_LIBRARY} ${ZLIB_LIBRARY} ${PNG_LIBRARY} ${SDL2_LIBRARY} ${SDL2MIXER_LIBRARY} ${STK_LIBRARY})
+#target_link_libraries( zig ${OPENGL_LIBRARY} ${ZLIB_LIBRARY} ${PNG_LIBRARY} ${SDL2_LIBRARY} ${SDL2MIXER_LIBRARY} ${STK_LIBRARY})
+target_link_libraries( zig ${OPENGL_LIBRARY} ${ZLIB_LIBRARY} ${PNG_LIBRARY} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} ${STK_LIBRARY})
 
 if( UNIX )
     # TODO: don't want this on OSX if we're building a bundle...
