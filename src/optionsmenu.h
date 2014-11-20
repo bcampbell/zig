@@ -21,10 +21,11 @@ private:
 	void RightArrow( vec2 const& offset );
 
 	bool m_Done;
-
+#if 0
 	int	m_SelectedRes;
-	bool m_Fullscreen;
 	int m_BitDepth;
+#endif
+	bool m_Fullscreen;
 	enum ItemID { ID_RES, ID_FULLSCREEN, ID_DEPTH, ID_ACCEPT, ID_CANCEL };
 };
 

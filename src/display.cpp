@@ -48,6 +48,7 @@ void Display::ChangeSettings(bool fullscreen )
     {
         SDL_SetWindowFullscreen(m_Window,0);
     }
+    m_Fullscreen = fullscreen;
 
 #if 0
 	// unload all textures
@@ -77,12 +78,12 @@ void Display::ChangeSettings(bool fullscreen )
 
 
 
-Display::Display( bool fullscreen ) : m_Window(0)
+Display::Display( bool fullscreen ) : m_Fullscreen(fullscreen), m_Window(0)
 {
     Uint32  flags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE;
     if(fullscreen) {
 //        flags |= SDL_WINDOW_FULLSCREEN;
-//        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
     m_Window = SDL_CreateWindow("Zig",
         SDL_WINDOWPOS_UNDEFINED,

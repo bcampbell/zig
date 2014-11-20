@@ -19,8 +19,11 @@ OptionsMenu::OptionsMenu() :
 //	int i = g_Display->MatchRes( g_Display->CurrentRes() );
 //	if( i==-1 )
 //		i=0;
+
+#if 0
 	m_SelectedRes = 0;
 	m_BitDepth = 0;
+#endif
 	m_Fullscreen = g_Display->IsFullscreen();
 }
 
@@ -155,8 +158,8 @@ void OptionsMenu::OnSelect( int id )
 			g_Display->ChangeSettings(
 				g_Config.fullscreen );
 
-			g_Config.Save();
 #endif
+			g_Config.Save();
 		}
 		break;
 	case ID_CANCEL:
@@ -166,10 +169,12 @@ void OptionsMenu::OnSelect( int id )
 		m_Fullscreen = m_Fullscreen ? false : true;
 		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
 		break;
+#if 0
 	case ID_DEPTH:
 		m_BitDepth = m_BitDepth==32 ? 16 : 32;
 		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
 		break;
+#endif
 	default:
 		break;
 	};
@@ -180,17 +185,19 @@ void OptionsMenu::OnLeft( int id )
 {
 	switch( (ItemID)id )
 	{
+#if 0
 	case ID_RES:
 		if( m_SelectedRes > 0 )
 			--m_SelectedRes;
 		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
 		break;
-	case ID_FULLSCREEN:
-		m_Fullscreen = m_Fullscreen ? false : true;
-		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
-		break;
 	case ID_DEPTH:
 		m_BitDepth = m_BitDepth==32 ? 16 : 32;
+		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
+		break;
+#endif
+	case ID_FULLSCREEN:
+		m_Fullscreen = m_Fullscreen ? false : true;
 		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
 		break;
 	default:
@@ -203,19 +210,19 @@ void OptionsMenu::OnRight( int id )
 {
 	switch( (ItemID)id )
 	{
-	case ID_RES:
 #if 0
+	case ID_RES:
 		if( m_SelectedRes < (int)g_Display->Resolutions().size()-1 )
 			++m_SelectedRes;
-		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
-#endif
-		break;
-	case ID_FULLSCREEN:
-		m_Fullscreen = m_Fullscreen ? false : true;
 		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
 		break;
 	case ID_DEPTH:
 		m_BitDepth = m_BitDepth==32 ? 16 : 32;
+		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
+		break;
+#endif
+	case ID_FULLSCREEN:
+		m_Fullscreen = m_Fullscreen ? false : true;
 		SoundMgr::Inst().Play( SFX_PLAYERFIRE );
 		break;
 	default:

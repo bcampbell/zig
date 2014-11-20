@@ -104,9 +104,11 @@ void ZigConfig::Save() const
 	else
 		out << "window" << std::endl;
 
+#if 0
 	out << "width " << width << std::endl;
 	out << "height " << height << std::endl;
 	out << "depth " << depth << std::endl;
+#endif
 }
 
 

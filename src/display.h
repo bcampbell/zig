@@ -32,7 +32,7 @@ public:
 	void ChangeSettings( bool fullscreen );
 
 	bool IsFullscreen() const
-        { return false;}
+        { return m_Fullscreen;}
     void HandleResize( int winw, int winh );
     void Present();
 	void AddTexture( Texture* t );
@@ -45,6 +45,7 @@ public:
     vec2 const& TopLeft() const { return m_Extent[0]; }
     vec2 const& TopRight() const { return m_Extent[1]; }
 private:
+    bool m_Fullscreen;
     vec2 m_Extent[4];
     SDL_Window *m_Window;
     SDL_GLContext m_GLContext;
