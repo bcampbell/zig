@@ -48,8 +48,7 @@ Texture* g_InvaderTexture=0;
 Texture* g_BlueGlow=0;
 AgentManager* g_Agents = 0;
 Display* g_Display=0;
-Controller* g_Controller = 0;
-Controller* g_MenuController = 0;
+ControllerMgr* g_ControllerMgr = 0;
 
 bool g_KeepYourSectorTidy = false;
 
@@ -77,7 +76,7 @@ int main( int argc, char*argv[] )
 
 		Resources::Init();
 
-		if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) != 0 )
+		if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK|SDL_INIT_GAMECONTROLLER) != 0)
 		{
 			Wobbly e("SDL_Init() failed");	//: %s\n", SDL_GetError() );
 			throw e;
@@ -92,7 +91,7 @@ int main( int argc, char*argv[] )
 			throw Wobbly( "Couldn't change to " ZIG_INSTALL_DIR );
 		}
 #endif
-
+        g_ControllerMgr = new ControllerMgr();
 
 		g_Display = new Display( g_Config.fullscreen );
 
@@ -104,9 +103,6 @@ int main( int argc, char*argv[] )
 
 		g_BlueGlow = new BlueGlow( 64,64 );
 		g_Display->AddTexture( g_BlueGlow );
-
-		g_Controller = new StandardController();
-		g_MenuController = new LatchedController( *g_Controller );
 
 		//----------------------------------------------
 		// Sound Init
@@ -212,8 +208,7 @@ int main( int argc, char*argv[] )
 	}
 
 	SoundMgr::Destroy();
-	delete g_MenuController;
-	delete g_Controller;
+    delete g_ControllerMgr;
 
 	// clean up global textures
 	if( g_Display )

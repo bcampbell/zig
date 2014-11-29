@@ -20,7 +20,7 @@
 
 Player::Player( bool autopilot ) :
 	Agent(),
-	m_Controller(0),
+	m_AutoController(0),
 	m_Score(0),
 	m_SpareLives(3),
 	m_FireTimer(0),
@@ -33,9 +33,7 @@ Player::Player( bool autopilot ) :
 	g_Player = this;
 
 	if( autopilot )
-		m_Controller = new Autopilot();
-	else
-		m_Controller = new StandardController();
+		m_AutoController = new Autopilot();
 
 	SetWeapon(0);
 }
@@ -44,7 +42,7 @@ Player::~Player()
 {
 	assert( g_Player == this );
 	g_Player = 0;
-	delete m_Controller;
+	delete m_AutoController;
 
 	delete m_Weapon;
 	delete m_Nashwan;
@@ -99,9 +97,10 @@ void Player::Draw()
 void Player::Tick()
 {
 	assert( m_Weapon != 0 );
-	assert( m_Controller != 0 );
 
-	bool button = m_Controller->Button();
+    // TODO: autopilot!
+    Controller& ctrl = g_ControllerMgr->GameController();
+	bool button = ctrl.Button();
 	m_Weapon->Tick( button );
 
 	if( m_Nashwan )
@@ -120,24 +119,24 @@ void Player::Tick()
 	}
 
 	// turn?
-	m_RotSpd += (0.02f*m_Controller->XAxis());
+	m_RotSpd += (0.02f*ctrl.XAxis());
 
 	// forwards? backwards?
-	float y = m_Controller->YAxis();
-	if( y > 0.0f )
+	float y = ctrl.YAxis();
+	if( y < 0.0f )
 	{
 		// forward!
-		y *= 0.75f;
+		y = (-y) * 0.75f;
 		m_Vel += Rotate( vec2(0.0f,y), Heading() );
 		// add exhaust trails
 		int i;
 		for( i=0; i<5; ++i )
 			g_Agents->AddUnderlay( new Exhaust( *this, m_Vel ) );
 	}
-	else if( y < 0.0f )
+	else if( y > 0.0f )
 	{
 		// reverse
-		y *= 0.35f;
+		y = (-y)*0.35f;
 		m_Vel += Rotate( vec2(0.0f,y ), Heading() );
 	}
 

@@ -93,7 +93,6 @@ void MenuItem::SetFocus( bool focus )
 Menu::Menu() : m_InactivityTime(0.0f)
 {
 	m_Current = m_Items.end();
-	assert( g_MenuController != 0 );
 }
 
 
@@ -127,17 +126,17 @@ void Menu::Tick()
 	itemlist::iterator it;
 	for( it=m_Items.begin(); it!=end; ++it )
 		(*it)->Tick();
-
-	float x = g_MenuController->XAxis();
-	float y = g_MenuController->YAxis();
-	bool b = g_MenuController->Button();
+    Controller& ctrl = g_ControllerMgr->MenuController();
+	float x = ctrl.XAxis();
+	float y = ctrl.YAxis();
+	bool b = ctrl.Button();
 
 	if( x == 0.0f && y == 0.0f && !b )
 		m_InactivityTime += 1.0f/(float)TARGET_FPS;
 	else
 		m_InactivityTime = 0.0f;
 
-	if( y > 0.0f )		// up?
+	if( y < 0.0f )		// up?
 	{
 		SoundMgr::Inst().Play( SFX_DULLBLAST );
 		(*m_Current)->SetFocus( false );
@@ -146,7 +145,7 @@ void Menu::Tick()
 		(*m_Current)->SetFocus( true );
 	}
 
-	if( y < 0.0f )	// down?
+	if( y > 0.0f )	// down?
 	{
 		SoundMgr::Inst().Play( SFX_DULLBLAST );
 		(*m_Current)->SetFocus( false );

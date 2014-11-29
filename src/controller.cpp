@@ -1,37 +1,88 @@
+#include <algorithm>
+#include <assert.h>
+#include <SDL_keyboard.h>
+#include <SDL.h>
 
 #include "controller.h"
 #include "mathutil.h"
-
-#include <assert.h>
-#include <SDL_keyboard.h>
+#include "wobbly.h"
 
 
-StandardController::StandardController() :
-	m_Joystick(0)
+
+
+
+
+// Controller interface for SDL gamecontroller
+class SDLController : public Controller
 {
-	if( SDL_NumJoysticks() > 0 )
-	{
-		m_Joystick = SDL_JoystickOpen(0);
+public:
+	SDLController(int j_idx);
+	~SDLController();
+	virtual float	XAxis();
+	virtual float	YAxis();
+	virtual bool	Button();
+private:
+	SDL_GameController*	m_Ctrl;
+	enum { DEADZONE=8000 };
+};
 
-		// need at least two axes and one button :-)
-		if( SDL_JoystickNumAxes(m_Joystick) < 2 ||
-			SDL_JoystickNumButtons(m_Joystick) < 1 )
-		{
-			SDL_JoystickClose( m_Joystick );
-			m_Joystick = 0;
-		}
-	}
+SDLController::SDLController(int j_idx) : m_Ctrl(0)
+{
+    m_Ctrl = SDL_GameControllerOpen(j_idx);
+    if (!m_Ctrl)
+    {
+        throw Wobbly("Couldn't open controller: %s", SDL_GetError());
+    }
+    const char *name = SDL_GameControllerNameForIndex(j_idx);
+    printf("Attached controller %d: %s\n",j_idx,name);
+}
+
+SDLController::~SDLController()
+{
+    if (m_Ctrl)
+    {
+        SDL_GameControllerClose(m_Ctrl);
+    }
+}
+
+float SDLController::XAxis()
+{
+    Sint16 v = SDL_GameControllerGetAxis(m_Ctrl, SDL_CONTROLLER_AXIS_LEFTX);
+    if (v>-DEADZONE && v<DEADZONE) {
+        return 0.0f;
+    } else {
+        return ((float)v) / 32768.0f;
+    }
+}
+
+float SDLController::YAxis()
+{
+    Sint16 v = SDL_GameControllerGetAxis(m_Ctrl, SDL_CONTROLLER_AXIS_LEFTY);
+    if (v>-DEADZONE && v<DEADZONE) {
+        return 0.0f;
+    } else {
+        return ((float)v) / 32768.0f;
+    }
+}
+
+bool SDLController::Button()
+{
+    return SDL_GameControllerGetButton(m_Ctrl,SDL_CONTROLLER_BUTTON_A)==1;
 }
 
 
-StandardController::~StandardController()
+
+KeyboardController::KeyboardController()
 {
-	if( m_Joystick )
-		SDL_JoystickClose( m_Joystick );
 }
 
 
-float StandardController::XAxis()
+KeyboardController::~KeyboardController()
+{
+}
+
+
+float KeyboardController::XAxis()
 {
 	int numkeys;
     const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -40,40 +91,24 @@ float StandardController::XAxis()
 		return -1.0f;
 	if( keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D] )
 		return 1.0f;
-
-	if( m_Joystick )
-	{
-		Sint16 rawx;
-		rawx = SDL_JoystickGetAxis( m_Joystick, 0 );
-		if( rawx < -DEADZONE || rawx > DEADZONE )
-			return (float)rawx / 32767.0f;
-	}
 	return 0.0f;
 }
 
-float StandardController::YAxis()
+float KeyboardController::YAxis()
 {
 	int numkeys;
     const Uint8* keys = SDL_GetKeyboardState(NULL);
 	
 	if( keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W] )
-		return 1.0f;
-	if( keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] )
 		return -1.0f;
-
-	if( m_Joystick )
-	{
-		Sint16 rawy;
-		rawy = SDL_JoystickGetAxis( m_Joystick, 1 );
-		if( rawy < -DEADZONE || rawy > DEADZONE )
-			return (float)rawy / 32767.0f;
-	}
+	if( keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] )
+		return 1.0f;
 	return 0.0f;
 }
 
 
 
-bool StandardController::Button()
+bool KeyboardController::Button()
 {
 	int numkeys;
     const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -87,12 +122,9 @@ bool StandardController::Button()
 	{
 		return true;
 	}
-
-	if( m_Joystick && SDL_JoystickGetButton( m_Joystick, 0 ) )
-		return true;
-
 	return false;
 }
+
 
 
 // could probably improve on this ai :-)
@@ -203,5 +235,93 @@ float LatchedController::YAxis()
 		m_DownCount = 0;
 
 	return 0.0f;
+}
+
+
+AggregateController::AggregateController()
+{
+}
+
+AggregateController::~AggregateController()
+{
+}
+
+void AggregateController::Remove( Controller* src)
+{
+    std::vector<Controller*> &v=m_Sources;
+    v.erase(std::remove(v.begin(),v.end(), src), v.end());
+}
+
+float AggregateController::XAxis()
+{
+    const float threshold = 0.001f;
+    std::vector<Controller*>::iterator it;
+    for (it=m_Sources.begin(); it<m_Sources.end(); ++it)
+    {
+        float v=(*it)->XAxis();
+        if (v<-threshold || v>threshold)
+            return v;
+    }
+    return 0.0f;
+}
+
+float AggregateController::YAxis()
+{
+    const float threshold = 0.001f;
+    std::vector<Controller*>::iterator it;
+    for (it=m_Sources.begin(); it<m_Sources.end(); ++it)
+    {
+        float v=(*it)->YAxis();
+        if (v<-threshold || v>threshold)
+            return v;
+    }
+    return 0.0f;
+}
+
+bool AggregateController::Button()
+{
+    std::vector<Controller*>::iterator it;
+    for (it=m_Sources.begin(); it<m_Sources.end(); ++it)
+    {
+        if ((*it)->Button())
+            return true;
+    }
+    return false;
+}
+
+
+ControllerMgr::ControllerMgr() :
+    m_KBCtrl(),
+    m_GameCtrl(),
+    m_MenuCtrl(m_GameCtrl)
+{
+    m_GameCtrl.Add(&m_KBCtrl);
+
+    if(SDL_GameControllerAddMappingsFromFile("/home/ben/proj/zig/gamecontrollerdb.txt")<0 ) {
+        printf("Add mapping failed: %s\n",SDL_GetError());
+    }
+
+    // scan for already-attached controllers
+    int i;
+    for(i=0; i<SDL_NumJoysticks(); ++i)
+    {
+        if (!SDL_IsGameController(i)) {
+            printf("joy %d is not controller\n",i);
+            continue;
+        }
+        SDLController* c = new SDLController(i);
+        m_Attached.push_back(c);
+        m_GameCtrl.Add(c);
+        break;
+    }
+}
+
+ControllerMgr::~ControllerMgr()
+{
+    while(!m_Attached.empty())
+    {
+        delete m_Attached.back();
+        m_Attached.pop_back();
+    }
 }
 

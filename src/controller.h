@@ -1,7 +1,12 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include <vector>
 #include <SDL_joystick.h>
+#include <SDL_gamecontroller.h>
+
+
+
 
 class Controller
 {
@@ -13,22 +18,20 @@ public:
 	virtual bool	Button() = 0;
 };
 
+class SDLController;
 
-
-
-// standard controller for user input
-class StandardController : public Controller
+class KeyboardController : public Controller
 {
 public:
-	StandardController();
-	~StandardController();
+	KeyboardController();
+	~KeyboardController();
 	virtual float	XAxis();
 	virtual float	YAxis();
 	virtual bool	Button();
 private:
-	SDL_Joystick*	m_Joystick;
-	enum { DEADZONE=8000 };
 };
+
+
 
 
 // autopilot!
@@ -67,6 +70,48 @@ private:
 	int m_UpCount;
 	int m_DownCount;
 };
+
+
+// merges multiple controllers into one
+class AggregateController : public Controller
+{
+public:
+	AggregateController();
+    virtual	~AggregateController();
+	virtual float	XAxis();
+	virtual float	YAxis();
+	virtual bool	Button();
+
+    void Add(Controller* src)
+        { m_Sources.push_back(src); }
+    void Remove(Controller* src);
+private:
+    std::vector<Controller*> m_Sources;
+};
+
+
+// Manager class for wrangling controllers
+// handles attach/detach, and presents virtualised controlllers
+// for gameplay and menu navigation
+class ControllerMgr
+{
+public:
+    ControllerMgr();
+    ~ControllerMgr();
+
+    // HandleJoyDevice/ControllerDevice events
+
+    Controller& MenuController() { return m_MenuCtrl; }
+    Controller& GameController() { return m_GameCtrl; }
+protected:
+    std::vector<SDLController*> m_Attached;
+    KeyboardController m_KBCtrl;
+    AggregateController m_GameCtrl;
+    LatchedController m_MenuCtrl;
+};
+
+
+
 
 
 #endif	// CONTROLLER_H

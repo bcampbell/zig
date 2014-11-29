@@ -53,6 +53,18 @@ void Scene::Run()
 							break;
 					}
 					break;
+                case SDL_CONTROLLERDEVICEADDED:
+                    printf("Controller Added\n");
+                    break;
+                case SDL_CONTROLLERDEVICEREMOVED:
+                    printf("Controller Removed\n");
+                    break;
+                case SDL_JOYDEVICEADDED:
+                    printf("joystick added\n");
+                    break;
+                case SDL_JOYDEVICEREMOVED:
+                    printf("joystick Removed\n");
+                    break;
                 case SDL_WINDOWEVENT:
                     if( event.window.event==SDL_WINDOWEVENT_RESIZED) {
                         int w=event.window.data1;
