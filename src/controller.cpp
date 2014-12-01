@@ -21,10 +21,18 @@ public:
 	virtual float	XAxis();
 	virtual float	YAxis();
 	virtual bool	Button();
+
+    SDL_JoystickID InstanceID();
 private:
 	SDL_GameController*	m_Ctrl;
 	enum { DEADZONE=8000 };
 };
+
+SDL_JoystickID SDLController::InstanceID()
+{
+    SDL_Joystick* joy = SDL_GameControllerGetJoystick(m_Ctrl);
+    return SDL_JoystickInstanceID(joy);
+}
 
 SDLController::SDLController(int j_idx) : m_Ctrl(0)
 {
@@ -34,7 +42,6 @@ SDLController::SDLController(int j_idx) : m_Ctrl(0)
         throw Wobbly("Couldn't open controller: %s", SDL_GetError());
     }
     const char *name = SDL_GameControllerNameForIndex(j_idx);
-    printf("Attached controller %d: %s\n",j_idx,name);
 }
 
 SDLController::~SDLController()
@@ -248,15 +255,14 @@ AggregateController::~AggregateController()
 
 void AggregateController::Remove( Controller* src)
 {
-    std::vector<Controller*> &v=m_Sources;
-    v.erase(std::remove(v.begin(),v.end(), src), v.end());
+    m_Sources.remove(src);
 }
 
 float AggregateController::XAxis()
 {
     const float threshold = 0.001f;
-    std::vector<Controller*>::iterator it;
-    for (it=m_Sources.begin(); it<m_Sources.end(); ++it)
+    std::list<Controller*>::iterator it;
+    for (it=m_Sources.begin(); it!=m_Sources.end(); ++it)
     {
         float v=(*it)->XAxis();
         if (v<-threshold || v>threshold)
@@ -268,8 +274,8 @@ float AggregateController::XAxis()
 float AggregateController::YAxis()
 {
     const float threshold = 0.001f;
-    std::vector<Controller*>::iterator it;
-    for (it=m_Sources.begin(); it<m_Sources.end(); ++it)
+    std::list<Controller*>::iterator it;
+    for (it=m_Sources.begin(); it!=m_Sources.end(); ++it)
     {
         float v=(*it)->YAxis();
         if (v<-threshold || v>threshold)
@@ -280,8 +286,8 @@ float AggregateController::YAxis()
 
 bool AggregateController::Button()
 {
-    std::vector<Controller*>::iterator it;
-    for (it=m_Sources.begin(); it<m_Sources.end(); ++it)
+    std::list<Controller*>::iterator it;
+    for (it=m_Sources.begin(); it!=m_Sources.end(); ++it)
     {
         if ((*it)->Button())
             return true;
@@ -312,6 +318,7 @@ ControllerMgr::ControllerMgr() :
         SDLController* c = new SDLController(i);
         m_Attached.push_back(c);
         m_GameCtrl.Add(c);
+        printf("Found controller: %d\n",c->InstanceID());
         break;
     }
 }
@@ -324,4 +331,37 @@ ControllerMgr::~ControllerMgr()
         m_Attached.pop_back();
     }
 }
+
+void ControllerMgr::HandleControllerAdded(SDL_ControllerDeviceEvent* ev)
+{
+    // TODO: cope with multiple adds 
+    int idx = ev->which;
+    SDLController* c = new SDLController(idx);
+    m_Attached.push_back(c);
+    m_GameCtrl.Add(c);
+    printf("Attached: %d\n",c->InstanceID());
+}
+
+void ControllerMgr::HandleControllerRemoved(SDL_ControllerDeviceEvent* ev)
+{
+    SDLController* ctrl = FindAttached(ev->which);
+    if (ctrl) {
+        printf("Removed: %d\n",ctrl->InstanceID());
+        m_GameCtrl.Remove(ctrl);
+        m_Attached.remove(ctrl);
+        delete ctrl;
+    }
+}
+
+SDLController* ControllerMgr::FindAttached(SDL_JoystickID instanceID)
+{
+    std::list<SDLController*>::iterator it;
+    for(it=m_Attached.begin(); it!=m_Attached.end(); ++it) {
+        SDLController* ctrl = *it;
+        if (ctrl->InstanceID() == instanceID)
+            return ctrl;
+    }
+    return 0;
+}
+
 

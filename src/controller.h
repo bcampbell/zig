@@ -1,9 +1,10 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <vector>
-#include <SDL_joystick.h>
-#include <SDL_gamecontroller.h>
+#include <list>
+//#include <SDL_joystick.h>
+//#include <SDL_gamecontroller.h>
+#include <SDL_events.h>
 
 
 
@@ -86,7 +87,7 @@ public:
         { m_Sources.push_back(src); }
     void Remove(Controller* src);
 private:
-    std::vector<Controller*> m_Sources;
+    std::list<Controller*> m_Sources;
 };
 
 
@@ -103,8 +104,13 @@ public:
 
     Controller& MenuController() { return m_MenuCtrl; }
     Controller& GameController() { return m_GameCtrl; }
-protected:
-    std::vector<SDLController*> m_Attached;
+
+
+    void HandleControllerAdded(SDL_ControllerDeviceEvent* ev);
+    void HandleControllerRemoved(SDL_ControllerDeviceEvent* ev);
+private:
+    SDLController* FindAttached(SDL_JoystickID instanceID);
+    std::list<SDLController*> m_Attached;
     KeyboardController m_KBCtrl;
     AggregateController m_GameCtrl;
     LatchedController m_MenuCtrl;
