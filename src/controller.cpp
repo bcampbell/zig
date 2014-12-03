@@ -20,7 +20,7 @@ public:
 	~SDLController();
 	virtual float	XAxis();
 	virtual float	YAxis();
-	virtual bool	Button();
+	virtual int 	Buttons();
 
     SDL_JoystickID InstanceID();
 private:
@@ -72,9 +72,14 @@ float SDLController::YAxis()
     }
 }
 
-bool SDLController::Button()
+int SDLController::Buttons()
 {
-    return SDL_GameControllerGetButton(m_Ctrl,SDL_CONTROLLER_BUTTON_A)==1;
+    int buttons =  0;
+    if (SDL_GameControllerGetButton(m_Ctrl,SDL_CONTROLLER_BUTTON_A)==1)
+        buttons |= CTRL_BTN_FIRE;
+    if (SDL_GameControllerGetButton(m_Ctrl,SDL_CONTROLLER_BUTTON_START)==1)
+        buttons |= CTRL_BTN_START;
+    return buttons;
 }
 
 
@@ -115,21 +120,25 @@ float KeyboardController::YAxis()
 
 
 
-bool KeyboardController::Button()
+int KeyboardController::Buttons()
 {
+    int buttons=0;
 	int numkeys;
     const Uint8* keys = SDL_GetKeyboardState(NULL);
 
-	if( keys[SDL_SCANCODE_RCTRL] ||
+	if (keys[SDL_SCANCODE_RCTRL] ||
 		keys[SDL_SCANCODE_LCTRL] ||
 		keys[SDL_SCANCODE_RSHIFT] ||
 		keys[SDL_SCANCODE_LSHIFT] ||
 		keys[SDL_SCANCODE_SPACE] ||
-		keys[SDL_SCANCODE_RETURN] )
+		keys[SDL_SCANCODE_RETURN])
 	{
-		return true;
+		buttons |= CTRL_BTN_FIRE;
 	}
-	return false;
+	if (keys[SDL_SCANCODE_ESCAPE])
+        buttons |= CTRL_BTN_ESC;
+
+	return buttons;
 }
 
 
@@ -153,9 +162,9 @@ float Autopilot::YAxis()
 	return m_Y;
 }
 
-bool Autopilot::Button()
+int Autopilot::Buttons()
 {
-	return true;
+	return CTRL_BTN_FIRE;
 }
 
 
@@ -164,7 +173,7 @@ LatchedController::LatchedController( Controller& source ) : m_Source(source)
 	float x = m_Source.XAxis();
 	float y = m_Source.YAxis();
 	
-	m_Button = m_Source.Button();
+	m_Buttons = m_Source.Buttons();
 
 	m_UpCount = y > 0.0f ? AUTOREPEAT:0;
 	m_DownCount = y < 0.0f ? AUTOREPEAT:0;
@@ -176,11 +185,11 @@ LatchedController::~LatchedController()
 {
 }
 
-bool LatchedController::Button()
+int LatchedController::Buttons()
 {
-	bool prev = m_Button;
-	m_Button = m_Source.Button();
-	return( m_Button && !prev );
+	int prev = m_Buttons;
+	m_Buttons = m_Source.Buttons();
+	return( m_Buttons && !prev );
 }
 
 float LatchedController::XAxis()
@@ -284,15 +293,13 @@ float AggregateController::YAxis()
     return 0.0f;
 }
 
-bool AggregateController::Button()
+int AggregateController::Buttons()
 {
+    int buttons = 0;
     std::list<Controller*>::iterator it;
     for (it=m_Sources.begin(); it!=m_Sources.end(); ++it)
-    {
-        if ((*it)->Button())
-            return true;
-    }
-    return false;
+        buttons |= (*it)->Buttons();
+    return buttons;
 }
 
 

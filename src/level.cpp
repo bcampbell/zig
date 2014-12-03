@@ -154,7 +154,7 @@ void Level::ShrinkArenaBy( float d )
 
 void Level::Tick()
 {
-	if( m_AttractMode && g_ControllerMgr->GameController().Button() )
+	if( m_AttractMode && g_ControllerMgr->GameController().Buttons() )
 	{
 		m_State = demofinished;
 		return;

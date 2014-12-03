@@ -82,7 +82,7 @@ void HighScoreScreen::Tick()
 	{
 		--m_TimeOut;
 
-		if( g_ControllerMgr->MenuController().Button() )
+		if( g_ControllerMgr->MenuController().Buttons() )
 			m_TimeOut = 0;
 	}
 }

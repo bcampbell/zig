@@ -51,7 +51,7 @@ void GameOver::Tick()
 	if( m_Timer > timeout )
 		m_Done = true;
 
-	if( g_ControllerMgr->MenuController().Button() && m_Timer > 0.5f )
+	if( g_ControllerMgr->MenuController().Buttons() && m_Timer > 0.5f )
 		m_Done = true;
 }
 

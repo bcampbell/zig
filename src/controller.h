@@ -8,6 +8,12 @@
 
 
 
+enum {
+    CTRL_BTN_FIRE = 1,
+    CTRL_BTN_ESC=2,
+    CTRL_BTN_START=4,
+    CTRL_BTN_PAUSE=8
+};
 
 class Controller
 {
@@ -16,7 +22,7 @@ public:
 	virtual ~Controller()		{}
 	virtual float	XAxis() = 0;		// left: -ve right +ve
 	virtual float	YAxis() = 0;		// up: +ve down: -ve
-	virtual bool	Button() = 0;
+	virtual int 	Buttons() = 0;       // CTRL_BTN_x  bitflags
 };
 
 class SDLController;
@@ -28,7 +34,7 @@ public:
 	~KeyboardController();
 	virtual float	XAxis();
 	virtual float	YAxis();
-	virtual bool	Button();
+	virtual int 	Buttons();
 private:
 };
 
@@ -42,7 +48,7 @@ public:
 	Autopilot();
 	virtual float	XAxis();
 	virtual float	YAxis();
-	virtual bool	Button();
+	virtual int 	Buttons();
 private:
 	float m_X;
 	float m_Y;
@@ -59,11 +65,11 @@ public:
 	~LatchedController();
 	virtual float	XAxis();
 	virtual float	YAxis();
-	virtual bool	Button();
+	virtual int 	Buttons();
 private:
 	Controller& m_Source;
 
-	bool m_Button;
+	int m_Buttons;
 
 	enum { AUTOREPEAT=10 };
 	int m_LeftCount;
@@ -81,7 +87,7 @@ public:
     virtual	~AggregateController();
 	virtual float	XAxis();
 	virtual float	YAxis();
-	virtual bool	Button();
+	virtual int 	Buttons();
 
     void Add(Controller* src)
         { m_Sources.push_back(src); }

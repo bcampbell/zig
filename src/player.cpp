@@ -100,11 +100,11 @@ void Player::Tick()
 
     // TODO: autopilot!
     Controller& ctrl = g_ControllerMgr->GameController();
-	bool button = ctrl.Button();
-	m_Weapon->Tick( button );
+	int buttons = ctrl.Buttons();
+	m_Weapon->Tick( buttons & CTRL_BTN_FIRE );
 
 	if( m_Nashwan )
-		m_Nashwan->Tick( button );
+		m_Nashwan->Tick( buttons & CTRL_BTN_FIRE );
 
 	// time to degrade weapon?
 	if( m_Weapon->Expired() && m_WeaponNum > 0 )

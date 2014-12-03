@@ -129,7 +129,7 @@ void Menu::Tick()
     Controller& ctrl = g_ControllerMgr->MenuController();
 	float x = ctrl.XAxis();
 	float y = ctrl.YAxis();
-	bool b = ctrl.Button();
+	int b = ctrl.Buttons();
 
 	if( x == 0.0f && y == 0.0f && !b )
 		m_InactivityTime += 1.0f/(float)TARGET_FPS;
@@ -161,7 +161,7 @@ void Menu::Tick()
 	if( x>0.0f )		// right?
 		OnRight( (*m_Current)->GetID() );
 
-	if( b )
+	if( b & CTRL_BTN_FIRE )
 		OnSelect( (*m_Current)->GetID() );
 }
 
