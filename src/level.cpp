@@ -154,11 +154,14 @@ void Level::ShrinkArenaBy( float d )
 
 void Level::Tick()
 {
-	if( m_AttractMode && g_Controller->Button() )
+    int buttons = g_ControllerMgr->MenuController().Pressed();
+
+	if( m_AttractMode && buttons )
 	{
 		m_State = demofinished;
 		return;
 	}
+
 
 	if( m_PauseMenu )
 	{
@@ -174,6 +177,10 @@ void Level::Tick()
 		return;
 	}
 
+    if (buttons & (CTRL_BTN_START|CTRL_BTN_ESC))
+    {
+        m_PauseMenu = new PauseMenu();
+    }
 
 	m_StateTimer += 1.0f / TARGET_FPS;
 
@@ -406,23 +413,6 @@ void Level::Restart()
 
 void Level::HandleKeyDown( SDL_Keysym& keysym )
 {
-	if( m_AttractMode )
-	{
-		m_State = demofinished;
-		return;
-	}
-
-	if( !m_PauseMenu )
-	{
-		if( keysym.sym == SDLK_ESCAPE ||
-			keysym.sym == SDLK_PAUSE )
-			m_PauseMenu = new PauseMenu();
-	}
-    else
-    {
-        m_PauseMenu->HandleKeyDown(keysym);
-    }
-
 
 	// screenshot?
 #if 0

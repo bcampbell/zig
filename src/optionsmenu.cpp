@@ -1,6 +1,7 @@
 #include <SDL_opengl.h>
 #include "optionsmenu.h"
 #include "colours.h"
+#include "controller.h"
 #include "display.h"
 #include "drawing.h"
 #include "soundmgr.h"
@@ -14,7 +15,7 @@ OptionsMenu::OptionsMenu() :
 //	AddItem( new MenuItem( ID_DEPTH, vec2(-100.0f,15.0f), "BIT DEPTH" ) );
 	AddItem( new MenuItem( ID_FULLSCREEN, vec2(-100.0f,-15.0f), "FULLSCREEN" ) );
 	AddItem( new MenuItem( ID_ACCEPT, vec2(0.0f,-80.0f), "ACCEPT" ) );
-	AddItem( new MenuItem( ID_CANCEL, vec2(0.0f,-110.0f), "CANCEL", true, SDLK_ESCAPE ) );
+	AddItem( new MenuItem( ID_CANCEL, vec2(0.0f,-110.0f), "CANCEL", true, CTRL_BTN_ESC ) );
 
 //	int i = g_Display->MatchRes( g_Display->CurrentRes() );
 //	if( i==-1 )

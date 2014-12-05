@@ -41,7 +41,7 @@ private:
 
 	void ApplyVelocity();
 	
-	Controller*	m_Controller;
+	Controller*	m_AutoController;
 
 	float m_RotSpd;
 	vec2 m_Vel;

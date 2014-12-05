@@ -13,7 +13,6 @@ protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();
-	virtual void HandleKeyDown( SDL_Keysym& keysym );
 private:
 	OptionsMenu m_Menu;
 };

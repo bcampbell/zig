@@ -1,5 +1,6 @@
 #include <SDL_opengl.h>
 #include "pausemenu.h"
+#include "controller.h"
 #include "drawing.h"
 //#include "zig.h"
 
@@ -7,8 +8,8 @@
 PauseMenu::PauseMenu()
 {
 	m_Done = false;
-	AddItem( new MenuItem( (int)ResumeGame, vec2(0.0f,15.0f), "RESUME" ) );
-	AddItem( new MenuItem( (int)AbortGame, vec2(0.0f,-15.0f), "QUIT", true, SDLK_ESCAPE ) );
+	AddItem( new MenuItem( (int)ResumeGame, vec2(0.0f,15.0f), "RESUME", true, CTRL_BTN_START ) );
+	AddItem( new MenuItem( (int)AbortGame, vec2(0.0f,-15.0f), "QUIT", true, CTRL_BTN_ESC ) );
 }
 
 

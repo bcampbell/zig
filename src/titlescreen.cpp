@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <string>
 
+#include "controller.h"
 #include "display.h"
 #include "drawing.h"
 #include "mathutil.h"
@@ -103,10 +104,6 @@ void TitleScreen::Tick()
 	m_Menu.Tick();
 }
 
-void TitleScreen::HandleKeyDown( SDL_Keysym& keysym )
-{
-    m_Menu.HandleKeyDown(keysym);
-}
 
 bool TitleScreen::IsFinished()
 {
@@ -140,9 +137,9 @@ int TitleScreen::Result() const
 TitleMenu::TitleMenu() :
 	m_Done(false)
 {
-	AddItem( new MenuItem( ID_PLAY, vec2(0.0f,-20.0f), "PLAY" ) );
+	AddItem( new MenuItem( ID_PLAY, vec2(0.0f,-20.0f), "PLAY", true, CTRL_BTN_START ) );
 	AddItem( new MenuItem( ID_OPTIONS, vec2(0.0f,-50.0f), "OPTIONS" ) );
-	AddItem( new MenuItem( ID_QUIT, vec2(0.0f,-80.0f), "EXIT", true, SDLK_ESCAPE ) );
+	AddItem( new MenuItem( ID_QUIT, vec2(0.0f,-80.0f), "EXIT", true, CTRL_BTN_ESC ) );
 }
 
 TitleMenu::ResultID TitleMenu::GetResult() const

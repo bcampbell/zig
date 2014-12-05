@@ -40,7 +40,6 @@ protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();
-	virtual void HandleKeyDown( SDL_Keysym& keysym );
 public:
 	bool m_Escaped;
 	bool m_Play;

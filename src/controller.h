@@ -1,34 +1,51 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <SDL_joystick.h>
+#include <list>
+//#include <SDL_joystick.h>
+//#include <SDL_gamecontroller.h>
+#include <SDL_events.h>
+
+
+
+enum {
+    CTRL_BTN_FIRE = 1,
+    CTRL_BTN_ESC=2,
+    CTRL_BTN_START=4,
+};
 
 class Controller
 {
 public:
-	Controller() 				{}
+	Controller();
 	virtual ~Controller()		{}
-	virtual float	XAxis() = 0;		// left: -ve right +ve
-	virtual float	YAxis() = 0;		// up: +ve down: -ve
-	virtual bool	Button() = 0;
+    virtual void Tick()         {}
+	float XAxis() { return m_X; }		// left: -ve right +ve
+	float YAxis() { return m_Y; }		// up: -ve down: +ve
+    int Buttons()   { return m_BtnState; } // CTRL_BTN_x  bitflags
+    int Pressed()   { return ~m_PrevBtnState & m_BtnState; }
+    int Released()  { return m_PrevBtnState & ~m_BtnState; }
+protected:
+    int m_BtnState;
+    int m_PrevBtnState;
+    float m_X;
+    float m_Y;
 };
 
 
 
+class SDLController;
 
-// standard controller for user input
-class StandardController : public Controller
+class KeyboardController : public Controller
 {
 public:
-	StandardController();
-	~StandardController();
-	virtual float	XAxis();
-	virtual float	YAxis();
-	virtual bool	Button();
+	KeyboardController();
+	~KeyboardController();
+    void Tick();
 private:
-	SDL_Joystick*	m_Joystick;
-	enum { DEADZONE=8000 };
 };
+
+
 
 
 // autopilot!
@@ -36,12 +53,8 @@ class Autopilot : public Controller
 {
 public:
 	Autopilot();
-	virtual float	XAxis();
-	virtual float	YAxis();
-	virtual bool	Button();
+    void Tick();
 private:
-	float m_X;
-	float m_Y;
 };
 
 
@@ -53,20 +66,62 @@ class LatchedController : public Controller
 public:
 	LatchedController( Controller& source );
 	~LatchedController();
-	virtual float	XAxis();
-	virtual float	YAxis();
-	virtual bool	Button();
+    void Tick();
 private:
 	Controller& m_Source;
 
-	bool m_Button;
-
+    float quant(float f);
 	enum { AUTOREPEAT=10 };
-	int m_LeftCount;
-	int m_RightCount;
-	int m_UpCount;
-	int m_DownCount;
+    int m_XCnt;
+    int m_YCnt;
+    float m_PrevX;
+    float m_PrevY;
 };
+
+
+// merges multiple controllers into one
+class AggregateController : public Controller
+{
+public:
+	AggregateController();
+    virtual	~AggregateController();
+    void Tick();
+    void Add(Controller* src)
+        { m_Sources.push_back(src); }
+    void Remove(Controller* src);
+private:
+    std::list<Controller*> m_Sources;
+};
+
+
+// Manager class for wrangling controllers
+// handles attach/detach, and presents virtualised controlllers
+// for gameplay and menu navigation
+class ControllerMgr
+{
+public:
+    ControllerMgr();
+    ~ControllerMgr();
+
+    void Tick();
+    // HandleJoyDevice/ControllerDevice events
+
+    Controller& MenuController() { return m_MenuCtrl; }
+    Controller& GameController() { return m_GameCtrl; }
+
+
+    void HandleControllerAdded(SDL_ControllerDeviceEvent* ev);
+    void HandleControllerRemoved(SDL_ControllerDeviceEvent* ev);
+private:
+    SDLController* FindAttached(SDL_JoystickID instanceID);
+    std::list<SDLController*> m_Attached;
+    KeyboardController m_KBCtrl;
+    AggregateController m_GameCtrl;
+    LatchedController m_MenuCtrl;
+};
+
+
+
 
 
 #endif	// CONTROLLER_H

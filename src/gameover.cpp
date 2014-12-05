@@ -51,7 +51,15 @@ void GameOver::Tick()
 	if( m_Timer > timeout )
 		m_Done = true;
 
-	if( g_MenuController->Button() && m_Timer > 0.5f )
+    int pressed = g_ControllerMgr->MenuController().Buttons();
+   
+    if (m_Timer>0.5f && pressed)
+		m_Done = true;
+    if (pressed = CTRL_BTN_ESC)
+        m_Done = true;
+
+	// bail out early if a any key is pressed
+	if( m_Timer > 0.5f )
 		m_Done = true;
 }
 
@@ -60,13 +68,4 @@ bool GameOver::IsFinished()
 	return m_Done;
 }
 
-void GameOver::HandleKeyDown( SDL_Keysym& keysym )
-{
-    if (keysym.sym==SDLK_ESCAPE)
-        m_Done = true;
-
-	// bail out early if a any key is pressed
-	if( m_Timer > 0.5f )
-		m_Done = true;
-}
 

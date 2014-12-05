@@ -15,7 +15,7 @@ class Display;
 class Texture;
 class Level;
 class Player;
-class Controller;
+class ControllerMgr;
 
 
 
@@ -34,8 +34,7 @@ extern bool g_NoExtraLives;
 
 extern AgentManager* g_Agents;
 extern Display* g_Display;
-extern Controller* g_Controller;
-extern Controller* g_MenuController;
+extern ControllerMgr* g_ControllerMgr;
 
 extern Texture* g_Font;
 extern Texture* g_InvaderTexture;

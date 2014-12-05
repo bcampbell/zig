@@ -20,7 +20,7 @@ void Scene::Run()
 	while( !IsFinished() )
 	{
 		prevtime = SDL_GetTicks();
-
+        g_ControllerMgr->Tick();
 		Tick();
 
 		Render();
@@ -31,7 +31,7 @@ void Scene::Run()
 
 
         g_Display->Present();
-
+    
 		SDL_PumpEvents();
 		SDL_Event event;
 		while( SDL_PollEvent( &event ) == 1 )
@@ -53,6 +53,20 @@ void Scene::Run()
 							break;
 					}
 					break;
+                case SDL_CONTROLLERDEVICEADDED:
+                    //printf("controller added\n");
+                    g_ControllerMgr->HandleControllerAdded(&event.cdevice);
+                    break;
+                case SDL_CONTROLLERDEVICEREMOVED:
+                    //printf("controller Removed\n");
+                    g_ControllerMgr->HandleControllerRemoved(&event.cdevice);
+                    break;
+                case SDL_JOYDEVICEADDED:
+                    //printf("joystick added\n");
+                    break;
+                case SDL_JOYDEVICEREMOVED:
+                    //printf("joystick Removed\n");
+                    break;
                 case SDL_WINDOWEVENT:
                     if( event.window.event==SDL_WINDOWEVENT_RESIZED) {
                         int w=event.window.data1;
