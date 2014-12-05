@@ -20,7 +20,7 @@ void Scene::Run()
 	while( !IsFinished() )
 	{
 		prevtime = SDL_GetTicks();
-
+        g_ControllerMgr->Tick();
 		Tick();
 
 		Render();

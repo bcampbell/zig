@@ -22,7 +22,7 @@ static const ColourRange focusrange( focuscolours, 2 );
 
 
 
-MenuItem::MenuItem( int id, vec2 const& pos, std::string const& text, bool centre, SDL_Keycode shortcut ) :
+MenuItem::MenuItem( int id, vec2 const& pos, std::string const& text, bool centre, int shortcut ) :
 	m_ID(id),
 	m_Pos( pos ),
 	m_Text( text ),
@@ -121,15 +121,25 @@ void Menu::Tick()
 {
 	assert( !m_Items.empty() );
 
+    Controller& ctrl = g_ControllerMgr->MenuController();
+	float x = ctrl.XAxis();
+	float y = ctrl.YAxis();
+	int b = ctrl.Pressed();
 
 	itemlist::const_iterator end = m_Items.end();
 	itemlist::iterator it;
 	for( it=m_Items.begin(); it!=end; ++it )
+    {
+        
+        if (b & (*it)->Shortcut())
+        {
+            SoundMgr::Inst().Play( SFX_DULLBLAST );
+            OnSelect((*it)->GetID());
+            return;
+        }
+        //
 		(*it)->Tick();
-    Controller& ctrl = g_ControllerMgr->MenuController();
-	float x = ctrl.XAxis();
-	float y = ctrl.YAxis();
-	int b = ctrl.Buttons();
+    }
 
 	if( x == 0.0f && y == 0.0f && !b )
 		m_InactivityTime += 1.0f/(float)TARGET_FPS;
@@ -163,28 +173,6 @@ void Menu::Tick()
 
 	if( b & CTRL_BTN_FIRE )
 		OnSelect( (*m_Current)->GetID() );
-}
-
-void Menu::HandleKeyDown( SDL_Keysym& keysym )
-{
-    if (keysym.sym==SDLK_UNKNOWN)
-        return;
-
-	itemlist::const_iterator end = m_Items.end();
-	itemlist::iterator it;
-	for( it=m_Items.begin(); it!=end; ++it )
-    {
-        SDL_Keycode k = (*it)->Shortcut();
-        if (k==keysym.sym)
-        {
-            SoundMgr::Inst().Play( SFX_DULLBLAST );
-            (*m_Current)->SetFocus( false );
-            m_Current = it;
-            (*m_Current)->SetFocus( true );
-            OnSelect( (*m_Current)->GetID() );
-            return;
-        }
-    }
 }
 
 void Menu::Draw()

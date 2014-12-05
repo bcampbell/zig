@@ -12,18 +12,27 @@ enum {
     CTRL_BTN_FIRE = 1,
     CTRL_BTN_ESC=2,
     CTRL_BTN_START=4,
-    CTRL_BTN_PAUSE=8
 };
 
 class Controller
 {
 public:
-	Controller() 				{}
+	Controller();
 	virtual ~Controller()		{}
-	virtual float	XAxis() = 0;		// left: -ve right +ve
-	virtual float	YAxis() = 0;		// up: +ve down: -ve
-	virtual int 	Buttons() = 0;       // CTRL_BTN_x  bitflags
+    virtual void Tick()         {}
+	float XAxis() { return m_X; }		// left: -ve right +ve
+	float YAxis() { return m_Y; }		// up: -ve down: +ve
+    int Buttons()   { return m_BtnState; } // CTRL_BTN_x  bitflags
+    int Pressed()   { return ~m_PrevBtnState & m_BtnState; }
+    int Released()  { return m_PrevBtnState & ~m_BtnState; }
+protected:
+    int m_BtnState;
+    int m_PrevBtnState;
+    float m_X;
+    float m_Y;
 };
+
+
 
 class SDLController;
 
@@ -32,9 +41,7 @@ class KeyboardController : public Controller
 public:
 	KeyboardController();
 	~KeyboardController();
-	virtual float	XAxis();
-	virtual float	YAxis();
-	virtual int 	Buttons();
+    void Tick();
 private:
 };
 
@@ -46,12 +53,8 @@ class Autopilot : public Controller
 {
 public:
 	Autopilot();
-	virtual float	XAxis();
-	virtual float	YAxis();
-	virtual int 	Buttons();
+    void Tick();
 private:
-	float m_X;
-	float m_Y;
 };
 
 
@@ -63,19 +66,16 @@ class LatchedController : public Controller
 public:
 	LatchedController( Controller& source );
 	~LatchedController();
-	virtual float	XAxis();
-	virtual float	YAxis();
-	virtual int 	Buttons();
+    void Tick();
 private:
 	Controller& m_Source;
 
-	int m_Buttons;
-
+    float quant(float f);
 	enum { AUTOREPEAT=10 };
-	int m_LeftCount;
-	int m_RightCount;
-	int m_UpCount;
-	int m_DownCount;
+    int m_XCnt;
+    int m_YCnt;
+    float m_PrevX;
+    float m_PrevY;
 };
 
 
@@ -85,10 +85,7 @@ class AggregateController : public Controller
 public:
 	AggregateController();
     virtual	~AggregateController();
-	virtual float	XAxis();
-	virtual float	YAxis();
-	virtual int 	Buttons();
-
+    void Tick();
     void Add(Controller* src)
         { m_Sources.push_back(src); }
     void Remove(Controller* src);
@@ -106,6 +103,7 @@ public:
     ControllerMgr();
     ~ControllerMgr();
 
+    void Tick();
     // HandleJoyDevice/ControllerDevice events
 
     Controller& MenuController() { return m_MenuCtrl; }
