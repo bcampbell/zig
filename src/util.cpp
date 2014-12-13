@@ -15,7 +15,8 @@
 #endif //!WIN32
 
 #if defined( __APPLE__ ) && defined( __MACH__ )
-	#include <Carbon/Carbon.h>
+    #include <sys/syslimits.h>  // for PATH_MAX
+    #include "osx_glue.h"
 #endif
 
 
@@ -139,22 +140,14 @@ std::string PerUserDir()
 #elif defined( __APPLE__ ) && defined( __MACH__ )
 
 // OSX version
+// Use the Application Support dir (this should handle sandboxed and non-sandboxed)
 
 std::string PerUserDir()
 {
-	FSRef FolderRef;
-	char buf[PATH_MAX];
-	if( FSFindFolder( kUserDomain,
-				kApplicationSupportFolderType,
-				kCreateFolder,
-				&FolderRef) != noErr)
-	{
-		return "";
-	}
-	if( FSRefMakePath( &FolderRef, (UInt8 *)buf, sizeof(buf) ) != noErr )
-		return "";
-
-	return buf;
+    char buf[PATH_MAX];
+    if(!osx_get_app_support_path(buf,PATH_MAX))
+        return "";
+    return buf;
 }
 
 #else
