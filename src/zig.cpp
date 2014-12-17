@@ -27,6 +27,7 @@
 #include "titlescreen.h"
 #include "util.h"
 #include "wobbly.h"
+#include "log.h"
 
 #include <SDL.h>
 
@@ -74,11 +75,15 @@ int main( int argc, char*argv[] )
 
 		g_Config.Init( argc, argv );
 
+
+        log_open(JoinPath(ZigUserDir(),"log.txt").c_str());
+        //log_open("-");
+        log_infof("Started\n");
 		Resources::Init();
 
 		if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK|SDL_INIT_GAMECONTROLLER) != 0)
 		{
-			Wobbly e("SDL_Init() failed");	//: %s\n", SDL_GetError() );
+			Wobbly e("SDL_Init() failed: %s\n", SDL_GetError() );
 			throw e;
 		}
 
@@ -114,7 +119,7 @@ int main( int argc, char*argv[] )
 			}
 			catch( Wobbly& e )
 			{
-				fprintf( stderr, "Sound error:\n%s\n",e.what() );
+				log_errorf("Error starting sound: %s - running silent\n",e.what() );
 			}
 		}
 
@@ -197,7 +202,7 @@ int main( int argc, char*argv[] )
 	catch( Wobbly& e )
 	{
 		// uhoh...
-		fprintf(stderr,"Exception:\n%s\n", e.what() );
+		log_errorf("ERROR: %s\n", e.what() );
 	}
 	catch( Scene::QuitNotification& q )
 	{
@@ -233,6 +238,7 @@ int main( int argc, char*argv[] )
 	if( s_LaunchWeb )
 		CrippleClock::LaunchWebSite();
 #endif	// CRIPPLED
+    log_close();
 	return 0;
 }
 

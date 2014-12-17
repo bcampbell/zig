@@ -7,7 +7,7 @@
 #include "mathutil.h"
 #include "resources.h"
 #include "wobbly.h"
-
+#include "log.h"
 
 Controller::Controller() :
     m_BtnState(0),
@@ -267,7 +267,7 @@ ControllerMgr::ControllerMgr() :
 
     std::string mappings = Resources::Map("gamecontrollerdb.txt");
     if(SDL_GameControllerAddMappingsFromFile(mappings.c_str())<0 ) {
-        printf("Couldn't load %s. Some controllers might not work.\n",mappings.c_str());
+        log_errorf("Couldn't load %s. Some controllers might not work.\n",mappings.c_str());
     }
 
     // scan for already-attached controllers

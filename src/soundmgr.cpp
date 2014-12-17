@@ -5,6 +5,7 @@
 #include "wobbly.h"
 #include "zigconfig.h"
 #include "zig.h"
+#include "log.h"
 
 #include <math.h>
 
@@ -36,7 +37,7 @@ void NullSoundMgr::Create()
 NullSoundMgr::NullSoundMgr()
 {
 	if( g_Config.sounddebug )
-		printf("running silent\n" );
+		log_infof("running silent\n" );
 }
 
 //-----------------------------------------------------------------
@@ -80,7 +81,7 @@ RealSoundMgr::RealSoundMgr()
 
 	if( g_Config.sounddebug )
 	{
-		printf("sound: requesting  frequency=%dHz  format=%s  channels=%d\n",
+		log_infof("sound: requesting  frequency=%dHz  format=%s  channels=%d\n",
 			req_freq, GetSampleFormatName( req_fmt ), req_channels );
 	}
 
@@ -94,7 +95,7 @@ RealSoundMgr::RealSoundMgr()
 
 	if( g_Config.sounddebug )
 	{
-		printf("sound: got  frequency=%dHz  format=%s  channels=%d\n",
+		log_infof("sound: got  frequency=%dHz  format=%s  channels=%d\n",
 			m_DeviceFreq, GetSampleFormatName( m_DeviceFmt ), m_DeviceChannels );
 	}
 
