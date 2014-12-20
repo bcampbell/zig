@@ -15,6 +15,12 @@
 static void ApplyOption( ZigConfig& cfg, std::vector<std::string> const& opts )
 {
 	std::string const& o = opts[0];
+#if defined( __APPLE__ ) && defined( __MACH__ )
+    // apple - ignore process serial number passed in by finder
+    if (o.find("psn_")==0)
+        return;
+#endif
+
 	if( o == "fullscreen" )
 		cfg.fullscreen = true;
 	else if( o == "window" )
