@@ -68,10 +68,18 @@ void Scene::Run()
                     //printf("joystick Removed\n");
                     break;
                 case SDL_WINDOWEVENT:
-                    if( event.window.event==SDL_WINDOWEVENT_RESIZED) {
-                        int w=event.window.data1;
-                        int h=event.window.data2;
-                        g_Display->HandleResize(w,h);
+                    {
+                        SDL_WindowEvent& wev = event.window;
+                        if ( wev.event==SDL_WINDOWEVENT_RESIZED)
+                        {
+                            int w=wev.data1;
+                            int h=wev.data2;
+                            g_Display->HandleResize(w,h);
+                        }
+                        else if( wev.event == SDL_WINDOWEVENT_FOCUS_LOST)
+                        {
+                            HandleFocusLost();
+                        }
                     }
                     break;
 			}

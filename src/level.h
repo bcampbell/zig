@@ -41,6 +41,7 @@ protected:
 	virtual void Tick();
 	virtual bool IsFinished();
 	virtual void HandleKeyDown( SDL_Keysym& keysym );
+    virtual void HandleFocusLost();
 private:
 
 	Level();

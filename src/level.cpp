@@ -218,7 +218,13 @@ void Level::Tick()
 #endif // CRIPPLED
 }
 
-
+// pause if we lose focus
+void Level::HandleFocusLost()
+{
+    if (m_PauseMenu)
+        return;
+    m_PauseMenu = new PauseMenu();
+}
 
 void Level::Render()
 {

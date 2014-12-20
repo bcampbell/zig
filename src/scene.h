@@ -50,6 +50,10 @@ protected:
     virtual void HandleTextInput( SDL_TextInputEvent& ev)
     {}
 
+    // app has lost focus
+    virtual void HandleFocusLost()
+    {}
+
 private:
 };
 
