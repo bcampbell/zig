@@ -68,17 +68,17 @@ int main( int argc, char*argv[] )
 {
 	try
 	{
-		// set up memory pooling system for agents
-		Agent_Startup();
-
 		InitZigUserDir();
+        log_open(JoinPath(ZigUserDir(),"log.txt").c_str());
+        log_infof("Started\n");
 
 		g_Config.Init( argc, argv );
 
 
-        log_open(JoinPath(ZigUserDir(),"log.txt").c_str());
+		// set up memory pooling system for agents
+		Agent_Startup();
+
         //log_open("-");
-        log_infof("Started\n");
 		Resources::Init();
 
 		if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK|SDL_INIT_GAMECONTROLLER) != 0)

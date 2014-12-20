@@ -1,24 +1,19 @@
 #include "resources.h"
 #include "util.h"	// for JoinPath()
+#include "log.h"
 
 // Handling for data file locations on various platforms/packaging systems,
 // as the location of the data files is platform dependent.
 //
-// unix: they'll be installed according to the packaging guidelines for
-//  whatever packaging we supply. This is defined via cmake using the
-//  DATA_PATH setting.
+// unix: assumes data dir is in current dir.
+//       TODO: override to allow proper installation!
 //
-// osx: the data files should be included inside the app bundle. There is
-//  code below for finding the path for the bundle.
+// osx: the data dir should be included inside the app bundle.
 //
-// windows: the data directory should be installed in the same directory
+// windows: the data directory should be in the same dir
 //  as the exe (which is generally the current directory when the game is
-//  run). CMake sets DATA_PATH to "data" in this case.
+//  run).
 //
-// Note that osx and windows (under cygwin or msys) could also support the
-// unix-style installation. But for end-user packaging that's pretty
-// unlikely (unless you wanted a cygwin package, say), so the cmake setup
-// and the code below just assumes you probably don't want to do that.
 //
 
 //static
@@ -43,9 +38,11 @@ void Resources::Init()
     if( osx_get_resource_path(buf,PATH_MAX) )
     {
         s_ResourcePath = JoinPath(buf,"data");
+        log_infof("data: %s\n", s_ResourcePath);
     }
     else
     {
+        log_infof("couldn't get path for data\n");
         // uhoh...
         s_ResourcePath = "./data";
     }
