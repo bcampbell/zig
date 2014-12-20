@@ -38,7 +38,7 @@ void Resources::Init()
     if( osx_get_resource_path(buf,PATH_MAX) )
     {
         s_ResourcePath = JoinPath(buf,"data");
-        log_infof("data: %s\n", s_ResourcePath);
+        log_infof("data: %s\n", s_ResourcePath.c_str());
     }
     else
     {
