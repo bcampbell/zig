@@ -148,18 +148,8 @@ void OptionsMenu::OnSelect( int id )
 	case ID_ACCEPT:
 		{
 			m_Done = true;
-			g_Display->ChangeSettings(m_Fullscreen);
-#if 0
-			Res const& r = g_Display->Resolutions()[m_SelectedRes];
 			g_Config.fullscreen = m_Fullscreen;
-			g_Config.width = r.w;
-			g_Config.height = r.h;
-			g_Config.depth = m_BitDepth;
-
-			g_Display->ChangeSettings(
-				g_Config.fullscreen );
-
-#endif
+			g_Display->ChangeSettings(g_Config.fullscreen);
 			g_Config.Save();
 		}
 		break;
