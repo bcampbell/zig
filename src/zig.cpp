@@ -111,6 +111,7 @@ int main( int argc, char*argv[] )
 
 		//----------------------------------------------
 		// Sound Init
+#if !defined(DISABLE_SOUND)
 		if( !g_Config.nosound )
 		{
 			try
@@ -122,7 +123,7 @@ int main( int argc, char*argv[] )
 				log_errorf("Error starting sound: %s - running silent\n",e.what() );
 			}
 		}
-
+#endif
 		if( !SoundMgr::Running() )
 			NullSoundMgr::Create();
 

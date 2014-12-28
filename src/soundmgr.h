@@ -6,7 +6,12 @@
 #include <assert.h>
 #include <vector>
 #include <string>
+
+//#define DISABLE_SOUND
+
+#if !defined(DISABLE_SOUND)
 #include <SDL_mixer.h>
+#endif
 
 #include "retromat/retromat.h"
 
@@ -111,6 +116,7 @@ private:
 
 
 
+#if !defined(DISABLE_SOUND)
 //--------------------------------------------------------------
 // RealSoundMgr uses SDL_mixer lib to do it's stuff.
 
@@ -142,7 +148,7 @@ private:
 	int m_DeviceChannels;
 };
 
-
+#endif //
 
 
 #endif // SOUNDMGR_H

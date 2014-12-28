@@ -1,6 +1,8 @@
 
 #include "soundmgr.h"
+#if !defined(DISABLE_SOUND)
 #include "retromat/retromat.h"
+#endif
 #include "resources.h"
 #include "wobbly.h"
 #include "zigconfig.h"
@@ -41,8 +43,9 @@ NullSoundMgr::NullSoundMgr()
 }
 
 //-----------------------------------------------------------------
-	
 
+
+#if !defined(DISABLE_SOUND)
 
 // helper
 const char* GetSampleFormatName( int fmt )
@@ -225,5 +228,5 @@ void RealSoundMgr::GenerateSounds()
 	m_Sounds[ SFX_WIBBLEPOP ] = Gen( GenerateWibblePop );
 }
 
-
+#endif
 
