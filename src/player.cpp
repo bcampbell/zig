@@ -33,7 +33,9 @@ Player::Player( bool autopilot ) :
 	g_Player = this;
 
 	if( autopilot )
+    {
 		m_AutoController = new Autopilot();
+    }
 
 	SetWeapon(0);
 }
@@ -98,8 +100,12 @@ void Player::Tick()
 {
 	assert( m_Weapon != 0 );
 
-    // TODO: autopilot!
-    Controller& ctrl = g_ControllerMgr->GameController();
+    // ugly...
+    if (m_AutoController) {
+        m_AutoController->Tick();
+    }
+
+    Controller& ctrl = m_AutoController ? *m_AutoController:g_ControllerMgr->GameController();
 	int buttons = ctrl.Buttons();
 	m_Weapon->Tick( buttons & CTRL_BTN_FIRE );
 
