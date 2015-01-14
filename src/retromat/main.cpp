@@ -2,10 +2,11 @@
 
 #include "retromat.h"
 
+#include <Stk.h>
 #include <RtWvOut.h>
-#include <WvOut.h>
-#include "Stk.h"
+#include <FileWvOut.h>
 #include <vector>
+#include <cstdio>
 
 #define OUTPATH "."
 #define RAWWAVEPATH "../data"
@@ -98,14 +99,14 @@ int main( int argc, char* argv[] )
 
 
 		std::vector< float > buf;
-		buf.reserve( 10 * (int)Stk::sampleRate() );
+		buf.reserve( 10 * (int)stk::Stk::sampleRate() );
 		(*snd->fn)( buf );
 		if( writewav )
 		{
 			std::string filename = OUTPATH;
 			filename = filename + soundlist[i] + ".wav";
 			printf("writing %s...", filename.c_str() );
-			WvOut out( filename.c_str() );
+            stk::FileWvOut out( filename );
 			std::vector<float>::const_iterator it;
 			for( it=buf.begin(); it!=buf.end(); ++it )
 				out.tick( *it );
@@ -115,7 +116,7 @@ int main( int argc, char* argv[] )
 		{
 			printf("playing %s...", soundlist[i].c_str() );
 			fflush( stdout );
-			RtWvOut out(1);
+            stk::RtWvOut out(1);
 			std::vector<float>::const_iterator it;
 			for( it=buf.begin(); it!=buf.end(); ++it )
 				out.tick( *it );
