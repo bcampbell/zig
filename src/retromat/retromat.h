@@ -5,8 +5,7 @@
 #include <vector>
 #include <string>
 
-// must be called before generating effects. can be called multiple times.
-void SetRetromatParams( int samplerate, std::string const& rawwavepath );
+void SetRetromatFreq( int samplerate );
 
 void GenerateLaser( std::vector<float>& out );
 void GenerateBaiterAlert( std::vector<float>& out );

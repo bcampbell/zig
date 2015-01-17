@@ -8,8 +8,6 @@
 #include <vector>
 #include <cstdio>
 
-#define OUTPATH "."
-#define RAWWAVEPATH "../data"
 
 struct SoundEntry
 {
@@ -51,7 +49,7 @@ int main( int argc, char* argv[] )
 	bool list = false;
 	std::vector< std::string > soundlist;
 
-	SetRetromatParams( 44100, RAWWAVEPATH );
+	SetRetromatFreq( 44100 );
 
 	int i;
 	for( i=1; i<argc; ++i )
@@ -103,8 +101,7 @@ int main( int argc, char* argv[] )
 		(*snd->fn)( buf );
 		if( writewav )
 		{
-			std::string filename = OUTPATH;
-			filename = filename + soundlist[i] + ".wav";
+            std::string filename = soundlist[i] + ".wav";
 			printf("writing %s...", filename.c_str() );
             stk::FileWvOut out( filename );
 			std::vector<float>::const_iterator it;

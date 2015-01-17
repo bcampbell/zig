@@ -1,6 +1,7 @@
 EXE = retromat
 
-CXXFLAGS = -O2
+#CXXFLAGS = -O2
+CXXFLAGS = -ggdb
 
 CXXFLAGS += -I/usr/local/include/stk -D__LINUX_ALSA__
 LIBS += -L/usr/local/lib -lstk
@@ -17,6 +18,14 @@ OBJS = $(patsubst %.cpp,%.o,$(SRCS) )
 
 $(EXE): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJS) $(LIBS)
+
+sidstyle.o: sidstyle.h
+
+retromat.o: retromat.h sidstyle.h
+
+main.o: retromat.h sidstyle.h
+
+
 
 
 

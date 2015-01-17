@@ -2,30 +2,32 @@
 
 #include <ADSR.h>
 #include <OnePole.h>
-#include <FileLoop.h>
 #include <Stk.h>
 
 #include <assert.h>
 
 using namespace stk;
 
-FileLoop* CreateOsc( OscType t )
+
+
+Osc* CreateOsc( OscType t )
 {
-	std::string filename = Stk::rawwavePath();
-	
 	switch( t )
 	{
-	case SINE:		filename += "sine.raw";		break;
-	case SQUARE:	filename += "square.raw";		break;
-	case TRIANGLE:	filename += "triangle.raw";	break;
-	case SAWTOOTH:	filename += "sawtooth.raw";	break;
+	case SINE:
+        return new SineOsc();
+	case SQUARE:
+        return new SquareOsc();
+	case TRIANGLE:
+        return new TriangleOsc();
+	case SAWTOOTH:
+        return new SawtoothOsc();
 	case NOISE:
-	default:
-		assert( false );
-		return 0;
+        return new NoiseOsc();
 	};
 
-	return new FileLoop( filename.c_str(), true );
+	assert( false );
+	return 0;
 }
 
 
@@ -60,13 +62,15 @@ SIDStyle::~SIDStyle()
 float SIDStyle::Tick()
 {
 	float t = m_Elapsed / m_Conf.Duration;
-
+    float timestep = (1.0f / Stk::sampleRate());
 	float modfreq = m_Conf.ModFreq0 + t*(m_Conf.ModFreq1 - m_Conf.ModFreq0);
 	m_ModOsc->setFrequency( modfreq );
 
 	float srcbasefreq = m_Conf.SrcFreq0 + t*(m_Conf.SrcFreq1 - m_Conf.SrcFreq0);
-	float srcfreq = srcbasefreq + m_ModOsc->tick()*m_Conf.ModAmpl;
-
+	float srcfreq = srcbasefreq + m_ModOsc->tick(timestep)*m_Conf.ModAmpl;
+    if (srcfreq<0.0f) {
+        srcfreq = 0.0f;
+    }
 	m_SrcOsc->setFrequency( srcfreq );
 
 	float releasetime = m_Conf.Duration - m_Conf.Release;
@@ -81,13 +85,13 @@ float SIDStyle::Tick()
 	m_Filter->setPole( pole );
 	
 	float samp;
-	samp = m_SrcOsc->tick();
+	samp = m_SrcOsc->tick(timestep);
 	samp *= m_ADSR->tick();
 	samp = m_Filter->tick( samp );
 
 	samp *= m_Conf.Gain;
 
-	m_Elapsed += 1.0f / Stk::sampleRate();
+	m_Elapsed += timestep;
 
 	return samp;
 }

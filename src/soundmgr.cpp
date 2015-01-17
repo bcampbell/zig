@@ -216,7 +216,7 @@ void RealSoundMgr::GenerateSounds()
 
 	std::vector<float> fbuf;
 
-	SetRetromatParams( m_DeviceFreq, Resources::ResourcePath() );
+	SetRetromatFreq( m_DeviceFreq );
 
 	m_Sounds[ SFX_PLAYERFIRE ] = Gen( GenerateLaser );
 	m_Sounds[ SFX_DULLBLAST ] = Gen( GenerateDullBlast );

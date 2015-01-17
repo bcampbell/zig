@@ -4,16 +4,26 @@
 #include "Stk.h"
 using namespace stk;
 
-void SetRetromatParams( int samplerate, std::string const& rawwavepath )
+void SetRetromatFreq( int samplerate ) 
 {
 	Stk::setSampleRate( samplerate );
-	Stk::setRawwavePath( rawwavepath );
 }
 
 
 
 void GenerateLaser( std::vector<float>& out )
 {
+    /*
+	SIDStyle::Config sidconf =
+	{
+		4.0f,						// duration
+		SAWTOOTH, 440.0f, 440.0f,		// src: type, startf, endf
+		SQUARE, 0.0f, 0.0f, 0.0f,	// mod: type, startf, endf, ampl
+		0.0001f, 0.01f, 1.0f, 0.1f,	// adsr
+		0.0f, 0.0f,				// filter: startpole, endpole
+		1.0f						// gain
+	};
+    */
 	SIDStyle::Config sidconf =
 	{
 		0.2f,						// duration
@@ -23,7 +33,6 @@ void GenerateLaser( std::vector<float>& out )
 		0.0f, 0.95f,				// filter: startpole, endpole
 		0.3f						// gain
 	};
-
 	SIDStyle sid( sidconf );
 	while( !sid.IsDone() )
 		out.push_back( sid.Tick() );
@@ -85,13 +94,24 @@ void GenerateLevelIntro( std::vector<float>& out )
 
 void GenerateBigExplosion( std::vector<float>& out )
 {
+    /*
 	SIDStyle::Config sidconf =
 	{
 		2.0f,						// duration, gain
-		SQUARE, 100.0f, 10.0f,		// src: type, startf, endf
+		PULSE, 100.0f, 10.0f,		// src: type, startf, endf
 		SAWTOOTH, 12000.0f, 10.0f, 1000.0f,	// mod: type, startf, endf, ampl
 		0.0001f, 0.2f, 0.7f, 1.0f,	// adsr
 		0.9f, 0.9f,				// filter: startpole, endpole
+		1.0f						// gain
+	};
+    */
+	SIDStyle::Config sidconf =
+	{
+		2.0f,						// duration, gain
+		SQUARE, 5000.0f, 10.0f,		// src: type, startf, endf
+		SAWTOOTH, 420.0f, 1.0f, 20000.0f,	// mod: type, startf, endf, ampl
+		0.0001f, 0.2f, 0.7f, 1.0f,	// adsr
+		0.9f, 0.6f,				// filter: startpole, endpole
 		1.0f						// gain
 	};
 
