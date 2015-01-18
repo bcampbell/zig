@@ -13,13 +13,13 @@ void SetRetromatFreq( int samplerate )
 
 void GenerateLaser( std::vector<float>& out )
 {
-    /*
+/*
 	SIDStyle::Config sidconf =
 	{
 		4.0f,						// duration
-		SAWTOOTH, 440.0f, 440.0f,		// src: type, startf, endf
+		SINE, 440.0f, 440.0f,		// src: type, startf, endf
 		SQUARE, 0.0f, 0.0f, 0.0f,	// mod: type, startf, endf, ampl
-		0.0001f, 0.01f, 1.0f, 0.1f,	// adsr
+		1.0f, 1.0f, 0.5f, 1.0f,	// adsr
 		0.0f, 0.0f,				// filter: startpole, endpole
 		1.0f						// gain
 	};
@@ -31,7 +31,7 @@ void GenerateLaser( std::vector<float>& out )
 		SQUARE, 0.0f, 0.0f, 0.0f,	// mod: type, startf, endf, ampl
 		0.0001f, 0.01f, 0.7f, 0.1f,	// adsr
 		0.0f, 0.95f,				// filter: startpole, endpole
-		0.3f						// gain
+		0.1f						// gain
 	};
 	SIDStyle sid( sidconf );
 	while( !sid.IsDone() )
