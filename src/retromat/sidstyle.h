@@ -13,10 +13,6 @@ enum OscType
 
 class ADSR;
 
-namespace stk {
-    class OnePole;
-};
-
 
 // Base oscillator class
 class Osc
@@ -31,6 +27,32 @@ protected:
     float m_Freq;
     inline void Advance(float timestep)
         { m_t = fmod(m_t + (timestep*m_Freq), 1.0f); }
+};
+
+
+
+class OnePole
+{
+public:
+    OnePole() : m_gain(1.0f), m_prev(0.0f) { setPole(0.0f); }
+    float tick(float inp)
+    {
+        inp *= m_gain;
+        float out = m_b0*inp - m_a1*m_prev;
+        m_prev = out;
+        return out;
+    }
+    void setPole( float pole)
+    {
+        assert(fabsf(pole)<1.0f);
+        m_b0 = (pole<0.0f) ? 1.0f+pole:1.0f-pole;
+        m_a1 = -pole;
+    }
+public:
+    float m_gain;
+    float m_a1;
+    float m_b0;
+    float m_prev;
 };
 
 
@@ -67,7 +89,7 @@ private:
     Osc*        	m_SrcOsc;
     Osc*        	m_ModOsc;
     ADSR*		m_ADSR;
-    stk::OnePole*	m_Filter;
+    OnePole*	m_Filter;
 
 	float m_Elapsed;
 };

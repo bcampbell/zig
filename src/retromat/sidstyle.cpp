@@ -6,9 +6,6 @@
 #include <cassert>
 #include <cmath>
 
-using namespace stk;
-
-
 class SineOsc : public Osc
 {
 public:
@@ -205,7 +202,7 @@ SIDStyle::SIDStyle( Config const& conf ) :
 		m_Conf.Release );
 	m_ADSR->keyOn();
 
-	m_Filter = new OnePole( 0.0f );
+	m_Filter = new OnePole();
 }
 
 
@@ -221,7 +218,7 @@ SIDStyle::~SIDStyle()
 float SIDStyle::Tick()
 {
 	float t = m_Elapsed / m_Conf.Duration;
-    float timestep = (1.0f / Stk::sampleRate());
+    float timestep = (1.0f / stk::Stk::sampleRate());
 	float modfreq = m_Conf.ModFreq0 + t*(m_Conf.ModFreq1 - m_Conf.ModFreq0);
 	m_ModOsc->setFrequency( modfreq );
 
