@@ -1,15 +1,25 @@
-#uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
 ARCH := $(firstword $(shell uname -m))	# x86_64, i386, etc..
 SYS := $(firstword $(shell uname -s))	# Linux, Darwin, etc...
 
-#include ${SYS}.${ARCH}.mk
+ifneq (,$(findstring MINGW,$(SYS)))
+  PLATFORM=Windows
+else
+  PLATFORM=$(SYS)
+endif
 
-#EXE = zig.exe
-EXE = zig
 
-CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
-LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
-#LIBS += -lopengl32
+ifeq ($(PLATFORM),Windows)
+  EXE = zig.exe
+  CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib)
+  LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib)
+  LIBS += -lopengl32
+  CXX=g++
+else
+  EXE = zig
+  CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
+  LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
+endif
+
 
 SRCS=$(wildcard *.cpp)
 SRCS += retromat/retromat.cpp retromat/sidstyle.cpp
@@ -28,7 +38,7 @@ clean:
 depend: .depend
 
 .depend: $(SRCS)
-	$(CC) $(CFLAGS) -MM $^ >.depend
+	$(CXX) $(CFLAGS) -MM $^ >.depend
 
 include .depend
 
