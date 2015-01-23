@@ -1,12 +1,14 @@
 #include "retromat.h"
 #include "sidstyle.h"
 
-#include "Stk.h"
-using namespace stk;
+
+
+
+static float s_TimeStep = 0.0f;
 
 void SetRetromatFreq( int samplerate ) 
 {
-	Stk::setSampleRate( samplerate );
+    s_TimeStep = 1.0f / (float)samplerate;
 }
 
 
@@ -35,7 +37,7 @@ void GenerateLaser( std::vector<float>& out )
 	};
 	SIDStyle sid( sidconf );
 	while( !sid.IsDone() )
-		out.push_back( sid.Tick() );
+		out.push_back( sid.Tick(s_TimeStep) );
 }
 
 
@@ -53,7 +55,7 @@ void GenerateBaiterAlert( std::vector<float>& out )
 
 	SIDStyle sid( sidconf );
 	while( !sid.IsDone() )
-		out.push_back( sid.Tick() );
+		out.push_back( sid.Tick(s_TimeStep) );
 }
 
 
@@ -72,7 +74,7 @@ void GeneratePlayerToast( std::vector<float>& out )
 
 	SIDStyle sid( sidconf );
 	while( !sid.IsDone() )
-		out.push_back( sid.Tick() );
+		out.push_back( sid.Tick(s_TimeStep) );
 }
 
 void GenerateLevelIntro( std::vector<float>& out )
@@ -89,7 +91,7 @@ void GenerateLevelIntro( std::vector<float>& out )
 
 	SIDStyle sid( sidconf );
 	while( !sid.IsDone() )
-		out.push_back( sid.Tick() );
+		out.push_back( sid.Tick(s_TimeStep) );
 }
 
 void GenerateBigExplosion( std::vector<float>& out )
@@ -117,7 +119,7 @@ void GenerateBigExplosion( std::vector<float>& out )
 
 	SIDStyle sid( sidconf );
 	while( !sid.IsDone() )
-		out.push_back( sid.Tick() );
+		out.push_back( sid.Tick(s_TimeStep) );
 }
 
 void GenerateGameOver( std::vector<float>& out )
@@ -134,7 +136,7 @@ void GenerateGameOver( std::vector<float>& out )
 
 	SIDStyle sid( sidconf2 );
 	while( !sid.IsDone() )
-		out.push_back( sid.Tick() );
+		out.push_back( sid.Tick(s_TimeStep) );
 }
 
 
@@ -154,7 +156,7 @@ void GenerateDullBlast( std::vector<float>& out )
 
 	SIDStyle sid( sidconf );
 	while( !sid.IsDone() )
-		out.push_back( sid.Tick() );
+		out.push_back( sid.Tick(s_TimeStep) );
 }
 
 
@@ -172,7 +174,7 @@ void GenerateWibblePop( std::vector<float>& out )
 
 	SIDStyle sid( sidconf );
 	while( !sid.IsDone() )
-		out.push_back( sid.Tick() );
+		out.push_back( sid.Tick(s_TimeStep) );
 }
 
 

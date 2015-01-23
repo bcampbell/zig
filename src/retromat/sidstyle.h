@@ -1,10 +1,19 @@
 #ifndef SIDSTYLE_H
 #define SIDSTYLE_H
 
+
+// a sound effect generator, based _very_ loosely on the SID chip
+// base waveform with frequency modulated by another oscillator
+// output passed through a lowpass filter
+
 #include <cstdlib>
 #include <cassert>
 #include <cstdio>
 #include <cmath>
+
+
+
+
 
 enum OscType
 {
@@ -81,7 +90,7 @@ public:
 
 	SIDStyle( Config const& conf );
 	~SIDStyle();
-	float Tick();
+	float Tick(float timestep);
 	bool IsDone();
 private:
 	Config m_Conf;

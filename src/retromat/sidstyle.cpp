@@ -1,7 +1,5 @@
 #include "sidstyle.h"
 
-#include <OnePole.h>
-#include <Stk.h>
 
 #include <cassert>
 #include <cmath>
@@ -215,10 +213,9 @@ SIDStyle::~SIDStyle()
 }
 
 
-float SIDStyle::Tick()
+float SIDStyle::Tick(float timestep)
 {
 	float t = m_Elapsed / m_Conf.Duration;
-    float timestep = (1.0f / stk::Stk::sampleRate());
 	float modfreq = m_Conf.ModFreq0 + t*(m_Conf.ModFreq1 - m_Conf.ModFreq0);
 	m_ModOsc->setFrequency( modfreq );
 
