@@ -57,6 +57,13 @@ public:
         m_b0 = (pole<0.0f) ? 1.0f+pole:1.0f-pole;
         m_a1 = -pole;
     }
+
+    void setCutoff( float cutoffFreq, float sampleFreq)
+    {
+        float pole = expf(-2.0f*M_PI*cutoffFreq/sampleFreq);
+        setPole(pole);
+    }
+
 public:
     float m_gain;
     float m_a1;
