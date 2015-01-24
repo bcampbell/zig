@@ -1,50 +1,19 @@
 Getting Started
 ===============
 
-Zig is uses cmake to sort out build configuration (http://www.cmake.org).
 
-I've used it to generate Makefiles for linux, but not tested it under any
-other platforms (yet) so it might take a little more fiddling.
-
-You should be able to generate [visualstudio|xcode|whatever] projects
-too...
-
-The build system generates config.h (from config.h.in), which is where all
-the platform-specific defines should go.
-
-Different platforms expect to find data files in different places.
-See resources.cpp for details (and DATA_PATH in config.h).
+$ cd src
+$ make
 
 
 Required libraries
 ------------------
 
-SDL (http://www.libsdl.org)
-SDL_mixer (http://www.libsdl.org/projects/SDL_mixer/)
-STK (http://ccrma.stanford.edu/software/stk/)
+SDL2 (http://www.libsdl.org)
+SDL2_mixer (http://www.libsdl.org/projects/SDL_mixer/)
 libpng
 zlib
 
-STK is probably the fiddliest.
-
-Easiest thing might be to stub out the sound code to begin with.
-this'll remove the need for SDL_Mixer and STK.
-
-
-Retromat
---------
-
-At startup, the game tries to synthesize all the sound effects using the
-code in retromat/. The retromat requires the following files in the data
-directory:
- - sawtooth.raw
- - sine.raw
- - square.raw
- - triangle.raw
-These should be checked in already, but if not, they are generated using
-tools/makewaves.c
-
-The retromat code uses the STK library.
 
 
 Stubbing out the sound
