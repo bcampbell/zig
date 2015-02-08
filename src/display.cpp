@@ -95,7 +95,6 @@ Display::Display( bool fullscreen ) : m_Fullscreen(fullscreen), m_Window(0)
 		Wobbly e("SDL_CreateWindow() failed");	//: %s\n", SDL_GetError() );
 		throw e;
 	}
-
     m_GLContext = SDL_GL_CreateContext(m_Window);
 
     // TODO: call SDL_GL_SetSwapInterval()
@@ -106,7 +105,7 @@ Display::Display( bool fullscreen ) : m_Fullscreen(fullscreen), m_Window(0)
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 */
-//	SDL_ShowCursor(SDL_DISABLE);	// hide the mouse
+	SDL_ShowCursor(SDL_DISABLE);	// hide the mouse
 
 
 	//----------------------------------------------
