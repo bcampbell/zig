@@ -1,23 +1,25 @@
-ARCH := $(firstword $(shell uname -m))	# x86_64, i386, etc..
-SYS := $(firstword $(shell uname -s))	# Linux, Darwin, etc...
+#ARCH := $(firstword $(shell uname -m))	# x86_64, i386, etc..
+#SYS := $(firstword $(shell uname -s))	# Linux, Darwin, etc...
 
-ifneq (,$(findstring MINGW,$(SYS)))
-  PLATFORM=Windows
-else
-  PLATFORM=$(SYS)
+# which platform? linux, win32 or osx
+PLATFORM=$(shell ./zig-platform)
+
+EXE = zig
+
+ifeq ($(PLATFORM),linux)
+  CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
+  LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
 endif
-
-
-ifeq ($(PLATFORM),Windows)
+ifeq ($(PLATFORM),osx)
+  CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
+  LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
+endif
+ifeq ($(PLATFORM),win32)
   EXE = zig.exe
   CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib)
   LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib)
   LIBS += -lopengl32
   CXX=g++
-else
-  EXE = zig
-  CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
-  LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
 endif
 
 
