@@ -6,13 +6,20 @@ PLATFORM=$(shell ./zig-platform)
 
 EXE = zig
 
+SRCS=$(wildcard *.cpp)
+SRCS += retromat/retromat.cpp retromat/sidstyle.cpp
+
+OBJS = $(patsubst %.cpp,%.o,$(SRCS) )
+
 ifeq ($(PLATFORM),linux)
   CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
   LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
 endif
 ifeq ($(PLATFORM),osx)
-  CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
-  LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
+  CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng)
+  LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng)
+  LIBS += -lz -framework OpenGL -framework Foundation
+  OBJS += osx_glue.o
 endif
 ifeq ($(PLATFORM),win32)
   EXE = zig.exe
@@ -23,14 +30,13 @@ ifeq ($(PLATFORM),win32)
 endif
 
 
-SRCS=$(wildcard *.cpp)
-SRCS += retromat/retromat.cpp retromat/sidstyle.cpp
-
-OBJS = $(patsubst %.cpp,%.o,$(SRCS) )
-
 $(EXE): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJS) $(LIBS)
 
+ifeq ($(PLATFORM),osx)
+%.o: %.mm
+	$(CXX) -c $(CXXFLAGS) $< -o $@ 
+endif
 
 .PHONY: clean
 clean:
@@ -40,7 +46,7 @@ clean:
 depend: .depend
 
 .depend: $(SRCS)
-	$(CXX) $(CFLAGS) -MM $^ >.depend
+	$(CXX) $(CXXFLAGS) -MM $^ >.depend
 
 include .depend
 
