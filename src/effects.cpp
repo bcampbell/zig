@@ -359,7 +359,7 @@ void Streamer::Draw()
 
 void Streamer::Tick()
 {
-	TurnBy( m_TurnSpd+Rnd(-0.3, 0.3) );
+	TurnBy( m_TurnSpd+Rnd(-0.3f, 0.3f) );
 	m_TurnSpd += m_TurnAccel;
 
 	Forward( 10.0f );

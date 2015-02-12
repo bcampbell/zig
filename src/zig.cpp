@@ -205,7 +205,7 @@ int main( int argc, char*argv[] )
 		// uhoh...
 		log_errorf("ERROR: %s\n", e.what() );
 	}
-	catch( Scene::QuitNotification& q )
+	catch( Scene::QuitNotification& )
 	{
 		// if we end up here, it means player has asked the game to close
 		// (via alt-f4, window decoration, whatever).

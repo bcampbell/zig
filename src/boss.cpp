@@ -295,7 +295,7 @@ void Boss::EnterState( State newstate )
 
 void Boss::OnHitBullet( Bullet& bullet )
 {
-	int absorbed = std::min( bullet.Power(), m_Life );
+	int absorbed = zimin( bullet.Power(), m_Life );
 	if( m_State == BERSERK )
 	{
 /*
@@ -362,7 +362,7 @@ void BeamPod::Fire()
 
 void BeamPod::OnHitBullet( Bullet& bullet )
 {
-	int absorbed = std::min( bullet.Power(), m_Life );
+	int absorbed = zimin( bullet.Power(), m_Life );
 	m_Life -= absorbed;
 	bullet.ReducePower( absorbed );
 	if( m_Life <= 0 )

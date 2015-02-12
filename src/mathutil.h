@@ -31,5 +31,25 @@ inline int RndI( int low, int high )
 	return (rand() % (1+high-low)) + low;
 }
 
+
+inline float zfmin(float a, float b)
+{
+    return a < b ? a : b;
+}
+inline float zfmax(float a, float b)
+{
+    return a > b ? a : b;
+}
+
+inline int zimin(int a, int b)
+{
+    return a < b ? a : b;
+}
+
+inline int zimax(int a, int b)
+{
+    return a > b ? a : b;
+}
+
 #endif
 

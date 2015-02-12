@@ -115,7 +115,7 @@ void FatZapper::Draw()
 
 void FatZapper::OnHitBullet( Bullet& bullet )
 {
-	int absorbed = std::min( bullet.Power(), m_Life );
+	int absorbed = zimin( bullet.Power(), m_Life );
 	m_Life -= absorbed;
 	if( m_Life <= 0 )
 	{
@@ -152,7 +152,7 @@ FatRay::FatRay( vec2 const& pos, float heading ) :
 	MoveTo(pos);
 	TurnTo(heading);
 
-	SetRadius( BeamWidth*0.75 );
+	SetRadius( BeamWidth*0.75f );
 	SetFlags( flagCanHitPlayer );
 
 	// start trail

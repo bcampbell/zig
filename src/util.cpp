@@ -129,7 +129,7 @@ std::string JoinPath( std::string const& a, std::string const& b )
 std::string PerUserDir()
 {
 	char buf[ MAX_PATH ];
-	HRESULT result = SHGetFolderPath( 0, CSIDL_APPDATA, 0, 0, buf );
+	HRESULT result = SHGetFolderPathA( 0, CSIDL_APPDATA, 0, 0, buf );
 	// |CSIDL_FLAG_CREATE
 	if( !SUCCEEDED( result ) )
 		return "";
@@ -170,7 +170,7 @@ std::string PerUserDir()
 
 bool MakeDir( std::string const& dir )
 {
-	if( !CreateDirectory( dir.c_str(), 0 ) )
+	if( !CreateDirectoryA( dir.c_str(), 0 ) )
 	{
 		DWORD err = GetLastError();
 		if( err != ERROR_ALREADY_EXISTS )
