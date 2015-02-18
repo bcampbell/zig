@@ -14,7 +14,7 @@
 #include <string>
 
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -179,7 +179,7 @@ void CrippleClock::ReduceRemainingTime( float dt )
 void CrippleClock::LaunchWebSite()
 {
 	const char* url = "http://www.itsagamewhereyoushootstuff.com/buybuybuy";
-#ifdef WIN32
+#ifdef _WIN32
 	::ShellExecute( NULL, "open", url, NULL, "C:\\", SW_SHOWNORMAL );
 #endif
 	//mac?

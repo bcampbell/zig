@@ -13,7 +13,7 @@ extern bool g_GLMultitexture;
 extern int g_NumTextureUnits;
 extern bool g_ARB_texture_env_add;
 
-#ifdef WIN32
+#ifdef _WIN32
 extern PFNGLACTIVETEXTUREARBPROC		g_glActiveTextureARB;
 extern PFNGLMULTITEXCOORD2FARBPROC		g_glMultiTexCoord2fARB;
 

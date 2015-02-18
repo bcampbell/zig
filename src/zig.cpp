@@ -329,7 +329,7 @@ static void PlayGame( HighScores& highscores )
 
 static void InitZigUserDir()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	s_ZigUserDir = JoinPath( PerUserDir(), "Zig" );
 #elif defined( __APPLE__ ) && defined( __MACH__ )
 	s_ZigUserDir = JoinPath( PerUserDir(), "Zig" );

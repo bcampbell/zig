@@ -14,7 +14,7 @@ bool g_GLMultitexture = false;
 int g_NumTextureUnits = 0;
 bool g_ARB_texture_env_add = false;
 
-#ifdef WIN32
+#ifdef _WIN32
 PFNGLACTIVETEXTUREARBPROC		g_glActiveTextureARB = 0;
 PFNGLMULTITEXCOORD2FARBPROC		g_glMultiTexCoord2fARB = 0;
 #else

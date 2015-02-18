@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <shlobj.h>
@@ -12,7 +12,7 @@
 	#include <sys/stat.h>
 	#include <unistd.h>
 	#include <errno.h>
-#endif //!WIN32
+#endif //!_WIN32
 
 #if defined( __APPLE__ ) && defined( __MACH__ )
     #include <sys/syslimits.h>  // for PATH_MAX
@@ -105,7 +105,7 @@ std::string JoinPath( std::string const& a, std::string const& b )
 	std::string ret(a);
 	char c = a[a.size()-1];
 
-#ifdef WIN32
+#ifdef _WIN32
 	if( c != '/' && c != '\\' && c != ':' )
 		ret += '/';
 #else
@@ -122,7 +122,7 @@ std::string JoinPath( std::string const& a, std::string const& b )
 
 
 
-#ifdef WIN32
+#ifdef _WIN32
 
 // Windows version
 
@@ -166,7 +166,7 @@ std::string PerUserDir()
 #endif
 
 
-#ifdef WIN32
+#ifdef _WIN32
 
 bool MakeDir( std::string const& dir )
 {
