@@ -23,7 +23,7 @@ ifeq ($(PLATFORM),osx)
 endif
 ifeq ($(PLATFORM),win32)
   EXE = zig.exe
-  CXXFLAGS = -O2 -Dmain=SDL_main -I/mingw32/include/libpng16
+  CXXFLAGS = -std=c++0x -O2 -Dmain=SDL_main -I/mingw32/include/libpng16
   CXXFLAGS += -I/c/site/SDL2_mixer-2.0.0/i686-w64-mingw32/include/SDL2 -I/c/site/SDL2-2.0.3/i686-w64-mingw32/include/SDL2
   LIBS = -L/c/site/SDL2_mixer-2.0.0/i686-w64-mingw32/lib -L/c/site/SDL2-2.0.3/i686-w64-mingw32/lib
   LIBS += -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lopengl32 -lpng16 -lz -mwindows
