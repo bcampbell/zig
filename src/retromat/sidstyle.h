@@ -5,14 +5,14 @@
 // a sound effect generator, based _very_ loosely on the SID chip
 // base waveform with frequency modulated by another oscillator
 // output passed through a lowpass filter
-
 #include <cstdlib>
 #include <cassert>
 #include <cstdio>
 #include <cmath>
 
-
-
+#ifndef M_PI
+#define M_PI (3.141592653589793)
+#endif
 
 
 enum OscType
