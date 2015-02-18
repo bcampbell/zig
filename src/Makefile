@@ -12,7 +12,7 @@ SRCS += retromat/retromat.cpp retromat/sidstyle.cpp
 OBJS = $(patsubst %.cpp,%.o,$(SRCS) )
 
 ifeq ($(PLATFORM),linux)
-  CXXFLAGS = -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
+  CXXFLAGS = -std=c++0x -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
   LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
 endif
 ifeq ($(PLATFORM),osx)
