@@ -25,7 +25,7 @@ void log_errorf(const char* fmt, ... )
     va_list ap;
     va_start(ap, fmt);
     int n = vsnprintf(buf,sizeof(buf), fmt, ap);
-    if (n>=sizeof(buf))
+    if (n>=(int)sizeof(buf))
         buf[sizeof(buf)-1]='\0';
     va_end(ap);
 

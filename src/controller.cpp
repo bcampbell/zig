@@ -45,7 +45,7 @@ SDLController::SDLController(int j_idx) : m_Ctrl(0)
     {
         throw Wobbly("Couldn't open controller: %s", SDL_GetError());
     }
-    const char *name = SDL_GameControllerNameForIndex(j_idx);
+    //const char *name = SDL_GameControllerNameForIndex(j_idx);
 }
 
 SDLController::~SDLController()

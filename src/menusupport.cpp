@@ -26,11 +26,11 @@ MenuItem::MenuItem( int id, vec2 const& pos, std::string const& text, bool centr
 	m_ID(id),
 	m_Pos( pos ),
 	m_Text( text ),
+    m_Shortcut(shortcut),
 	m_State( Normal ),
 	m_Wibble( 0.0f ),
 	m_Cyc( 0.0f ),
-	m_Centre( centre ),
-    m_Shortcut(shortcut)
+	m_Centre( centre )
 {
 }
 

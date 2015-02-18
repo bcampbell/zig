@@ -45,7 +45,8 @@ static SDL_Surface* Read( FILE* fp )
 	try
 	{
 		png_byte header[8];
-		fread( header, 1, sizeof(header), fp );
+		if( fread( header, 1, sizeof(header), fp ) != sizeof(header) )
+			throw Wobbly( "read failed");
 		bool ispng = !png_sig_cmp( header, 0, sizeof(header) );
 		if( !ispng )
 			throw Wobbly( "not a png file");
@@ -152,7 +153,7 @@ static SDL_Surface* Read( FILE* fp )
 		if( !surface )
 			throw Wobbly( "out of memory (SDL_CreateRGBSurface() failed)" );
 
-		assert( png_get_rowbytes( png_ptr, info_ptr ) <= surface->pitch );
+		assert( (int)png_get_rowbytes( png_ptr, info_ptr ) <= surface->pitch );
 
 
 		// point png at our surface rows

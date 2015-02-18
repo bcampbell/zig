@@ -529,8 +529,8 @@ void Level::DoArenaShrinkage()
 
 void Level::GiveKeepYourSectorTidyBonus()
 {
-	vec2 offset1 = Rotate( vec2(0.0f,-20.0f), g_Player->Heading() );
-	vec2 offset2 = Rotate( vec2(0.0f,-40.0f), g_Player->Heading() );
+//	vec2 offset1 = Rotate( vec2(0.0f,-20.0f), g_Player->Heading() );
+//	vec2 offset2 = Rotate( vec2(0.0f,-40.0f), g_Player->Heading() );
 
 //	g_Agents->AddUnderlay( new FadeText(
 //		g_Player->Pos() + offset1,
