@@ -124,7 +124,6 @@ float ADSR::tick(float timestep)
         m_State = SUSTAIN;
         m_StateTime -= m_Decay;
         // fall through
-        break;
     case SUSTAIN:
         return m_SustainLevel;
     case RELEASE:
@@ -139,6 +138,7 @@ float ADSR::tick(float timestep)
     case IDLE:
         return 0.0f;
     }
+    assert(false);  // should _never_ get here!
 }
 
 void ADSR::keyOn()
