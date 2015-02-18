@@ -46,7 +46,7 @@ clean:
 .PHONY: depend
 depend: .depend
 
-.depend: $(SRCS)
+.depend:
 	$(CXX) $(CXXFLAGS) -MM $^ >.depend
 
 include .depend
