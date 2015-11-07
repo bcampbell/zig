@@ -23,13 +23,13 @@ Controller::Controller() :
 class SDLController : public Controller
 {
 public:
-	SDLController(int j_idx);
-	~SDLController();
+    SDLController(int j_idx);
+    ~SDLController();
     void Tick();
     SDL_JoystickID InstanceID();
 private:
-	SDL_GameController*	m_Ctrl;
-	enum { DEADZONE=8000 };
+    SDL_GameController* m_Ctrl;
+    enum { DEADZONE=8000 };
 };
 
 SDL_JoystickID SDLController::InstanceID()
@@ -102,28 +102,32 @@ void KeyboardController::Tick()
     const Uint8* keys = SDL_GetKeyboardState(NULL);
 
     m_X = 0.0f;    
-	if( keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A] )
-		m_X -= 1.0f;
-	if( keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D] )
-		m_X += 1.0f;
-	
+    if( keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A] )
+        m_X -= 1.0f;
+    if( keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D] )
+        m_X += 1.0f;
+    
     m_Y = 0.0f;
-	if( keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W] )
-		m_Y -= 1.0f;
-	if( keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] )
-		m_Y += 1.0f;
+    if( keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W] )
+        m_Y -= 1.0f;
+    if( keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] )
+        m_Y += 1.0f;
 
     int buttons=0;
-	if (keys[SDL_SCANCODE_RCTRL] ||
-		keys[SDL_SCANCODE_LCTRL] ||
-		keys[SDL_SCANCODE_RSHIFT] ||
-		keys[SDL_SCANCODE_LSHIFT] ||
-		keys[SDL_SCANCODE_SPACE] ||
-		keys[SDL_SCANCODE_RETURN])
-	{
-		buttons |= CTRL_BTN_FIRE;
-	}
-	if (keys[SDL_SCANCODE_ESCAPE])
+
+    // note: on osx, CTRL+arrows changes virtual desktop, so don't use CTRL for fire
+    if (keys[SDL_SCANCODE_RSHIFT] ||
+        keys[SDL_SCANCODE_LSHIFT] ||
+#if !(defined( __APPLE__ ) && defined( __MACH__ ))
+        keys[SDL_SCANCODE_RCTRL] ||
+        keys[SDL_SCANCODE_LCTRL] ||
+#endif
+        keys[SDL_SCANCODE_SPACE] ||
+        keys[SDL_SCANCODE_RETURN])
+    {
+        buttons |= CTRL_BTN_FIRE;
+    }
+    if (keys[SDL_SCANCODE_ESCAPE])
         buttons |= CTRL_BTN_ESC;
 
     m_PrevBtnState = m_BtnState;
@@ -139,12 +143,12 @@ Autopilot::Autopilot()
 
 void Autopilot::Tick()
 {
-	if( Rnd(0.0f,1.0f) < 0.01 )
-		m_X = Rnd( -1.0f, 1.0f );
-	if( Rnd(0.0f,1.0f) < 0.01 )
-		m_Y = Rnd( -1.0f, 0.0f );	// don't go backwards
+    if( Rnd(0.0f,1.0f) < 0.01 )
+        m_X = Rnd( -1.0f, 1.0f );
+    if( Rnd(0.0f,1.0f) < 0.01 )
+        m_Y = Rnd( -1.0f, 0.0f );   // don't go backwards
     m_PrevBtnState = m_BtnState;
-	m_BtnState = CTRL_BTN_FIRE;
+    m_BtnState = CTRL_BTN_FIRE;
 }
 
 
@@ -171,8 +175,8 @@ float LatchedController::quant(float f)
 
 void LatchedController::Tick()
 {
-	float x = m_Source.XAxis();
-	float y = m_Source.YAxis();
+    float x = m_Source.XAxis();
+    float y = m_Source.YAxis();
 
     x= quant(x);
     y= quant(y);
@@ -200,8 +204,8 @@ void LatchedController::Tick()
     m_PrevX = x;
     m_PrevY = y;
 
-	m_PrevBtnState = m_BtnState;
-	m_BtnState = m_Source.Buttons();
+    m_PrevBtnState = m_BtnState;
+    m_BtnState = m_Source.Buttons();
 }
 
 
