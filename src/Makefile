@@ -16,9 +16,17 @@ ifeq ($(PLATFORM),linux)
   LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
 endif
 ifeq ($(PLATFORM),osx)
-  CXXFLAGS = -Wall -O2 $(shell pkg-config --cflags sdl2 SDL2_mixer libpng)
-  LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng)
-  LIBS += -lz -framework OpenGL -framework Foundation
+  CXXFLAGS = -Wall -O2 $(shell pkg-config --cflags libpng)
+  CXXFLAGS += -F ~/Library/Frameworks
+  # need to explicitly add include paths to allow SDL-prefered includes
+  # (ie include <SDL2_mixer.h> instead of <SDL2_mixer/SDL2_mixer.h>
+  CXXFLAGS += -I ~/Library/Frameworks/SDL2.framework/Headers
+  CXXFLAGS += -I ~/Library/Frameworks/SDL2_mixer.framework/Headers
+
+  LIBS = $(shell pkg-config --libs libpng)
+  LIBS += -lz -framework OpenGL -framework Foundation -framework SDL2 -framework SDL2_mixer
+  # Make sure SDL2 & SDL2_mixer will be found when bundled
+  LIBS += -Xlinker -rpath -Xlinker @executable_path/../Frameworks
   OBJS += osx_glue.o
 endif
 ifeq ($(PLATFORM),win32)
