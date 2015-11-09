@@ -41,7 +41,7 @@ void Laser::Draw()
 	glEnd();
 
 	glEnable( GL_TEXTURE_2D );
-	glBindTexture( GL_TEXTURE_2D, g_BlueGlow->ID() );
+	glBindTexture( GL_TEXTURE_2D, g_Textures[TX_BLUEGLOW]->ID() );
 	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
 	glEnable( GL_BLEND );
@@ -99,7 +99,7 @@ void FatLaser::Draw()
 
 	glShadeModel(GL_FLAT);
 	glEnable( GL_TEXTURE_2D );
-	glBindTexture( GL_TEXTURE_2D, g_BlueGlow->ID() );
+	glBindTexture( GL_TEXTURE_2D, g_Textures[TX_BLUEGLOW]->ID() );
 	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
 	glEnable( GL_BLEND );

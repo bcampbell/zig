@@ -15,6 +15,14 @@ private:
 };
 
 
+class BeamGradient : public CalculatedTexture
+{
+public:
+	BeamGradient( int pixw, int pixh );
+	virtual void Calc( float x, float y, Colour& out );
+private:
+};
+
 
 #endif	// PROCEDURALTEXTURES_H
 

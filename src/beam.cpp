@@ -1,6 +1,7 @@
 #include "beam.h"
 #include "colours.h"
 #include "player.h"
+#include "texture.h"
 #include "zig.h"
 #include <SDL_opengl.h>
 
@@ -67,30 +68,41 @@ void Beam::Tick()
 void Beam::Draw()
 {
 	glEnable( GL_BLEND );
-	glDisable( GL_TEXTURE_2D );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	glShadeModel(GL_SMOOTH);
+	glEnable( GL_TEXTURE_2D );
+	glShadeModel( GL_FLAT );
+	glBindTexture( GL_TEXTURE_2D,g_Textures[TX_BEAMGRADIENT]->ID() );
+	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+	glBlendFunc( GL_ONE, GL_ONE );
 	float w;
 	Colour c;
+    float l = m_Params.length;
 	if( m_State == WARMUP )
 	{
 		float factor = Rnd();
 		w = 8.0f * (1.0f-factor);
 		c = Colour( 1.0f, 0.0f, 0.0f, factor*0.5f );
+        l = m_Timer * 4000.0f;
+        if(l>m_Params.length)
+            l = m_Params.length;
 	}
 	else
 	{
 		// ON
 		w = m_Params.width + Rnd(-2.0f,2.0f);
-		c = Colour( 1.0f, 0.0f, 0.0f, Rnd( 0.5f,0.7f) );
+		c = Colour( 1.0f, 1.0f, 1.0f, Rnd( 0.5f,0.7f) );
 	}
 
-	
+
+
 	glColor4f( c.r, c.g, c.b, c.a );
 	glBegin( GL_QUADS );
-		glVertex2f( -w/2.0f, m_Params.length );
-		glVertex2f( w/2.0f, m_Params.length );
+		glTexCoord2f(0.0f,0.0f);
+		glVertex2f( -w/2.0f, -l );
+		glTexCoord2f(1.0f,0.0f);
+		glVertex2f( w/2.0f, -l );
+		glTexCoord2f(1.0f,1.0f);
 		glVertex2f( w/2.0f, 0.0f );
+		glTexCoord2f(0.0f,1.0f);
 		glVertex2f( -w/2.0f, 0.0f );
 	glEnd();
 }

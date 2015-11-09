@@ -45,8 +45,9 @@ ZigConfig g_Config;
 Player* g_Player=0;
 Level* g_CurrentLevel=0;
 Texture* g_Font=0;
-Texture* g_InvaderTexture=0;
-Texture* g_BlueGlow=0;
+
+Texture* g_Textures[TX_NUMTEXTURES] = {0};
+
 AgentManager* g_Agents = 0;
 Display* g_Display=0;
 ControllerMgr* g_ControllerMgr = 0;
@@ -63,6 +64,8 @@ static std::string s_ZigUserDir;
 static void PlayGame( HighScores& highscores );
 static void InitZigUserDir();
 
+static void InitTextures();
+static void FreeTextures();
 
 int main( int argc, char*argv[] )
 {
@@ -100,14 +103,7 @@ int main( int argc, char*argv[] )
 
 		g_Display = new Display( g_Config.fullscreen );
 
-		g_Font = new FileTexture( Resources::Map( "font.png" ).c_str() );
-		g_Display->AddTexture( g_Font );
-
-		g_InvaderTexture = new FileTexture( Resources::Map( "invaders.png").c_str() );
-		g_Display->AddTexture( g_InvaderTexture );
-
-		g_BlueGlow = new BlueGlow( 64,64 );
-		g_Display->AddTexture( g_BlueGlow );
+        InitTextures();
 
 		//----------------------------------------------
 		// Sound Init
@@ -218,17 +214,7 @@ int main( int argc, char*argv[] )
 
 	// clean up global textures
 	if( g_Display )
-	{
-		if( g_Font )
-			g_Display->RemoveTexture( g_Font );
-		if( g_InvaderTexture )
-			g_Display->RemoveTexture( g_InvaderTexture );
-		if( g_BlueGlow )
-			g_Display->RemoveTexture( g_BlueGlow );
-	}
-	delete g_Font;
-	delete g_InvaderTexture;
-	delete g_BlueGlow;
+        FreeTextures();
 
 	delete g_Display;
 
@@ -241,6 +227,38 @@ int main( int argc, char*argv[] )
 #endif	// CRIPPLED
     log_close();
 	return 0;
+}
+
+// create/load global textures
+void InitTextures()
+{
+    g_Font = new FileTexture( Resources::Map( "font.png" ).c_str() );
+    g_Textures[TX_FONT] = g_Font;
+    g_Textures[TX_INVADER] = new FileTexture( Resources::Map( "invaders.png").c_str() );
+    g_Textures[TX_BLUEGLOW] = new BlueGlow( 64,64 );
+    g_Textures[TX_BEAMGRADIENT] = new BeamGradient( 64,64 );
+    int i;
+    for(i=0; i<TX_NUMTEXTURES; ++i)
+    {
+        assert(g_Textures[i]);
+        g_Display->AddTexture(g_Textures[i]);
+    }
+}
+
+
+// clean up global textures
+void FreeTextures()
+{
+    int i;
+    for(i=0; i<TX_NUMTEXTURES; ++i)
+    {
+        if(!g_Textures[i])
+            continue;
+        g_Display->RemoveTexture(g_Textures[i]);
+        delete g_Textures[i];
+        g_Textures[i] = 0;
+    }
+    g_Font = 0;
 }
 
 

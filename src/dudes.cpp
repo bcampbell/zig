@@ -1811,7 +1811,7 @@ void Invader::Tick()
 void Invader::Draw()
 {
 	glEnable( GL_TEXTURE_2D );
-	glBindTexture( GL_TEXTURE_2D, g_InvaderTexture->ID() );
+	glBindTexture( GL_TEXTURE_2D, g_Textures[TX_INVADER]->ID() );
 	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
 //	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -2447,10 +2447,10 @@ void Divider::Tick()
 		beamparams.width = 28.0f;
 		beamparams.length = 600.0f;
 		
-		Beam* b1 = new Beam( *this, vec2( 0.0f, 8 ), 0.0f, &beamparams );
+		Beam* b1 = new Beam( *this, vec2( 0.0f, -8 ), 0.0f, &beamparams );
 		g_Agents->AddDude( b1 );
 
-		Beam* b2 = new Beam( *this, vec2( 0.0f, -8 ), pi, &beamparams );
+		Beam* b2 = new Beam( *this, vec2( 0.0f, 8 ), pi, &beamparams );
 		g_Agents->AddDude( b2 );
 		m_Timer = 0.0f;
 	}

@@ -28,8 +28,17 @@ public:
     void Tick();
     SDL_JoystickID InstanceID();
 private:
-    SDL_GameController* m_Ctrl;
-    enum { DEADZONE=8000 };
+	SDL_GameController*	m_Ctrl;
+	enum { DEADZONE=8000 };
+
+    float ApplyDeadZone(Sint16 v)
+    {
+        if (v>-DEADZONE && v<DEADZONE) {
+            return 0.0f;
+        } else {
+            return ((float)v) / 32768.0f;
+        }
+    }
 };
 
 SDL_JoystickID SDLController::InstanceID()
@@ -56,23 +65,58 @@ SDLController::~SDLController()
     }
 }
 
+
+// return the average of the non-zero values
+static inline float AvgNonZero(float (&v)[3])
+{
+    float out = 0.0f;
+    int i,cnt;
+    cnt=0;
+    for(i=0;i<3;++i)
+    {
+        if (v[i]!=0.0f)
+        {
+            out += v[i];
+            ++cnt;
+        }
+    }
+    if (cnt > 0)
+        out /= (float)cnt;
+
+    return out;
+}
+
 void SDLController::Tick()
 {
+    float x[3];
+    float y[3];
+
+    // we'll accept input from left stick, right stick or dpad...
+
     // X axis
-    Sint16 v = SDL_GameControllerGetAxis(m_Ctrl, SDL_CONTROLLER_AXIS_LEFTX);
-    if (v>-DEADZONE && v<DEADZONE) {
-        m_X = 0.0f;
-    } else {
-        m_X = ((float)v) / 32768.0f;
-    }
+    x[0] = ApplyDeadZone(SDL_GameControllerGetAxis(m_Ctrl, SDL_CONTROLLER_AXIS_LEFTX));
+    x[1] = ApplyDeadZone(SDL_GameControllerGetAxis(m_Ctrl, SDL_CONTROLLER_AXIS_RIGHTX));
+    if (SDL_GameControllerGetButton(m_Ctrl, SDL_CONTROLLER_BUTTON_DPAD_LEFT))
+        x[2] = -1.0f;
+    else if (SDL_GameControllerGetButton(m_Ctrl, SDL_CONTROLLER_BUTTON_DPAD_RIGHT))
+        x[2] = 1.0f;
+    else
+        x[2] = 0.0f;
+
+    m_X = AvgNonZero(x);
 
     // Y axis
-    v = SDL_GameControllerGetAxis(m_Ctrl, SDL_CONTROLLER_AXIS_LEFTY);
-    if (v>-DEADZONE && v<DEADZONE) {
-        m_Y = 0.0f;
-    } else {
-        m_Y = ((float)v) / 32768.0f;
-    }
+    y[0] = ApplyDeadZone(SDL_GameControllerGetAxis(m_Ctrl, SDL_CONTROLLER_AXIS_LEFTY));
+    y[1] = ApplyDeadZone(SDL_GameControllerGetAxis(m_Ctrl, SDL_CONTROLLER_AXIS_RIGHTY));
+    if (SDL_GameControllerGetButton(m_Ctrl, SDL_CONTROLLER_BUTTON_DPAD_UP))
+        y[2] = -1.0f;
+    else if (SDL_GameControllerGetButton(m_Ctrl, SDL_CONTROLLER_BUTTON_DPAD_DOWN))
+        y[2] = 1.0f;
+    else
+        y[2] = 0.0f;
+    m_Y = AvgNonZero(y);
+
+
 
     // buttons
     int buttons =  0;

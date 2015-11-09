@@ -37,8 +37,16 @@ extern Display* g_Display;
 extern ControllerMgr* g_ControllerMgr;
 
 extern Texture* g_Font;
-extern Texture* g_InvaderTexture;
-extern Texture* g_BlueGlow;
+
+enum { TX_FONT=0,
+    TX_INVADER,
+    TX_BLUEGLOW,
+    TX_BEAMGRADIENT,
+    TX_NUMTEXTURES
+};
+
+extern Texture* g_Textures[TX_NUMTEXTURES];
+
 
 #define VW (640)
 #define VH (480)
