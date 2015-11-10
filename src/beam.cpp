@@ -79,8 +79,8 @@ void Beam::Draw()
 	if( m_State == WARMUP )
 	{
 		float factor = Rnd();
-		w = 8.0f * (1.0f-factor);
-		c = Colour( 1.0f, 0.0f, 0.0f, factor*0.5f );
+		w = 2.0f * (1.0f-factor);
+		c = Colour( 0.5f, 0.0f, 0.0f, 1.0f );
         l = m_Timer * 4000.0f;
         if(l>m_Params.length)
             l = m_Params.length;

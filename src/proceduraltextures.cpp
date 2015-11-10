@@ -29,7 +29,7 @@ BeamGradient::BeamGradient( int pixw, int pixh ) :
 void BeamGradient::Calc( float x, float y, Colour& out )
 {
     float a = (0.5f-x)*2;
-    float v = 1.0f - (a*a);
+    float v = 1.0f - (a*a*a*a);
 
 	out.r = v;
 	out.g = v*v*v*v*v*v;
