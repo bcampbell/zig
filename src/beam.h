@@ -12,8 +12,8 @@ public:
 		Params() :
 			warmuptime( 2.0f ),
 			ontime( 3.0f ),
-			width( 32.0f ),
-			length( 400.0f )
+			width( 28.0f ),
+			length( 1200.0f )
 		{}
 		float warmuptime;
 		float ontime;

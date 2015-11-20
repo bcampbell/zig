@@ -21,19 +21,38 @@ void BlueGlow::Calc( float x, float y, Colour& out )
 }
 
 
-BeamGradient::BeamGradient( int pixw, int pixh ) :
+NarrowBeamGradient::NarrowBeamGradient( int pixw, int pixh ) :
 	CalculatedTexture( pixw, pixh )
 {
 }
 
-void BeamGradient::Calc( float x, float y, Colour& out )
+void NarrowBeamGradient::Calc( float x, float y, Colour& out )
 {
-    float a = (0.5f-x)*2;
-    float v = 1.0f - (a*a*a*a);
+    float d = fabs((x-0.5f)*2);   // d in [0..1)
+    float v = 1.0f-d;
+    v=v*v;  //*v*v;
 
 	out.r = v;
-	out.g = v*v*v*v*v*v;
-	out.b = v*v*v*v*v*v;
+	out.g = v;
+	out.b = v;
+	out.a = 1.0f;
+}
+
+
+WideBeamGradient::WideBeamGradient( int pixw, int pixh ) :
+	CalculatedTexture( pixw, pixh )
+{
+}
+
+void WideBeamGradient::Calc( float x, float y, Colour& out )
+{
+    float d = fabs((x-0.5f)*2);   // d in [0..1)
+    float v = 1.0f-d;
+    v=v*v*v*v*v*v*v*v;
+
+	out.r = v;
+	out.g = v;
+	out.b = v;
 	out.a = 1.0f;
 }
 

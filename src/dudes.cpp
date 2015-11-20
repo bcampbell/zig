@@ -2445,7 +2445,7 @@ void Divider::Tick()
 		beamparams.warmuptime = 2.0f;
 		beamparams.ontime = 2.0f;
 		beamparams.width = 28.0f;
-		beamparams.length = 600.0f;
+		beamparams.length = 1200.0f;
 		
 		Beam* b1 = new Beam( *this, vec2( 0.0f, -8 ), 0.0f, &beamparams );
 		g_Agents->AddDude( b1 );

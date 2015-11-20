@@ -236,7 +236,8 @@ void InitTextures()
     g_Textures[TX_FONT] = g_Font;
     g_Textures[TX_INVADER] = new FileTexture( Resources::Map( "invaders.png").c_str() );
     g_Textures[TX_BLUEGLOW] = new BlueGlow( 64,64 );
-    g_Textures[TX_BEAMGRADIENT] = new BeamGradient( 64,64 );
+    g_Textures[TX_NARROWBEAMGRADIENT] = new NarrowBeamGradient( 64,64 );
+    g_Textures[TX_WIDEBEAMGRADIENT] = new WideBeamGradient( 64,64 );
     int i;
     for(i=0; i<TX_NUMTEXTURES; ++i)
     {

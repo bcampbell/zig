@@ -41,7 +41,8 @@ extern Texture* g_Font;
 enum { TX_FONT=0,
     TX_INVADER,
     TX_BLUEGLOW,
-    TX_BEAMGRADIENT,
+    TX_NARROWBEAMGRADIENT,
+    TX_WIDEBEAMGRADIENT,
     TX_NUMTEXTURES
 };
 
