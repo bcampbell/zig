@@ -7,7 +7,7 @@ PLATFORM=$(shell ./zig-platform)
 EXE = zig
 
 SRCS=$(wildcard *.cpp)
-SRCS += retromat/retromat.cpp retromat/sidstyle.cpp
+SRCS += retromat/retromat.cpp retromat/sidstyle.cpp retromat/gen.cpp
 
 OBJS = $(patsubst %.cpp,%.o,$(SRCS) )
 

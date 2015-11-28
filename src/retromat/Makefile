@@ -6,7 +6,7 @@ CXXFLAGS = -ggdb
 CXXFLAGS += -I/usr/local/include/stk -D__LINUX_ALSA__
 LIBS += -L/usr/local/lib -lstk
 
-SRCS += main.cpp retromat.cpp sidstyle.cpp
+SRCS += main.cpp retromat.cpp sidstyle.cpp gen.cpp
 
 #STKDIR = /home/ben/crap/stk-4.5.0
 #CXXFLAGS += -I$(STKDIR)/include

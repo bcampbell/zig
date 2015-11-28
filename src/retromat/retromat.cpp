@@ -1,181 +1,88 @@
 #include "retromat.h"
-#include "sidstyle.h"
+
+#include <cmath>
 
 
+float g_RFreq = 8000.0f;
+float g_RStep = 0.0;
 
-
-static float s_TimeStep = 0.0f;
 
 void SetRetromatFreq( int samplerate ) 
 {
-    s_TimeStep = 1.0f / (float)samplerate;
+    g_RFreq = samplerate;
+    g_RStep = 1.0f / (float)samplerate;
 }
 
 
 
-void GenerateLaser( std::vector<float>& out )
+
+ADSR::ADSR() :
+    m_State(IDLE),
+    m_StateTime(0.0f),
+    m_Attack(0.0f),
+    m_Decay(0.0f),
+    m_SustainLevel(0.0f),
+    m_Release(0.0f)
 {
-/*
-	SIDStyle::Config sidconf =
-	{
-		4.0f,						// duration
-		SINE, 440.0f, 440.0f,		// src: type, startf, endf
-		SQUARE, 0.0f, 0.0f, 0.0f,	// mod: type, startf, endf, ampl
-		1.0f, 1.0f, 0.5f, 1.0f,	// adsr
-		0.0f, 0.0f,				// filter: startpole, endpole
-		1.0f						// gain
-	};
-    */
-	SIDStyle::Config sidconf =
-	{
-		0.2f,						// duration
-		SINE, 440.0f, 10.0f,		// src: type, startf, endf
-		SQUARE, 0.0f, 0.0f, 0.0f,	// mod: type, startf, endf, ampl
-		0.0001f, 0.01f, 0.7f, 0.1f,	// adsr
-		0.0f, 0.95f,				// filter: startpole, endpole
-		0.1f						// gain
-	};
-	SIDStyle sid( sidconf );
-	while( !sid.IsDone() )
-		out.push_back( sid.Tick(s_TimeStep) );
 }
 
-
-void GenerateBaiterAlert( std::vector<float>& out )
+float ADSR::tick()
 {
-	SIDStyle::Config sidconf =
-	{
-		1.0f,						// duration, gain
-		TRIANGLE, 440.0f, 2500.0f,		// src: type, startf, endf
-		SINE, 5.0f, 100.0f, 1000.0f,	// mod: type, startf, endf, ampl
-		0.0001f, 0.0001f, 1.0f, 0.1f,	// adsr
-		0.95f, -0.95f,				// filter: startpole, endpole
-		0.3f						// gain
-	};
-
-	SIDStyle sid( sidconf );
-	while( !sid.IsDone() )
-		out.push_back( sid.Tick(s_TimeStep) );
+    m_StateTime += g_RStep;
+    switch( m_State )
+    {
+    case ATTACK:
+        if (m_StateTime<m_Attack)
+            return m_StateTime/m_Attack;
+        m_StateTime -= m_Attack;
+        m_State = DECAY;
+        // fall through
+    case DECAY:
+        if (m_StateTime<m_Decay)
+        {
+            float t = m_StateTime/m_Decay;
+            return 1.0f*(1.0f-t) + m_SustainLevel*t;
+        }
+        m_State = SUSTAIN;
+        m_StateTime -= m_Decay;
+        // fall through
+    case SUSTAIN:
+        return m_SustainLevel;
+    case RELEASE:
+        if (m_StateTime<m_Release)
+        {
+            float t = m_StateTime/m_Release;
+            return m_SustainLevel*(1.0f-t);
+        }
+        m_State = IDLE;
+        m_StateTime -= m_Release;
+        // fall through
+    case IDLE:
+        return 0.0f;
+    }
+    assert(false);  // should _never_ get here!
 }
 
-
-
-void GeneratePlayerToast( std::vector<float>& out )
+void ADSR::keyOn()
 {
-	SIDStyle::Config sidconf =
-	{
-		1.0f,						// duration, gain
-		SQUARE, 1.0f, 50.0f,		// src: type, startf, endf
-		SINE, 500.0f, 1.0f, 1000.0f,	// mod: type, startf, endf, ampl
-		0.0001f, 0.0001f, 1.0f, 0.1f,	// adsr
-		-0.9f, 0.9f,				// filter: startpole, endpole
-		0.3f						// gain
-	};
-
-	SIDStyle sid( sidconf );
-	while( !sid.IsDone() )
-		out.push_back( sid.Tick(s_TimeStep) );
+    m_State = ATTACK;
+    m_StateTime = 0.0f;
 }
 
-void GenerateLevelIntro( std::vector<float>& out )
+void ADSR::keyOff()
 {
-	SIDStyle::Config sidconf =
-	{
-		2.0f,						// duration, gain
-		SQUARE, 8000.0f, -1000.0f,		// src: type, startf, endf
-		SAWTOOTH, 2000.0f, 1.0f, 1000.0f,	// mod: type, startf, endf, ampl
-		0.0001f, 0.2f, 0.7f, 1.0f,	// adsr
-		0.9f, 0.9f,				// filter: startpole, endpole
-		1.0f						// gain
-	};
-
-	SIDStyle sid( sidconf );
-	while( !sid.IsDone() )
-		out.push_back( sid.Tick(s_TimeStep) );
+    if (m_State!=IDLE && m_State!=RELEASE)
+    {
+        m_State = RELEASE;
+        m_StateTime = 0.0f;
+    }
 }
 
-void GenerateBigExplosion( std::vector<float>& out )
+void ADSR::setAllTimes(float aTime, float dTime, float sLevel, float rTime)
 {
-    /*
-	SIDStyle::Config sidconf =
-	{
-		2.0f,						// duration, gain
-		PULSE, 100.0f, 10.0f,		// src: type, startf, endf
-		SAWTOOTH, 12000.0f, 10.0f, 1000.0f,	// mod: type, startf, endf, ampl
-		0.0001f, 0.2f, 0.7f, 1.0f,	// adsr
-		0.9f, 0.9f,				// filter: startpole, endpole
-		1.0f						// gain
-	};
-    */
-	SIDStyle::Config sidconf =
-	{
-		2.0f,						// duration, gain
-		SQUARE, 5000.0f, 10.0f,		// src: type, startf, endf
-		SAWTOOTH, 420.0f, 1.0f, 20000.0f,	// mod: type, startf, endf, ampl
-		0.0001f, 0.2f, 0.7f, 1.0f,	// adsr
-		0.9f, 0.6f,				// filter: startpole, endpole
-		1.0f						// gain
-	};
-
-	SIDStyle sid( sidconf );
-	while( !sid.IsDone() )
-		out.push_back( sid.Tick(s_TimeStep) );
+    m_Attack = aTime;
+    m_Decay = dTime;
+    m_SustainLevel = sLevel;
+    m_Release = rTime;
 }
-
-void GenerateGameOver( std::vector<float>& out )
-{
-	SIDStyle::Config sidconf2 =
-	{
-		3.0f,						// duration, gain
-		SQUARE, 80.0f, 1.0f,		// src: type, startf, endf
-		SQUARE, 5.0f, 0.0f, 20.0f,	// mod: type, startf, endf, ampl
-		0.0001f, 0.2f, 0.7f, 0.1f,	// adsr
-		0.9f, -0.9f,				// filter: startpole, endpole
-		1.0f						// gain
-	};
-
-	SIDStyle sid( sidconf2 );
-	while( !sid.IsDone() )
-		out.push_back( sid.Tick(s_TimeStep) );
-}
-
-
-
-
-void GenerateDullBlast( std::vector<float>& out )
-{
-	SIDStyle::Config sidconf =
-	{
-		0.15f,						// duration
-		SQUARE, 200.0f, 1.0f,			// src: type, startf, endf
-		SINE, 	10000.0f, 10.0f, 10.0f,	// mod: type, startf, endf, ampl
-		0.0001f, 0.01f, 0.7f, 0.05f,	// adsr
-		0.95f, 0.95f,				// filter: startpole, endpole
-		0.3f						// gain
-	};
-
-	SIDStyle sid( sidconf );
-	while( !sid.IsDone() )
-		out.push_back( sid.Tick(s_TimeStep) );
-}
-
-
-void GenerateWibblePop( std::vector<float>& out )
-{
-	SIDStyle::Config sidconf =
-	{
-		0.7f,						// duration
-		TRIANGLE, 220.0f, 2840.0f,			// src: type, startf, endf
-		SQUARE, 20.0f, 1.0f, 440.0f,	// mod: type, startf, endf, ampl
-		0.1f, 0.1f, 1.0f, 0.3f,	// adsr
-		0.95f, -0.95f,				// filter: startpole, endpole
-		0.7f						// gain
-	};
-
-	SIDStyle sid( sidconf );
-	while( !sid.IsDone() )
-		out.push_back( sid.Tick(s_TimeStep) );
-}
-
-
 

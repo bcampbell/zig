@@ -2,6 +2,7 @@
 #include "soundmgr.h"
 #if !defined(DISABLE_SOUND)
 #include "retromat/retromat.h"
+#include "retromat/gen.h"
 #endif
 #include "resources.h"
 #include "wobbly.h"
