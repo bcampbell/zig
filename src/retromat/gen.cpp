@@ -192,7 +192,7 @@ void GenerateWibblePop( std::vector<float>& out )
 
 
 
-// rackly electric drone
+// looping, electric blast
 void GenerateElectric( std::vector<float>& out )
 {
     SineOsc lfo1(33.0f);
@@ -240,6 +240,28 @@ void GenerateElectric( std::vector<float>& out )
 
 }
 
+void GenerateChargeUp( std::vector<float>& out )
+{
+    TriangleOsc wave;
+
+    SineOsc lfo(1000.1f);
+
+
+    float t; 
+    const float dur=3.0f;
+    OnePole filt;
+    for (t=0.0f; t<dur; t+=g_RStep)
+    {
+        float f = t/dur;
+         filt.setCutoff(800.0f + lfo.tick()*500, g_RFreq);
+        
+        wave.setFrequency(8000.0f + t*t*400.0f);
+        float v = wave.tick()*0.2f;
+        v = filt.tick(v);
+        out.push_back(v);
+    }
+    Loopum(out,1.5f);
+}
 
 #if 0
 // cool!

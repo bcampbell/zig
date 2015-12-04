@@ -231,6 +231,7 @@ void RealSoundMgr::GenerateSounds()
 	m_Sounds[ SFX_BIGEXPLOSION ] = Gen( GenerateBigExplosion );
 	m_Sounds[ SFX_GAMEOVER ] = Gen( GenerateGameOver );
 	m_Sounds[ SFX_WIBBLEPOP ] = Gen( GenerateWibblePop );
+	m_Sounds[ SFX_CHARGEUP ] = Gen( GenerateChargeUp );
 }
 
 #endif

@@ -21,6 +21,7 @@ Beam::Beam( Agent& owner, vec2 const& relpos, float relheading, Params const* pa
 	PositionRelative( m_Owner, m_RelPos, m_RelHeading );
 	SetRadius( m_Params.length );	// hooo! only used for 1st-pass culling. Real work done in OnHitPlayer()
 	SetFlags( 0 );
+    m_Snd.Start(SFX_CHARGEUP,100);
 }
 
 Beam::~Beam()
