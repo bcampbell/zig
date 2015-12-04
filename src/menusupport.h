@@ -41,16 +41,18 @@ private:
 class Menu
 {
 public:
+	Menu();
 	virtual void Tick();
 	virtual void Draw();
 	virtual ~Menu();
 
 	float InactivityTime()	{ return m_InactivityTime; }
 
-protected:
-	Menu();
+    // ownership is passed to menu
 	void AddItem( MenuItem* item );
+protected:
 	virtual void OnSelect( int id )		{}
+	virtual void OnFocus( int id );
 	virtual void OnLeft( int id )		{}
 	virtual void OnRight( int id )		{}
 	int Current() const					{ return (*m_Current)->GetID(); }

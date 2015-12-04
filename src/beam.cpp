@@ -53,6 +53,7 @@ void Beam::Tick()
 				// zap.
 				m_Timer = 0.0f;
 				m_State = ON;
+                m_Snd.Start(SFX_ELECTRIC,500);
 				SetFlags( flagCanHitPlayer );
 			}
 			break;

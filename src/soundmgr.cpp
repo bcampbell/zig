@@ -154,9 +154,12 @@ int RealSoundMgr::PlayLooped( unsigned int id )
 	return channel;
 }
 
-void RealSoundMgr::StopLooped( int channel )
+void RealSoundMgr::StopLooped( int channel, int fadems )
 {
-	Mix_HaltChannel( channel );
+    if(fadems>0)
+        Mix_FadeOutChannel(channel, fadems);
+    else
+        Mix_HaltChannel( channel );
 }
 
 
@@ -220,6 +223,7 @@ void RealSoundMgr::GenerateSounds()
 	SetRetromatFreq( m_DeviceFreq );
 
 	m_Sounds[ SFX_PLAYERFIRE ] = Gen( GenerateLaser );
+	m_Sounds[ SFX_ELECTRIC ] = Gen( GenerateElectric );
 	m_Sounds[ SFX_DULLBLAST ] = Gen( GenerateDullBlast );
 	m_Sounds[ SFX_BAITERALERT ] = Gen( GenerateBaiterAlert );
 	m_Sounds[ SFX_PLAYERTOAST ] = Gen( GeneratePlayerToast );

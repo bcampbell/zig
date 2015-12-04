@@ -19,14 +19,13 @@
 enum
 {
 	SFX_PLAYERFIRE=0,
+	SFX_ELECTRIC,
 	SFX_DULLBLAST,
 	SFX_BAITERALERT,
 	SFX_PLAYERTOAST,
 	SFX_LEVELINTRO,
 	SFX_BIGEXPLOSION,
 	SFX_GAMEOVER,
-//	SFX_FATZAPPERWARN,
-//	SFX_FATZAPPERFIRE,
 	SFX_WIBBLEPOP,
 	SFX_NUM_EFFECTS
 };
@@ -63,7 +62,7 @@ public:
 	virtual int PlayLooped( unsigned int id )=0;
 
 	// stop a sound started with PlayLooped().
-	virtual void StopLooped( int channel )=0;
+	virtual void StopLooped( int channel, int fadems=0 )=0;
 
 protected:
 	// the single allowed soundmgr.
@@ -107,7 +106,7 @@ public:
 //	virtual void LoadSound( unsigned int id, std::string const& filename ) {}
 	virtual void Play( unsigned int id ) {}
 	virtual int PlayLooped( unsigned int id ) { return -1; }
-	virtual void StopLooped( int channel  ) {}
+	virtual void StopLooped( int channel, int fadems=0 ) {}
 private:
 	NullSoundMgr();
 
@@ -128,7 +127,7 @@ public:
 
 	virtual void Play( unsigned int id );
 	virtual int PlayLooped( unsigned int id );
-	virtual void StopLooped( int channel );
+	virtual void StopLooped( int channel, int fadems=0 );
 
 private:
 	RealSoundMgr();
@@ -149,6 +148,28 @@ private:
 };
 
 #endif //
+
+
+
+// a looped sound. Stops when it goes out of scope (if playing)
+class ScopedSnd
+{
+public:
+    ScopedSnd() : m_Chan(-1),m_FadeOutMS(0)    {}
+    ~ScopedSnd()                { Stop(); }
+    void Start(int sfxid, int fadeoutms=0)       { Stop(); m_FadeOutMS = fadeoutms; m_Chan = SoundMgr::Inst().PlayLooped(sfxid); }
+    void Stop()
+    {
+        if( m_Chan!=-1)
+        {
+            SoundMgr::Inst().StopLooped(m_Chan,m_FadeOutMS);
+            m_Chan = -1;
+        }
+    }
+private:
+    int m_Chan;
+    int m_FadeOutMS;
+};
 
 
 #endif // SOUNDMGR_H

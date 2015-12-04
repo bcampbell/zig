@@ -12,7 +12,7 @@ void GenerateGameOver( std::vector<float>& out );
 void GenerateDullBlast( std::vector<float>& out );
 void GenerateWibblePop( std::vector<float>& out );
 
-void GenerateDrone( std::vector<float>& out );
+void GenerateElectric( std::vector<float>& out );
 
 
 

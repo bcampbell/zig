@@ -22,6 +22,7 @@
 #include "player.h"
 #include "proceduraltextures.h"
 #include "resources.h"
+#include "soundexplore.h"
 #include "soundmgr.h"
 #include "texture.h"
 #include "titlescreen.h"
@@ -140,6 +141,11 @@ int main( int argc, char*argv[] )
 #ifdef CRIPPLED
 		CrippleClock::Init();
 #endif	// CRIPPLED
+
+
+        SoundExplore exp;
+        exp.Run();
+
 
 		//----------------------------------------------
 		// MAIN

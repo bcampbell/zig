@@ -2,6 +2,29 @@
 //#include "retromat.h"
 #include "sidstyle.h"
 
+void Loopum(std::vector<float>& buf, float fadeTime)
+{
+    int len = fadeTime * g_RFreq;
+
+    assert(len < buf.size());
+
+    int i;
+    for(i=0;i<len; ++i)
+    {
+        int dest = i;
+        int src = (buf.size()-len) + i;
+        float t = (float)i/(float)len;
+
+        buf[dest] = buf[dest]*t + buf[src]*(1-t);
+    }
+
+
+    buf.resize(buf.size()-len);
+
+}
+
+
+
 void GenerateLaser( std::vector<float>& out )
 {
 /*
@@ -168,28 +191,95 @@ void GenerateWibblePop( std::vector<float>& out )
 
 
 
-void GenerateDrone( std::vector<float>& out )
+
+// rackly electric drone
+void GenerateElectric( std::vector<float>& out )
 {
-    SineOsc lfo(2.0f);
-    SquareOsc s;
+    SineOsc lfo1(33.0f);
+    SawtoothOsc lfo2(1.0f);
+    SawtoothOsc lfo3(13.0f);
+
+
+    SawtoothOsc w1;
+
+    SawtoothOsc o;
+    NoiseOsc noise;
+
+
+    SquareOsc high;
+
+
+    OnePole filt;
+    float t; 
+    for (t=0.0f; t<2.5f; t+=g_RStep)
+    {
+        float f1 = lfo1.tick();
+        float f2 = lfo2.tick();
+        float f3 = lfo3.tick();
+
+        filt.setCutoff(60 + f2*f3*59 , g_RFreq);
+        o.setFrequency(1000.0f + 999.0f*f1*f1*f1);
+        float v = o.tick();
+
+
+
+        w1.setFrequency(10.0f + t*t*1.0f );
+        v += (w1.tick()*0.2);
+        v = filt.tick(v);
+
+        high.setFrequency( 5000 - t*t*t*50.0f );
+        v += high.tick() * 0.005f;
+
+
+
+		out.push_back( v );
+    }
+
+
+    Loopum(out,0.5f);
+
+}
+
+
+#if 0
+// cool!
+void GenerateElectric( std::vector<float>& out )
+{
+    SineOsc lfo1(3.0f);
+    SineOsc lfo2(7.0f);
+    SineOsc lfo3(37.0f);
+
+    SineOsc lfo4(1.0f);
+
+    SawtoothOsc w1(40.0f);
+
+    SawtoothOsc o;
     NoiseOsc noise;
 
     OnePole filt;
-    filt.setCutoff( 200.0f, g_RFreq);
     float t; 
     for (t=0.0f; t<5.0f; t+=g_RStep)
     {
-        float f = lfo.tick();
-        s.setFrequency(220.0f + 200.0f*f);
-        
-        float v = s.tick();
+        float f1 = lfo1.tick();
+        float f2 = lfo2.tick();
+        float f3 = lfo3.tick();
+        float f4 = lfo4.tick();
 
-        v = 0.4f*noise.tick() + 0.6f*v;
-
-        v=filt.tick(v);
+        filt.setCutoff(100 + f4*99.0f, g_RFreq);
+        o.setFrequency(50.0f + 49.0f*f1*f1);
+        w1.setFrequency(20.0f+t*4);
+        float v = o.tick();
+//        v = filt.tick(v);
+       // v += w1.tick();
 		out.push_back( v );
     }
+
+
+    Loopum(out,2.5f);
 }
+
+#endif
+
 
 
 

@@ -148,21 +148,22 @@ void Menu::Tick()
 
 	if( y < 0.0f )		// up?
 	{
-		SoundMgr::Inst().Play( SFX_DULLBLAST );
 		(*m_Current)->SetFocus( false );
 		if( m_Current != m_Items.begin() )
 			--m_Current;
 		(*m_Current)->SetFocus( true );
+        OnFocus((*m_Current)->GetID());
 	}
 
 	if( y > 0.0f )	// down?
 	{
-		SoundMgr::Inst().Play( SFX_DULLBLAST );
 		(*m_Current)->SetFocus( false );
 		++m_Current;
 		if( m_Current == m_Items.end() )
 			--m_Current;
 		(*m_Current)->SetFocus( true );
+
+        OnFocus((*m_Current)->GetID());
 	}
 
 	if( x<0.0f )		// left?
@@ -184,5 +185,9 @@ void Menu::Draw()
 }
 
 
+void Menu::OnFocus(int id)
+{
+		SoundMgr::Inst().Play( SFX_DULLBLAST );
+}
 
 

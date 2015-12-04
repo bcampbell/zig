@@ -4,6 +4,7 @@
 #include "dudes.h"
 
 
+
 class Beam : public Dude
 {
 public:
@@ -38,6 +39,7 @@ private:
 	enum { WARMUP, ON } m_State;
 	float m_Timer;
 	Params m_Params;
+    ScopedSnd m_Snd;
 };
 
 #endif // BEAM_H
