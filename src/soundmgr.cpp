@@ -145,12 +145,19 @@ void RealSoundMgr::Play( unsigned int id )
 }
 
 
-int RealSoundMgr::PlayLooped( unsigned int id )
+int RealSoundMgr::PlayLooped( unsigned int id, int fadeinms )
 {
 	assert( id<m_Sounds.size() );
 	assert( m_Sounds[id] != 0 );
 
-	int channel = Mix_PlayChannel( -1, m_Sounds[id], -1 );
+	int channel;
+  
+   if (fadeinms>0)
+        channel = Mix_FadeInChannel( -1, m_Sounds[id], -1,fadeinms );
+   else
+        channel = Mix_PlayChannel( -1, m_Sounds[id], -1 );
+
+
 	return channel;
 }
 
@@ -232,6 +239,8 @@ void RealSoundMgr::GenerateSounds()
 	m_Sounds[ SFX_GAMEOVER ] = Gen( GenerateGameOver );
 	m_Sounds[ SFX_WIBBLEPOP ] = Gen( GenerateWibblePop );
 	m_Sounds[ SFX_CHARGEUP ] = Gen( GenerateChargeUp );
+
+	m_Sounds[ SFX_THRUST ] = Gen( GenerateThrust );
 }
 
 #endif

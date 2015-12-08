@@ -263,44 +263,34 @@ void GenerateChargeUp( std::vector<float>& out )
     Loopum(out,1.5f);
 }
 
-#if 0
-// cool!
-void GenerateElectric( std::vector<float>& out )
+void GenerateThrust( std::vector<float>& out )
 {
-    SineOsc lfo1(3.0f);
-    SineOsc lfo2(7.0f);
-    SineOsc lfo3(37.0f);
-
-    SineOsc lfo4(1.0f);
-
-    SawtoothOsc w1(40.0f);
-
-    SawtoothOsc o;
     NoiseOsc noise;
 
+    SquareOsc w;
+    SineOsc lfo1(220.0f);
+    SineOsc lfo2(13.0f);
+
     OnePole filt;
-    float t; 
-    for (t=0.0f; t<5.0f; t+=g_RStep)
+    float t;
+    for (t=0.0f; t<2.0f; t+=g_RStep)
     {
         float f1 = lfo1.tick();
         float f2 = lfo2.tick();
-        float f3 = lfo3.tick();
-        float f4 = lfo4.tick();
+        filt.setCutoff(80.0f + f1*30.0f, g_RFreq);
 
-        filt.setCutoff(100 + f4*99.0f, g_RFreq);
-        o.setFrequency(50.0f + 49.0f*f1*f1);
-        w1.setFrequency(20.0f+t*4);
-        float v = o.tick();
-//        v = filt.tick(v);
-       // v += w1.tick();
+        w.setFrequency(6080.0f + f2*39.0f);
+        
+        float v = 0.2f*w.tick();
+        v += noise.tick()*0.5f;
+        v = filt.tick(v);
+
+
+        v *= 0.5f;
 		out.push_back( v );
     }
-
-
-    Loopum(out,2.5f);
 }
 
-#endif
 
 
 

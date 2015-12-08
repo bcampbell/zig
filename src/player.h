@@ -4,7 +4,7 @@
 #define PLAYER_H
 
 #include "agent.h"
-
+#include "soundmgr.h"   // for ScopedSnd
 
 class Controller;
 class Dude;
@@ -53,6 +53,7 @@ private:
 	int m_WeaponNum;
 	Weapon*	m_Weapon;
 	Weapon* m_Nashwan;
+    ScopedSnd m_ThrustSnd;
 };
 
 

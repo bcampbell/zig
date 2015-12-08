@@ -19,6 +19,7 @@
 enum
 {
 	SFX_PLAYERFIRE=0,
+	SFX_THRUST,
     SFX_CHARGEUP,
 	SFX_ELECTRIC,
 	SFX_DULLBLAST,
@@ -60,7 +61,7 @@ public:
 
 	// play a sound on a continuous loop.
 	// returns the channel used to play it, or -1 if it couldn't play
-	virtual int PlayLooped( unsigned int id )=0;
+	virtual int PlayLooped( unsigned int id, int fadeinms=0 )=0;
 
 	// stop a sound started with PlayLooped().
 	virtual void StopLooped( int channel, int fadems=0 )=0;
@@ -106,7 +107,7 @@ public:
 
 //	virtual void LoadSound( unsigned int id, std::string const& filename ) {}
 	virtual void Play( unsigned int id ) {}
-	virtual int PlayLooped( unsigned int id ) { return -1; }
+	virtual int PlayLooped( unsigned int id, int fadeinms=0 ) { return -1; }
 	virtual void StopLooped( int channel, int fadems=0 ) {}
 private:
 	NullSoundMgr();
@@ -127,7 +128,7 @@ public:
 	static void Create();
 
 	virtual void Play( unsigned int id );
-	virtual int PlayLooped( unsigned int id );
+	virtual int PlayLooped( unsigned int id, int fadeinms=0 );
 	virtual void StopLooped( int channel, int fadems=0 );
 
 private:
@@ -158,7 +159,16 @@ class ScopedSnd
 public:
     ScopedSnd() : m_Chan(-1),m_FadeOutMS(0)    {}
     ~ScopedSnd()                { Stop(); }
-    void Start(int sfxid, int fadeoutms=0)       { Stop(); m_FadeOutMS = fadeoutms; m_Chan = SoundMgr::Inst().PlayLooped(sfxid); }
+    void Start(int sfxid, int fadeinms=0, int fadeoutms=0)
+    {
+       if (Playing())
+           SoundMgr::Inst().StopLooped(m_Chan,0);
+
+        m_FadeOutMS = fadeoutms;
+        m_Chan = SoundMgr::Inst().PlayLooped(sfxid,fadeinms);
+    }
+    
+
     void Stop()
     {
         if( m_Chan!=-1)
@@ -167,6 +177,7 @@ public:
             m_Chan = -1;
         }
     }
+    bool Playing() const                   { return m_Chan != -1; }
 private:
     int m_Chan;
     int m_FadeOutMS;

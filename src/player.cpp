@@ -132,6 +132,9 @@ void Player::Tick()
 	if( y < 0.0f )
 	{
 		// forward!
+        if(!m_ThrustSnd.Playing())
+            m_ThrustSnd.Start(SFX_THRUST,500,500);
+
 		y = (-y) * 0.75f;
 		m_Vel += Rotate( vec2(0.0f,y), Heading() );
 		// add exhaust trails
@@ -142,9 +145,16 @@ void Player::Tick()
 	else if( y > 0.0f )
 	{
 		// reverse
+        if(!m_ThrustSnd.Playing())
+            m_ThrustSnd.Start(SFX_THRUST,500,500);
 		y = (-y)*0.35f;
 		m_Vel += Rotate( vec2(0.0f,y ), Heading() );
 	}
+    else
+    {
+        if (m_ThrustSnd.Playing())
+            m_ThrustSnd.Stop();
+    }
 
 	TurnBy(m_RotSpd);
 
@@ -162,7 +172,7 @@ void Player::Tick()
 void Player::FatalDudeCollision( Dude& dude )
 {
 	assert( Alive() );
-
+    m_ThrustSnd.Stop();
 	SoundMgr::Inst().Play( SFX_PLAYERTOAST );
 	SoundMgr::Inst().Play( SFX_BIGEXPLOSION );
 	Die();
@@ -207,6 +217,7 @@ int Player::SpareLives() const
 
 void Player::Reset()
 {
+    m_ThrustSnd.Stop();
 	if( g_BigHeadMode )
 		SetRadius(20.0f);
 	else

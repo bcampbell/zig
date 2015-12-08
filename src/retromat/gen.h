@@ -14,6 +14,7 @@ void GenerateWibblePop( std::vector<float>& out );
 
 void GenerateElectric( std::vector<float>& out );
 void GenerateChargeUp( std::vector<float>& out );
+void GenerateThrust( std::vector<float>& out );
 
 
 

@@ -142,10 +142,12 @@ int main( int argc, char*argv[] )
 		CrippleClock::Init();
 #endif	// CRIPPLED
 
-
-        SoundExplore exp;
-        exp.Run();
-
+#if 0
+        {
+            SoundExplore exp;
+            exp.Run();
+        }
+#endif
 
 		//----------------------------------------------
 		// MAIN
