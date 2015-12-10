@@ -72,7 +72,7 @@ void RealSoundMgr::Create()
 
 
 
-RealSoundMgr::RealSoundMgr()
+RealSoundMgr::RealSoundMgr() : m_Alloced(0)
 {	
 //	if( Mix_OpenAudio( 44100, AUDIO_S16, 1, 1024 ) < 0 )
 //
@@ -103,7 +103,13 @@ RealSoundMgr::RealSoundMgr()
 			m_DeviceFreq, GetSampleFormatName( m_DeviceFmt ), m_DeviceChannels );
 	}
 
-	Mix_AllocateChannels( 16 );
+    m_NumChans = Mix_AllocateChannels( 16 );
+
+    m_Alloced = new bool[m_NumChans];
+    int i;
+    for(i=0; i<m_NumChans; ++i)
+        m_Alloced[i]=false;
+
 	GenerateSounds();
 }
 
@@ -111,6 +117,8 @@ RealSoundMgr::RealSoundMgr()
 RealSoundMgr::~RealSoundMgr()
 {
 	Mix_CloseAudio();
+
+    delete [] m_Alloced;
 
 	while( !m_Sounds.empty() )
 	{
@@ -120,7 +128,40 @@ RealSoundMgr::~RealSoundMgr()
 	}
 }
 
-void RealSoundMgr::LoadSound( unsigned int id, std::string const& filename )
+
+int RealSoundMgr::findFreeChan()
+{
+    int i;
+    for (i=0; i<m_NumChans; ++i)
+    {
+        if (m_Alloced[i])
+            continue;
+        if (!Mix_Playing(i))
+            return i;
+    }
+    return -1;
+}
+
+
+
+int RealSoundMgr::AllocChan()
+{
+    int chan = findFreeChan();
+    if (chan>=0)
+        m_Alloced[chan] = true;
+    return chan;
+}
+
+void RealSoundMgr::FreeChan(int chan)
+{
+    assert(m_Alloced[chan]==true);
+    m_Alloced[chan] = false;
+}
+
+
+
+#if 0
+void RealSoundMgr::LoadSound( sfxid_t id, std::string const& filename )
 {
 	if( id >= m_Sounds.size() )
 		m_Sounds.resize( id+1, 0 );
@@ -134,39 +175,45 @@ void RealSoundMgr::LoadSound( unsigned int id, std::string const& filename )
 			Mix_GetError() );
 	}
 }
+#endif
 
-
-void RealSoundMgr::Play( unsigned int id )
+void RealSoundMgr::Play( sfxid_t id )
 {
 	assert( id<m_Sounds.size() );
 	assert( m_Sounds[id] != 0 );
 
-	Mix_PlayChannel( -1, m_Sounds[id], 0 );
+    int chan = findFreeChan();
+    if (chan>=0)
+    {
+        Mix_Volume(chan,128);
+    	Mix_PlayChannel( chan, m_Sounds[id], 0 );
+    }
 }
 
 
-int RealSoundMgr::PlayLooped( unsigned int id, int fadeinms )
+void RealSoundMgr::PlayLooped( int chan, sfxid_t id, int fadeinms )
 {
+    assert( m_Alloced[chan]==true );
 	assert( id<m_Sounds.size() );
 	assert( m_Sounds[id] != 0 );
-
-	int channel;
+    assert( chan>=0 && chan<m_NumChans );
   
-   if (fadeinms>0)
-        channel = Mix_FadeInChannel( -1, m_Sounds[id], -1,fadeinms );
-   else
-        channel = Mix_PlayChannel( -1, m_Sounds[id], -1 );
-
-
-	return channel;
+    if (fadeinms>0)
+        Mix_FadeInChannel( chan, m_Sounds[id], -1,fadeinms );
+    else
+    {
+        Mix_Volume(chan,128);
+        Mix_PlayChannel( chan, m_Sounds[id], -1 );
+    }
 }
 
-void RealSoundMgr::StopLooped( int channel, int fadems )
+void RealSoundMgr::StopLooped( int chan, int fadems )
 {
+    assert( m_Alloced[chan]==true );
     if(fadems>0)
-        Mix_FadeOutChannel(channel, fadems);
+        Mix_FadeOutChannel(chan, fadems);
     else
-        Mix_HaltChannel( channel );
+        Mix_HaltChannel( chan );
 }
 
 
@@ -241,6 +288,27 @@ void RealSoundMgr::GenerateSounds()
 	m_Sounds[ SFX_CHARGEUP ] = Gen( GenerateChargeUp );
 
 	m_Sounds[ SFX_THRUST ] = Gen( GenerateThrust );
+}
+
+const char* RealSoundMgr::DebugString()
+{
+    static char out[64+1];
+    int i;
+    for(i=0;i<m_NumChans; ++i)
+    {
+        if(Mix_Playing(i))
+            out[i]='*';
+        else
+        {
+            if(m_Alloced[i])
+                out[i]='A';
+            else
+                out[i]='.';
+        }
+    }
+    out[m_NumChans] = '\0';
+
+    return out;
 }
 
 #endif

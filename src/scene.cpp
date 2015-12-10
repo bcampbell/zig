@@ -11,6 +11,8 @@
 #include "display.h"
 #include "controller.h"
 
+#include "soundmgr.h"
+#include "drawing.h"
 
 
 void Scene::Run()
@@ -24,6 +26,15 @@ void Scene::Run()
 		Tick();
 
 		Render();
+/*
+	glPushMatrix();
+	glLoadIdentity();
+	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+    vec2 tl = g_Display->TopLeft();
+    glTranslatef(tl.x, tl.y-16,0.0f);
+		PlonkText( *g_Font, SoundMgr::Inst().DebugString(), false, 8, 8 );
+	glPopMatrix();
+*/
 
 #ifdef CRIPPLED
 		CrippleClock::Render();

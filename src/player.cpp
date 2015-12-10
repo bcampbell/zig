@@ -23,6 +23,7 @@ Player::Player( bool autopilot ) :
 	m_AutoController(0),
 	m_Score(0),
 	m_SpareLives(3),
+    m_PrevThrust(false),
 	m_FireTimer(0),
 	m_WeaponNum(0),
 	m_Weapon(0),
@@ -128,13 +129,12 @@ void Player::Tick()
 	m_RotSpd += (0.02f*ctrl.XAxis());
 
 	// forwards? backwards?
+    bool thrust = false;
 	float y = ctrl.YAxis();
 	if( y < 0.0f )
 	{
 		// forward!
-        if(!m_ThrustSnd.Playing())
-            m_ThrustSnd.Start(SFX_THRUST,500,500);
-
+        thrust = true;
 		y = (-y) * 0.75f;
 		m_Vel += Rotate( vec2(0.0f,y), Heading() );
 		// add exhaust trails
@@ -145,16 +145,23 @@ void Player::Tick()
 	else if( y > 0.0f )
 	{
 		// reverse
-        if(!m_ThrustSnd.Playing())
-            m_ThrustSnd.Start(SFX_THRUST,500,500);
+        thrust = true;
 		y = (-y)*0.35f;
 		m_Vel += Rotate( vec2(0.0f,y ), Heading() );
 	}
-    else
+
+    // play sfx
+    if (thrust && !m_PrevThrust ) 
     {
-        if (m_ThrustSnd.Playing())
-            m_ThrustSnd.Stop();
+        // start thrust
+        m_ThrustSnd.Start(SFX_THRUST,50);
     }
+    if (!thrust && m_PrevThrust ) 
+    {
+        // stop thrust
+        m_ThrustSnd.Stop(500);
+    }
+    m_PrevThrust = thrust;
 
 	TurnBy(m_RotSpd);
 

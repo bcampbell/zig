@@ -24,11 +24,6 @@
 # Divider - double-beam thingy
 # Agitator - gets mad when you shoot it
 
-LEVEL
-    Grunt 5
-    Divider 2
-
-
 #1
 LEVEL
 	Grunt 10

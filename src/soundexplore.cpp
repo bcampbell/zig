@@ -22,12 +22,11 @@ private:
 	virtual void OnFocus( int id );
     void Shush();
     bool m_Done;
-    int m_LoopChan;
+    ScopedSnd m_Snd;
 };
 
 SoundMenu::SoundMenu() :
-    m_Done(false),
-    m_LoopChan(-1)
+    m_Done(false)
 {
     vec2 pos(0.0f,100.0f);
     int i;
@@ -48,11 +47,7 @@ SoundMenu::SoundMenu() :
 
 void SoundMenu::Shush()
 {
-    if(m_LoopChan!=-1)
-    {
-        SoundMgr::Inst().StopLooped(m_LoopChan);
-        m_LoopChan = -1;
-    }
+    m_Snd.Stop();
 }
 
 
@@ -69,7 +64,7 @@ void SoundMenu::OnSelect( int id )
         m_Done = true;
         return;
     }
-    m_LoopChan = SoundMgr::Inst().PlayLooped(id);
+    m_Snd.Start((sfxid_t)id);
 }
 
 

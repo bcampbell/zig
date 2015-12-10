@@ -48,7 +48,9 @@ private:
 
 	int m_Score;
 	int m_SpareLives;
-	
+
+    bool m_PrevThrust;
+
 	int m_FireTimer;
 	int m_WeaponNum;
 	Weapon*	m_Weapon;

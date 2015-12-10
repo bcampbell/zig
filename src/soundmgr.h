@@ -16,7 +16,7 @@
 #include "retromat/retromat.h"
 
 // sound effect IDs
-enum
+enum sfxid_t
 {
 	SFX_PLAYERFIRE=0,
 	SFX_THRUST,
@@ -51,20 +51,23 @@ public:
 	static bool Running();
 
 
-	// Load a wavefile into the SoundMgr
-	// Sounds stay resident until manager is destroyed.
-//	virtual void LoadSound( unsigned int id, std::string const& filename )=0;
-	
 	// play a one-shot sound effect
-	virtual void Play( unsigned int id )=0;
-
+	virtual void Play( sfxid_t id )=0;
 
 	// play a sound on a continuous loop.
-	// returns the channel used to play it, or -1 if it couldn't play
-	virtual int PlayLooped( unsigned int id, int fadeinms=0 )=0;
+	virtual void PlayLooped( int chan, sfxid_t id, int fadeinms=0 )=0;
 
 	// stop a sound started with PlayLooped().
-	virtual void StopLooped( int channel, int fadems=0 )=0;
+	virtual void StopLooped( int chan, int fadems=0 )=0;
+
+    virtual bool IsPlaying( int chan )=0;
+    virtual bool IsFadingIn( int chan )=0;
+    virtual bool IsFadingOut( int chan )=0;
+
+    virtual int AllocChan() = 0;
+    virtual void FreeChan(int chan) = 0;
+
+    virtual const char* DebugString() {return "";}
 
 protected:
 	// the single allowed soundmgr.
@@ -105,10 +108,14 @@ public:
 	// Create the singleton SoundMgr (as a NullSoundMgr)
 	static void Create();
 
-//	virtual void LoadSound( unsigned int id, std::string const& filename ) {}
-	virtual void Play( unsigned int id ) {}
-	virtual int PlayLooped( unsigned int id, int fadeinms=0 ) { return -1; }
-	virtual void StopLooped( int channel, int fadems=0 ) {}
+	virtual void Play( sfxid_t id ) {}
+	virtual void PlayLooped( int chan, sfxid_t id, int fadeinms=0 ) {}
+	virtual void StopLooped( int chan, int fadems=0 ) {}
+    virtual bool IsPlaying( int chan ) { return false; }
+    virtual bool IsFadingIn( int chan ) { return false; }
+    virtual bool IsFadingOut( int chan ) { return false; }
+    virtual int AllocChan()             {return -1; }
+    virtual void FreeChan(int chan)  {}
 private:
 	NullSoundMgr();
 
@@ -127,19 +134,27 @@ public:
 	// Create the singleton SoundMgr (as a RealSoundMgr)
 	static void Create();
 
-	virtual void Play( unsigned int id );
-	virtual int PlayLooped( unsigned int id, int fadeinms=0 );
+	virtual void Play( sfxid_t id );
+	virtual void PlayLooped( int chan, sfxid_t id, int fadeinms=0 );
 	virtual void StopLooped( int channel, int fadems=0 );
-
+    virtual bool IsPlaying( int chan ) { return Mix_Playing(chan) ? true:false; }
+    virtual bool IsFadingIn( int chan ) { return Mix_FadingChannel(chan)==MIX_FADING_IN ? true:false; }
+    virtual bool IsFadingOut( int chan ) { return Mix_FadingChannel(chan)==MIX_FADING_OUT ? true:false; }
+    virtual int AllocChan();
+    virtual void FreeChan(int chan);
+    virtual const char* DebugString();
 private:
 	RealSoundMgr();
 	virtual ~RealSoundMgr();
 
-	void LoadSound( unsigned int id, std::string const& filename );
+//	void LoadSound( sfxid_t id, std::string const& filename );
 	void GenerateSounds();
 	Mix_Chunk* ConvertToMixChunk( std::vector<float> const& src );
 
 	Mix_Chunk* Gen( RetromatFn fn );
+
+
+    int findFreeChan();
 
 	RealSoundMgr( RealSoundMgr const& );	// not allowed
 	std::vector< Mix_Chunk* > m_Sounds;		// our loaded sounds
@@ -147,6 +162,11 @@ private:
 	int m_DeviceFreq;
 	unsigned short int m_DeviceFmt;
 	int m_DeviceChannels;
+
+    int m_NumChans;
+    // which channels have been allocated
+    bool *m_Alloced;
+
 };
 
 #endif //
@@ -157,30 +177,41 @@ private:
 class ScopedSnd
 {
 public:
-    ScopedSnd() : m_Chan(-1),m_FadeOutMS(0)    {}
-    ~ScopedSnd()                { Stop(); }
-    void Start(int sfxid, int fadeinms=0, int fadeoutms=0)
+    ScopedSnd() : m_Chan(-1)
     {
-       if (Playing())
-           SoundMgr::Inst().StopLooped(m_Chan,0);
-
-        m_FadeOutMS = fadeoutms;
-        m_Chan = SoundMgr::Inst().PlayLooped(sfxid,fadeinms);
+        m_Chan = SoundMgr::Inst().AllocChan();
+        //printf("ScopedSnd() [chan %d]\n",m_Chan);
     }
-    
-
-    void Stop()
+    ~ScopedSnd()
     {
-        if( m_Chan!=-1)
+        //printf("~ScopedSnd() [chan %d]\n", m_Chan);
+        if( m_Chan>0 )
         {
-            SoundMgr::Inst().StopLooped(m_Chan,m_FadeOutMS);
-            m_Chan = -1;
+            Stop();
+            SoundMgr::Inst().FreeChan(m_Chan);
         }
     }
-    bool Playing() const                   { return m_Chan != -1; }
+    void Start(sfxid_t sfxid, int fadeinms=0)
+    {
+        if (m_Chan<0)
+            return; // TODO: try allocating again
+        SoundMgr::Inst().PlayLooped(m_Chan, sfxid,fadeinms);
+        //printf("playing %d on chan %d\n",sfxid, m_Chan);
+    }
+
+    void Stop(int fadeoutms=0)
+    {
+        if (m_Chan<0)
+            return;
+        //printf("stop chan %d\n", m_Chan);
+        SoundMgr::Inst().StopLooped(m_Chan,fadeoutms);
+    }
+
+
+    bool IsPlaying() { return SoundMgr::Inst().IsPlaying(m_Chan); }
+    bool IsFadingOut() { return SoundMgr::Inst().IsFadingOut(m_Chan); }
 private:
     int m_Chan;
-    int m_FadeOutMS;
 };
 
 

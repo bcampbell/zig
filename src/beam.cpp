@@ -21,7 +21,7 @@ Beam::Beam( Agent& owner, vec2 const& relpos, float relheading, Params const* pa
 	PositionRelative( m_Owner, m_RelPos, m_RelHeading );
 	SetRadius( m_Params.length );	// hooo! only used for 1st-pass culling. Real work done in OnHitPlayer()
 	SetFlags( 0 );
-    m_Snd.Start(SFX_CHARGEUP,100,100);
+    m_Snd.Start(SFX_CHARGEUP,100);
 }
 
 Beam::~Beam()
@@ -54,14 +54,22 @@ void Beam::Tick()
 				// zap.
 				m_Timer = 0.0f;
 				m_State = ON;
-                m_Snd.Start(SFX_ELECTRIC,10,500);
+                m_Snd.Start(SFX_ELECTRIC,10);
 				SetFlags( flagCanHitPlayer );
 			}
 			break;
 		case ON:
 			if( m_Timer > m_Params.ontime )
-				Die();
+            {
+                m_Timer = 0;
+                m_State = DONE;
+                m_Snd.Stop(500);
+            }
 			break;
+        case DONE:  // allow sound to fade away
+            if(m_Timer > 0.5f)
+                Die();
+            break;
 	}
 }
 

@@ -36,7 +36,7 @@ private:
 	vec2 m_RelPos;
 	float m_RelHeading;
 
-	enum { WARMUP, ON } m_State;
+	enum { WARMUP, ON, DONE } m_State;
 	float m_Timer;
 	Params m_Params;
     ScopedSnd m_Snd;
