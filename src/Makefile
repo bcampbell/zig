@@ -39,8 +39,21 @@ ifeq ($(PLATFORM),win32)
 endif
 
 
+all: $(EXE)
+
+
 $(EXE): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJS) $(LIBS)
+
+
+%.o: %.cpp .deps
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -MMD -MP -MF .deps/$*.d $< -o $@
+
+.deps:
+	mkdir .deps
+	mkdir .deps/retromat
+
+-include .deps/*.d
 
 ifeq ($(PLATFORM),osx)
 %.o: %.mm
@@ -49,13 +62,8 @@ endif
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(EXE)
+	rm -rf $(OBJS) $(EXE) .deps
 
-.PHONY: depend
-depend: .depend
 
-.depend:
-	$(CXX) $(CXXFLAGS) -MM $^ >.depend
 
-include .depend
 
