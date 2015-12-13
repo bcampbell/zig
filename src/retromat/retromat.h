@@ -23,6 +23,7 @@ class Osc
 {
 public:
     Osc(float freq) : m_t(0.0f),m_Freq(freq) {}
+    virtual ~Osc()  {}
     // return value in range [-1.0f,1.0f]
     virtual float tick() = 0;
     void setFrequency(float freq) { assert(freq>=0.0f); m_Freq=freq; }
