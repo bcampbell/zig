@@ -185,7 +185,7 @@ public:
     ~ScopedSnd()
     {
         //printf("~ScopedSnd() [chan %d]\n", m_Chan);
-        if( m_Chan>0 )
+        if( m_Chan>=0 )
         {
             Stop();
             SoundMgr::Inst().FreeChan(m_Chan);

@@ -149,6 +149,7 @@ int RealSoundMgr::AllocChan()
     int chan = findFreeChan();
     if (chan>=0)
         m_Alloced[chan] = true;
+
     return chan;
 }
 
@@ -197,12 +198,14 @@ void RealSoundMgr::PlayLooped( int chan, sfxid_t id, int fadeinms )
 	assert( id<m_Sounds.size() );
 	assert( m_Sounds[id] != 0 );
     assert( chan>=0 && chan<m_NumChans );
-  
+ 
+    Mix_HaltChannel(chan);
+    Mix_Volume(chan,128);
+
     if (fadeinms>0)
         Mix_FadeInChannel( chan, m_Sounds[id], -1,fadeinms );
     else
     {
-        Mix_Volume(chan,128);
         Mix_PlayChannel( chan, m_Sounds[id], -1 );
     }
 }
@@ -292,21 +295,32 @@ void RealSoundMgr::GenerateSounds()
 
 const char* RealSoundMgr::DebugString()
 {
-    static char out[64+1];
+    static char out[128+1];
+    char* p = out;
     int i;
     for(i=0;i<m_NumChans; ++i)
     {
-        if(Mix_Playing(i))
-            out[i]='*';
-        else
-        {
-            if(m_Alloced[i])
-                out[i]='A';
-            else
-                out[i]='.';
+        if(m_Alloced[i]) {
+            *p++ = 'A';
+        } else {
+            *p++ = ' ';
+        }
+
+
+        if(Mix_Playing(i)) {
+            *p++ = '*';
+        } else {
+            *p++ = '.';
+        }
+        switch (Mix_FadingChannel(i)) {
+            case MIX_FADING_IN: *p++ = 'I'; break;
+            case MIX_FADING_OUT: *p++ = 'O'; break;
+            case MIX_NO_FADING:
+            default:
+               *p++ = '-'; break;
         }
     }
-    out[m_NumChans] = '\0';
+    *p++ = '\0';
 
     return out;
 }
