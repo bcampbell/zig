@@ -310,14 +310,22 @@ static void PlayGame( HighScores& highscores )
 
 		const int perceivedlevel =
 			s_LevelDefs.size()*wrapcount + levelindex + 1;
-		Level l( *def, perceivedlevel );
-		l.Run();
+
+
+        bool levelcompleted = false;
+        bool levelquit = false;
+        {
+    		Level l( *def, perceivedlevel );
+	    	l.Run();
+            levelcompleted = l.WasCompleted();
+            levelquit = !l.WasQuit();
+        }
 
 #ifdef CRIPPLED
 		if( CrippleClock::Expired() )
 			return;
 #endif	// CRIPPLED
-		if( l.WasCompleted() )
+		if( levelcompleted )
 		{
 			++levelindex;
 			if( levelindex >= (int)s_LevelDefs.size() )
@@ -333,7 +341,7 @@ static void PlayGame( HighScores& highscores )
 			gameover = true;
 			GameOver g( player.Score(), perceivedlevel );
 			g.Run();
-			if( !l.WasQuit() )
+			if(!levelquit)
 			{
 
 				int scoreidx = highscores.Submit( player.Score() );
