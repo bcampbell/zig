@@ -224,10 +224,10 @@ void Boss::Tick()
 
 static const vec2 s_BeamPodPos[4] =
 {
-	vec2( 0.0f,-50.0f ),
-	vec2( -50.0f,0.0f ),
 	vec2( 0.0f,50.0f ),
-	vec2( 50.0f,0.0f )
+	vec2( 50.0f,0.0f ),
+	vec2( 0.0f,-50.0f ),
+	vec2( -50.0f,0.0f )
 };
 
 static const float s_BeamPodHeading[4] =
@@ -354,7 +354,7 @@ void BeamPod::Tick()
 void BeamPod::Fire()
 {
 	assert( Alive() );
-	Beam* b = new Beam( *this, vec2( 0.0f, -10.0f ), 0.0f );
+	Beam* b = new Beam( *this, vec2( 0.0f, 10.0f ), 0.0f );
 	g_Agents->AddDude( b );
 
 }
@@ -396,33 +396,33 @@ void BeamPod::Draw()
 	glBegin( GL_TRIANGLES );
 
 		glColor3f( c1.r, c1.g, c1.b );
-		glVertex2f( -20.0f, -10.0f );
+		glVertex2f( -20.0f, 10.0f );
 		glColor3f( c2.r, c2.g, c2.b );
-		glVertex2f( -10.0f, -10.0f );
+		glVertex2f( -10.0f, 10.0f );
 		glColor3f( c3.r, c3.g, c3.b );
-		glVertex2f( -10.0f, 5.0f );
+		glVertex2f( -10.0f, -5.0f );
 
 		glColor3f( c2.r, c2.g, c2.b );
-		glVertex2f( -10.0f, -10.0f );
+		glVertex2f( -10.0f, 10.0f );
 		glColor3f( c3.r, c3.g, c3.b );
-		glVertex2f( 10.0f, -10.0f );
+		glVertex2f( 10.0f, 10.0f );
 		glColor3f( c3.r, c3.g, c3.b );
-		glVertex2f( -10.0f, 5.0f );
+		glVertex2f( -10.0f, -5.0f );
 
 		glColor3f( c3.r, c3.g, c3.b );
-		glVertex2f( 10.0f, -10.0f );
+		glVertex2f( 10.0f, 10.0f );
 		glColor3f( c4.r, c4.g, c4.b );
-		glVertex2f( 10.0f, 5.0f );
+		glVertex2f( 10.0f, -5.0f );
 		glColor3f( c3.r, c3.g, c3.b );
-		glVertex2f( -10.0f, 5.0f );
+		glVertex2f( -10.0f, -5.0f );
 
 
 		glColor3f( c3.r, c3.g, c3.b );
-		glVertex2f( 10.0f, -10.0f );
+		glVertex2f( 10.0f, 10.0f );
 		glColor3f( c4.r, c4.g, c4.b );
-		glVertex2f( 20.0f, -10.0f );
+		glVertex2f( 20.0f, 10.0f );
 		glColor3f( c4.r, c4.g, c4.b );
-		glVertex2f( 10.0f, 5.0f );
+		glVertex2f( 10.0f, -5.0f );
 
 	glEnd();
 

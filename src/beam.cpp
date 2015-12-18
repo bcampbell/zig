@@ -103,7 +103,7 @@ void Beam::Draw()
             for(i=0; i<=n_segs; ++i)
             {
                 float t=(float)i/(float)n_segs;
-                float y = -t*l;
+                float y = t*l;
                 float x = w*2;
 
                 glTexCoord2f(0.2f,0.0f);
@@ -133,7 +133,7 @@ void Beam::Draw()
             for(i=0; i<=n_segs; ++i)
             {
                 float t=(float)i/(float)n_segs;
-                float y = -t*l;
+                float y = t*l;
                 float x = w*2;
 
                 float theta = 8*t - m_Timer*2;
@@ -157,7 +157,7 @@ void Beam::Draw()
             int i;
             for(i=0; i<=n_segs; ++i)
             {
-                float y = i*(-l/n_segs);
+                float y = i*(l/n_segs);
                 float x = w/2;
 
     //            x += Rnd(-1.0f,1.0f);
