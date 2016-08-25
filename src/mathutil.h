@@ -1,13 +1,9 @@
-
-
 #ifndef MATHUTIL_H
 #define MATHUTIL_H
 
-#include <stdlib.h>
-#include <math.h>
-#ifndef M_PI
-#define M_PI (3.141592653589793)
-#endif
+#include <cstdlib>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 const float pi = (float)M_PI;
 const float twopi = 2.0f*pi;
