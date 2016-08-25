@@ -54,13 +54,19 @@ void GameOver::Tick()
     int pressed = g_ControllerMgr->MenuController().Pressed();
    
     if (m_Timer>0.5f && pressed)
+    {
 		m_Done = true;
+    }
     if (pressed & CTRL_BTN_ESC)
+    {
         m_Done = true;
+    }
 
 	// bail out early if a any key is pressed
 	if( m_Timer > 5.0f )
+    {
 		m_Done = true;
+    }
 }
 
 bool GameOver::IsFinished()

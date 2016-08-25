@@ -6,7 +6,7 @@ void Loopum(std::vector<float>& buf, float fadeTime)
 {
     int len = fadeTime * g_RFreq;
 
-    assert(len < buf.size());
+    assert(len < (int)buf.size());
 
     int i;
     for(i=0;i<len; ++i)
@@ -252,8 +252,8 @@ void GenerateChargeUp( std::vector<float>& out )
     OnePole filt;
     for (t=0.0f; t<dur; t+=g_RStep)
     {
-        float f = t/dur;
-         filt.setCutoff(800.0f + lfo.tick()*500, g_RFreq);
+        //float f = t/dur;
+        filt.setCutoff(800.0f + lfo.tick()*500, g_RFreq);
         
         wave.setFrequency(8000.0f + t*t*400.0f);
         float v = wave.tick()*0.2f;

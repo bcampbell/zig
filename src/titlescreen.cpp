@@ -75,7 +75,7 @@ void TitleScreen::Render()
 	glPopMatrix();
 	glPushMatrix();
 		glTranslatef( tr.x-40.0f, tr.y-12.0f, 0.0f );
-		PlonkText( *g_Font, "V"ZIGVERSION, false, 8, 10 );
+		PlonkText( *g_Font, "V" ZIGVERSION, false, 8, 10 );
 	glPopMatrix();
 /*
 	glColor4f( 0.4f, 0.4f, 0.4f, 1.0f );

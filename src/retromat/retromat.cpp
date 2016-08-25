@@ -61,6 +61,7 @@ float ADSR::tick()
         return 0.0f;
     }
     assert(false);  // should _never_ get here!
+    return 0.0f;
 }
 
 void ADSR::keyOn()

@@ -108,7 +108,9 @@ RealSoundMgr::RealSoundMgr() : m_Alloced(0)
     m_Alloced = new bool[m_NumChans];
     int i;
     for(i=0; i<m_NumChans; ++i)
+    {
         m_Alloced[i]=false;
+    }
 
 	GenerateSounds();
 }
