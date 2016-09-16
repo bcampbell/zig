@@ -16,13 +16,13 @@ void SpawnBonusMaybe( vec2 const& pos )
 
 	// if we completely cleared the last sector then definitely
 	// spawn a bonus
-	if( !g_KeepYourSectorTidy )
+	if( !g_GameState->KeepYourSectorTidy )
 	{
 		if( Rnd( 0, 1.0f ) > bonusprob )
 			return;
 	}
 
-	g_KeepYourSectorTidy = false;
+	g_GameState->KeepYourSectorTidy = false;
 
 	// OK, now what _kind_ of bonus?
 	float nashwanprob = 0.01f;
@@ -30,7 +30,7 @@ void SpawnBonusMaybe( vec2 const& pos )
 	float powerupprob = 0.25f;
 	float pointsprob = 0.5f;
 
-	if( g_NoExtraLives )
+	if( g_GameState->NoExtraLives )
 		extralifeprob = 0.0f;
 	if( g_Player->WeaponNum() == 1 )
 		powerupprob *= 0.5f;

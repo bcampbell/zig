@@ -225,7 +225,8 @@ int Player::SpareLives() const
 void Player::Reset()
 {
     m_ThrustSnd.Stop();
-	if( g_BigHeadMode )
+    assert(g_GameState != 0);
+	if( g_GameState->BigHeadMode )
 		SetRadius(20.0f);
 	else
 		SetRadius(10.0f);

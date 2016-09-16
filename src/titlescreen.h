@@ -36,7 +36,6 @@ public:
 	enum { TIMEOUT, PLAY, QUIT, CONFIG };
 	int Result() const;
 
-protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();

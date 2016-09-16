@@ -11,7 +11,6 @@ class GameOver : public Scene
 {
 public:
 	GameOver( int score, int level );
-protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();

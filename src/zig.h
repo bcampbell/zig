@@ -22,15 +22,29 @@ class ControllerMgr;
 #define ZIGVERSION "1.1"
 
 
+// stuff that needs to persist over mulitple levels
+struct GameState {
+    GameState() : KeepYourSectorTidy(false), BigHeadMode(false), NoExtraLives(false) {};
+    ~GameState() {};
+
+    // set if all blastable dudes blasted at level end
+    bool KeepYourSectorTidy;
+
+    // double-size player
+    bool BigHeadMode;
+
+    // no more extra-life bonuses
+    bool NoExtraLives;
+};
+
+
+extern GameState* g_GameState;
+
 extern ZigConfig g_Config;
 
 extern Player* g_Player;
 extern Level* g_CurrentLevel;
 
-extern bool g_KeepYourSectorTidy;
-
-extern bool g_BigHeadMode;
-extern bool g_NoExtraLives;
 
 extern AgentManager* g_Agents;
 extern Display* g_Display;

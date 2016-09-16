@@ -536,7 +536,7 @@ void Level::GiveKeepYourSectorTidyBonus()
 //		g_Player->Pos() + offset1,
 //		"KEEP YOUR SECTOR TIDY!" , 8.0f, 1.5f ) );
 
-	g_KeepYourSectorTidy = true;
+	g_GameState->KeepYourSectorTidy = true;
 
 	// make the victory state hang round a little longer
 	if( m_VictoryDuration-m_StateTimer < 1.5f )

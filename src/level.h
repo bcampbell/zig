@@ -35,7 +35,6 @@ public:
 	float ArenaRadius() const;
 	void ShrinkArenaBy( float d );
 
-protected:
 	// Overrides to implement Scene class
 	virtual void Render();
 	virtual void Tick();

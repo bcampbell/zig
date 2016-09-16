@@ -9,7 +9,6 @@
 class OptionsScreen : public Scene
 {
 public:
-protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();

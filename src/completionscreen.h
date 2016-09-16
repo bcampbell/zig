@@ -8,7 +8,6 @@ class CompletionScreen : public Scene
 public:
 	CompletionScreen( int wrapnum );
 	virtual ~CompletionScreen();
-protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();

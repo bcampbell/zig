@@ -29,7 +29,7 @@
 #include "util.h"
 #include "wobbly.h"
 #include "log.h"
-
+#include "mainloop.h"
 #include <SDL.h>
 
 #ifdef ZIG_INSTALL_DIR
@@ -53,11 +53,8 @@ AgentManager* g_Agents = 0;
 Display* g_Display=0;
 ControllerMgr* g_ControllerMgr = 0;
 
-bool g_KeepYourSectorTidy = false;
 
-
-bool g_BigHeadMode=false;
-bool g_NoExtraLives=false;
+GameState* g_GameState = 0;
 
 static std::vector<LevelDef> s_LevelDefs;
 static std::string s_ZigUserDir;
@@ -152,7 +149,12 @@ int main( int argc, char*argv[] )
 		//----------------------------------------------
 		// MAIN
 		//----------------------------------------------
+
 		bool quit = false;
+
+        //mainloop();
+        // quit=true;
+
 		while( !quit )
 		{
 #ifdef CRIPPLED
@@ -176,10 +178,14 @@ int main( int argc, char*argv[] )
 				{
 					{
 						// Demo mode
+                        assert(!g_GameState);
+                        g_GameState = new GameState();
 						Player player(true);
 						int num = (int)(Rnd(0.0f,(float)(s_LevelDefs.size()-2))+0.5f);
 						Level l( s_LevelDefs[num], num+1, true);
 						l.Run();
+                        delete g_GameState;
+                        g_GameState = 0;
 					}
 
 					HighScoreScreen scorescreen( highscores );
@@ -273,9 +279,8 @@ void FreeTextures()
 
 static void PlayGame( HighScores& highscores )
 {
-	g_BigHeadMode = false;
-	g_NoExtraLives = false;
-	g_KeepYourSectorTidy = false;
+    assert( g_GameState == 0 );
+    g_GameState = new GameState();
 
 	Player player;
 	int wrapcount = 0;	// how many times all levels completed
@@ -289,16 +294,16 @@ static void PlayGame( HighScores& highscores )
 		switch( wrapcount )
 		{
 		case 0:
-			g_BigHeadMode = false;
-			g_NoExtraLives = false;
+			g_GameState->BigHeadMode = false;
+			g_GameState->NoExtraLives = false;
 			break;
 		case 1:
-			g_BigHeadMode = true;
-			g_NoExtraLives = false;
+			g_GameState->BigHeadMode = true;
+			g_GameState->NoExtraLives = false;
 			break;
 		case 2:
-			g_BigHeadMode = false;
-			g_NoExtraLives = true;
+			g_GameState->BigHeadMode = false;
+			g_GameState->NoExtraLives = true;
 			break;
 		}
 
@@ -321,10 +326,6 @@ static void PlayGame( HighScores& highscores )
             levelquit = !l.WasQuit();
         }
 
-#ifdef CRIPPLED
-		if( CrippleClock::Expired() )
-			return;
-#endif	// CRIPPLED
 		if( levelcompleted )
 		{
 			++levelindex;
@@ -357,6 +358,8 @@ static void PlayGame( HighScores& highscores )
 			}
 		}
 	}
+    delete g_GameState;
+    g_GameState = 0;
 }
 
 

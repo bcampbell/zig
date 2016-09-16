@@ -16,7 +16,6 @@ public:
 	
 	void EntryMode( int scoreidx );
 
-protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();

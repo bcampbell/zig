@@ -14,7 +14,6 @@ class SoundExplore : public Scene
 public:
 	SoundExplore();
 	~SoundExplore();
-protected:
 	virtual void Render();
 	virtual void Tick();
 	virtual bool IsFinished();

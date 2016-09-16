@@ -31,7 +31,6 @@ public:
 	{
 	};
 
-protected:
 	// draw the scene
 	virtual void Render()=0;
 
