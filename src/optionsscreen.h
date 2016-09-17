@@ -11,7 +11,7 @@ class OptionsScreen : public Scene
 public:
 	virtual void Render();
 	virtual void Tick();
-	virtual bool IsFinished();
+    virtual SceneResult Result();
 private:
 	OptionsMenu m_Menu;
 };

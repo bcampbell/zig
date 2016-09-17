@@ -10,7 +10,7 @@ public:
 	virtual ~CompletionScreen();
 	virtual void Render();
 	virtual void Tick();
-	virtual bool IsFinished();
+	virtual SceneResult Result();
 	virtual void HandleKeyDown( SDL_Keysym& keysym );
 private:
 	CompletionScreen();

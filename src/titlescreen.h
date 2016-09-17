@@ -13,7 +13,7 @@ class TitleMenu : public Menu
 {
 public:
 	TitleMenu();
-	enum ResultID { ID_PLAY, ID_OPTIONS, ID_QUIT };
+	enum ResultID { ID_PLAY, ID_OPTIONS, ID_EXIT };
 	ResultID GetResult() const;
 	bool IsDone() const
 		{ return m_Done; }
@@ -32,13 +32,9 @@ public:
 	TitleScreen();
 	~TitleScreen();
 
-	// After Scene::Run() returns, call Result() to get the reason
-	enum { TIMEOUT, PLAY, QUIT, CONFIG };
-	int Result() const;
-
 	virtual void Render();
 	virtual void Tick();
-	virtual bool IsFinished();
+	virtual SceneResult Result();
 public:
 	bool m_Escaped;
 	bool m_Play;

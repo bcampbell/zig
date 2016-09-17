@@ -105,27 +105,27 @@ void TitleScreen::Tick()
 }
 
 
-bool TitleScreen::IsFinished()
+SceneResult TitleScreen::Result()
 {
-	return ( m_Menu.IsDone() || m_Menu.InactivityTime() > s_TimeOut );
-}
 
-int TitleScreen::Result() const
-{
 	if( m_Menu.IsDone() )
 	{
 		switch( m_Menu.GetResult() )
 		{
 		case TitleMenu::ID_PLAY:
-			return PLAY;
+			return STARTGAME;
 		case TitleMenu::ID_OPTIONS:
 			return CONFIG;
-		case TitleMenu::ID_QUIT:
-			return QUIT;
+		case TitleMenu::ID_EXIT:
+			return CANCEL;
 		}
 	}
+    else if (m_Menu.InactivityTime() > s_TimeOut)
+    {
+        return TIMEOUT;
+    }
 
-	return TitleScreen::TIMEOUT;
+	return NONE;
 }
 
 
@@ -139,7 +139,7 @@ TitleMenu::TitleMenu() :
 {
 	AddItem( new MenuItem( ID_PLAY, vec2(0.0f,-20.0f), "PLAY", true, CTRL_BTN_START ) );
 	AddItem( new MenuItem( ID_OPTIONS, vec2(0.0f,-50.0f), "OPTIONS" ) );
-	AddItem( new MenuItem( ID_QUIT, vec2(0.0f,-80.0f), "EXIT", true, CTRL_BTN_ESC ) );
+	AddItem( new MenuItem( ID_EXIT, vec2(0.0f,-80.0f), "EXIT", true, CTRL_BTN_ESC ) );
 }
 
 TitleMenu::ResultID TitleMenu::GetResult() const

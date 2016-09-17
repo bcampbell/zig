@@ -105,9 +105,9 @@ void SoundExplore::Tick()
     m_Menu->Tick();
 }
 
-bool SoundExplore::IsFinished()
+SceneResult SoundExplore::Result()
 {
-	return m_Menu->IsDone();
+	return m_Menu->IsDone() ? DONE:NONE;
 }
 
 

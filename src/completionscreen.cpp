@@ -67,9 +67,9 @@ void CompletionScreen::Tick()
 }
 	
 
-bool CompletionScreen::IsFinished()
+SceneResult CompletionScreen::Result()
 {
-	return m_Done;
+	return m_Done ? DONE : NONE;
 }
 
 

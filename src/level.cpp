@@ -114,27 +114,17 @@ Level::~Level()
 }
 
 
-bool Level::IsFinished()
+SceneResult Level::Result()
 {
-	if( m_State == completed ||
-		m_State == thatsitmangameovermangameover ||
-		m_State == quit ||
-		m_State == demofinished )
-	{
-		return true;
-	}
-	else
-		return false;
+    switch(m_State) {
+        case completed: return DONE;
+        case demofinished: return DONE;
+        case thatsitmangameovermangameover: return GAMEOVER;
+        case quit: return CANCEL;
+        default: return NONE;
+    }
 }
 
-bool Level::WasCompleted() const
-	{ return m_State == completed; }
-
-bool Level::WasGameOver() const
-	{ return m_State == thatsitmangameovermangameover; }
-
-bool Level::WasQuit() const
-	{ return m_State == quit; }
 
 
 float Level::ArenaRadius() const

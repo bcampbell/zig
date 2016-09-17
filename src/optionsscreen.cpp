@@ -23,9 +23,9 @@ void OptionsScreen::Tick()
 	m_Menu.Tick();
 }
 	
-bool OptionsScreen::IsFinished()
+SceneResult OptionsScreen::Result()
 {
-	return ( m_Menu.IsDone() );
+	return m_Menu.IsDone() ? DONE : NONE;
 }
 
 

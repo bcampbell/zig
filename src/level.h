@@ -26,11 +26,6 @@ public:
 	Level( LevelDef const& details, int levelnum, bool demomode=false );
 	virtual ~Level();
 
-
-	bool WasCompleted() const;
-	bool WasGameOver() const;
-	bool WasQuit() const;
-
 	// get the size of the bordering circle
 	float ArenaRadius() const;
 	void ShrinkArenaBy( float d );
@@ -38,7 +33,7 @@ public:
 	// Overrides to implement Scene class
 	virtual void Render();
 	virtual void Tick();
-	virtual bool IsFinished();
+	virtual SceneResult Result();
 	virtual void HandleKeyDown( SDL_Keysym& keysym );
     virtual void HandleFocusLost();
 private:

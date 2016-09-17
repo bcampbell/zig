@@ -87,12 +87,9 @@ void HighScoreScreen::Tick()
 	}
 }
 
-bool HighScoreScreen::IsFinished()
+SceneResult HighScoreScreen::Result()
 {
-	if( m_TimeOut > 0 )
-		return false;
-	else
-		return true;
+	return ( m_TimeOut > 0 ) ? NONE:DONE;
 }
 
 

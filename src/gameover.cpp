@@ -69,9 +69,9 @@ void GameOver::Tick()
     }
 }
 
-bool GameOver::IsFinished()
+SceneResult GameOver::Result()
 {
-	return m_Done;
+	return m_Done ? DONE : NONE;
 }
 
 

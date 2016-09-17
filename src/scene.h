@@ -13,6 +13,18 @@
 // and any other sequence that needs to update and display.
 //
 
+
+enum SceneResult {
+    NONE=0, // scene is still running
+    HARDEXIT,
+    DONE,   // scene complete (eg level finished)
+    CANCEL, // cancelled, eg escape key pressed
+    STARTGAME,  // request to start a new game
+    GAMEOVER,   // game has finished
+    TIMEOUT,    // scene timed out (eg demo starts if title idle)
+    CONFIG      // request for config screen
+};
+
 class Scene
 {
 public:
@@ -39,7 +51,9 @@ public:
 
 	// derived classes must provide an IsFinished() which returns true when
 	// the scene is over.
-	virtual bool IsFinished()=0;
+	//virtual bool IsFinished()=0;
+
+    virtual SceneResult Result()=0;
 
 	// if the derived scene wants to handle key events it can override this.
 	virtual void HandleKeyDown( SDL_Keysym& keysym )

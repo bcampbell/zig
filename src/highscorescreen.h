@@ -18,7 +18,7 @@ public:
 
 	virtual void Render();
 	virtual void Tick();
-	virtual bool IsFinished();
+	virtual SceneResult Result();
 	virtual void HandleKeyDown( SDL_Keysym& keysym );
 public:
 	HighScoreScreen();

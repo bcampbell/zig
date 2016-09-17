@@ -11,14 +11,14 @@
 #include <SDL_events.h>
 
 static enum {
-   INIT,
-   TITLESCREEN,
-   HIGHSCORE,
-   DEMO,
-   LEVEL,
-   GAMEOVER,
-   QUIT
-} s_State = INIT;
+   STATE_INIT,
+   STATE_TITLESCREEN,
+   STATE_HIGHSCORE,
+   STATE_DEMO,
+   STATE_LEVEL,
+   STATE_GAMEOVER,
+   STATE_QUIT
+} s_State = STATE_INIT;
 
 static Scene* s_CurrentScene = 0;
 
@@ -34,7 +34,7 @@ void mainloop()
 
 
 		execframe();
-        if( s_State==QUIT ) {
+        if( s_State==STATE_QUIT ) {
             return;
         }
 
@@ -59,15 +59,15 @@ void NextState()
         s_CurrentScene = 0;
     }
 
-    if (s_State==INIT)
+    if (s_State==STATE_INIT)
     {
         // initial startup
         s_CurrentScene = new TitleScreen();
-        s_State = TITLESCREEN;
+        s_State = STATE_TITLESCREEN;
     }
     else
     {
-        s_State = QUIT;
+        s_State = STATE_QUIT;
     }
 
 }
@@ -79,7 +79,7 @@ void NextState()
 void execframe()
 {
 
-    if (!s_CurrentScene || s_CurrentScene->IsFinished() )
+    if (!s_CurrentScene || s_CurrentScene->Result()!=NONE )
     {
         NextState();
     }

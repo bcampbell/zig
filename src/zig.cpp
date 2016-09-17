@@ -170,11 +170,11 @@ int main( int argc, char*argv[] )
 				TitleScreen t;
 				t.Run();
 
-				if( t.Result() == TitleScreen::QUIT )
+				if( t.Result() == CANCEL )
 					quit=true;
-				else if( t.Result() == TitleScreen::PLAY )
+				else if( t.Result() == STARTGAME )
 					go=true;
-				else if( t.Result() == TitleScreen::TIMEOUT )
+				else if( t.Result() == TIMEOUT )
 				{
 					{
 						// Demo mode
@@ -191,7 +191,7 @@ int main( int argc, char*argv[] )
 					HighScoreScreen scorescreen( highscores );
 					scorescreen.Run();
 				}
-				else if( t.Result() == TitleScreen::CONFIG )
+				else if( t.Result() == CONFIG )
 				{
 					OptionsScreen o;
 					o.Run();
@@ -317,16 +317,14 @@ static void PlayGame( HighScores& highscores )
 			s_LevelDefs.size()*wrapcount + levelindex + 1;
 
 
-        bool levelcompleted = false;
-        bool levelquit = false;
+        SceneResult result = NONE;
         {
     		Level l( *def, perceivedlevel );
 	    	l.Run();
-            levelcompleted = l.WasCompleted();
-            levelquit = !l.WasQuit();
+            result = l.Result();
         }
 
-		if( levelcompleted )
+		if( result == DONE )
 		{
 			++levelindex;
 			if( levelindex >= (int)s_LevelDefs.size() )
@@ -342,7 +340,7 @@ static void PlayGame( HighScores& highscores )
 			gameover = true;
 			GameOver g( player.Score(), perceivedlevel );
 			g.Run();
-			if(!levelquit)
+			if(result != CANCEL)
 			{
 
 				int scoreidx = highscores.Submit( player.Score() );

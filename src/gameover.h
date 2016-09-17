@@ -13,7 +13,7 @@ public:
 	GameOver( int score, int level );
 	virtual void Render();
 	virtual void Tick();
-	virtual bool IsFinished();
+	virtual SceneResult Result();
 public:
 	float m_Timer;
 	int m_Score;

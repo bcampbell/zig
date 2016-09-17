@@ -19,7 +19,7 @@ void Scene::Run()
 {
 	Uint32 prevtime;
 
-	while( !IsFinished() )
+	while( Result()==NONE )
 	{
 		prevtime = SDL_GetTicks();
         g_ControllerMgr->Tick();
