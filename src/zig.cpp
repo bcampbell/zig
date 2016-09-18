@@ -43,6 +43,8 @@
 #endif // CRIPPLED
 
 ZigConfig g_Config;
+std::vector<LevelDef> g_LevelDefs;
+
 Player* g_Player=0;
 Level* g_CurrentLevel=0;
 Texture* g_Font=0;
@@ -56,7 +58,6 @@ ControllerMgr* g_ControllerMgr = 0;
 
 GameState* g_GameState = 0;
 
-static std::vector<LevelDef> s_LevelDefs;
 static std::string s_ZigUserDir;
 
 static void PlayGame( HighScores& highscores );
@@ -132,7 +133,7 @@ int main( int argc, char*argv[] )
 		//----------------------------------------------
 		{
 			std::string levelfile = Resources::Map( "levels" );
-			LevelParser parser( levelfile, s_LevelDefs );
+			LevelParser parser( levelfile, g_LevelDefs );
 		}
 
 #ifdef CRIPPLED
@@ -152,8 +153,8 @@ int main( int argc, char*argv[] )
 
 		bool quit = false;
 
-        //mainloop();
-        // quit=true;
+        mainloop();
+        quit=true;
 
 		while( !quit )
 		{
@@ -181,8 +182,8 @@ int main( int argc, char*argv[] )
                         assert(!g_GameState);
                         g_GameState = new GameState();
 						Player player(true);
-						int num = (int)(Rnd(0.0f,(float)(s_LevelDefs.size()-2))+0.5f);
-						Level l( s_LevelDefs[num], num+1, true);
+						int num = (int)(Rnd(0.0f,(float)(g_LevelDefs.size()-2))+0.5f);
+						Level l( g_LevelDefs[num], num+1, true);
 						l.Run();
                         delete g_GameState;
                         g_GameState = 0;
@@ -287,7 +288,7 @@ static void PlayGame( HighScores& highscores )
 	int levelindex=0;
 	bool gameover=false;
 
-	assert( s_LevelDefs.size() > 0 );
+	assert( g_LevelDefs.size() > 0 );
 
 	while( !gameover )
 	{
@@ -308,13 +309,13 @@ static void PlayGame( HighScores& highscores )
 		}
 
 		LevelDef* def;
-		if( levelindex < (int)s_LevelDefs.size() )
-			def = &s_LevelDefs[levelindex];
+		if( levelindex < (int)g_LevelDefs.size() )
+			def = &g_LevelDefs[levelindex];
 		else
-			def = &s_LevelDefs.back();
+			def = &g_LevelDefs.back();
 
 		const int perceivedlevel =
-			s_LevelDefs.size()*wrapcount + levelindex + 1;
+			g_LevelDefs.size()*wrapcount + levelindex + 1;
 
 
         SceneResult result = NONE;
@@ -327,7 +328,7 @@ static void PlayGame( HighScores& highscores )
 		if( result == DONE )
 		{
 			++levelindex;
-			if( levelindex >= (int)s_LevelDefs.size() )
+			if( levelindex >= (int)g_LevelDefs.size() )
 			{
 				++wrapcount;
 				levelindex = 0;

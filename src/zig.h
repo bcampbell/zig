@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 
+#include "leveldef.h"
 #include "zigconfig.h"
 
 class AgentManager;
@@ -41,6 +42,7 @@ struct GameState {
 extern GameState* g_GameState;
 
 extern ZigConfig g_Config;
+extern std::vector<LevelDef> g_LevelDefs;
 
 extern Player* g_Player;
 extern Level* g_CurrentLevel;
