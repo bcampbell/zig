@@ -122,7 +122,7 @@ SceneResult TitleScreen::Result()
 	}
     else if (m_Menu.InactivityTime() > s_TimeOut)
     {
-        return TIMEOUT;
+        return DONE;
     }
 
 	return NONE;

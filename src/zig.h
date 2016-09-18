@@ -17,6 +17,7 @@ class Texture;
 class Level;
 class Player;
 class ControllerMgr;
+class HighScores;
 
 
 
@@ -51,6 +52,7 @@ extern Level* g_CurrentLevel;
 extern AgentManager* g_Agents;
 extern Display* g_Display;
 extern ControllerMgr* g_ControllerMgr;
+extern HighScores* g_HighScores;
 
 extern Texture* g_Font;
 

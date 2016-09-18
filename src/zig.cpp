@@ -54,13 +54,13 @@ Texture* g_Textures[TX_NUMTEXTURES] = {0};
 AgentManager* g_Agents = 0;
 Display* g_Display=0;
 ControllerMgr* g_ControllerMgr = 0;
-
+HighScores* g_HighScores = 0;
 
 GameState* g_GameState = 0;
 
 static std::string s_ZigUserDir;
 
-static void PlayGame( HighScores& highscores );
+static void PlayGame();
 static void InitZigUserDir();
 
 static void InitTextures();
@@ -99,7 +99,7 @@ int main( int argc, char*argv[] )
 		}
 #endif
         g_ControllerMgr = new ControllerMgr();
-
+        g_HighScores = new HighScores();
 		g_Display = new Display( g_Config.fullscreen );
 
         InitTextures();
@@ -125,7 +125,6 @@ int main( int argc, char*argv[] )
 		//----------------------------------------------
 
 
-		HighScores highscores;
 
 		srand( SDL_GetTicks() );
 
@@ -189,7 +188,7 @@ int main( int argc, char*argv[] )
                         g_GameState = 0;
 					}
 
-					HighScoreScreen scorescreen( highscores );
+					HighScoreScreen scorescreen;
 					scorescreen.Run();
 				}
 				else if( t.Result() == CONFIG )
@@ -200,7 +199,7 @@ int main( int argc, char*argv[] )
 			}
 
 			if( !quit )
-				PlayGame( highscores );
+				PlayGame();
 		}
 #ifdef CRIPPLED
 		{
@@ -225,6 +224,7 @@ int main( int argc, char*argv[] )
 	}
 
 	SoundMgr::Destroy();
+    delete g_HighScores;
     delete g_ControllerMgr;
 
 	// clean up global textures
@@ -278,7 +278,7 @@ void FreeTextures()
 }
 
 
-static void PlayGame( HighScores& highscores )
+static void PlayGame()
 {
     assert( g_GameState == 0 );
     g_GameState = new GameState();
@@ -344,8 +344,8 @@ static void PlayGame( HighScores& highscores )
 			if(result != CANCEL)
 			{
 
-				int scoreidx = highscores.Submit( player.Score() );
-				HighScoreScreen scorescreen( highscores );
+				int scoreidx = g_HighScores->Submit( player.Score() );
+				HighScoreScreen scorescreen;
 				if( scoreidx != -1 )
 					scorescreen.EntryMode( scoreidx );
 

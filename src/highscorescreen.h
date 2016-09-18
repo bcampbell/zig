@@ -23,7 +23,6 @@ public:
 public:
 	HighScoreScreen();
 
-	HighScores& m_Scores;
 	int m_TimeOut;
 
 	// index of score being entered (-1=none)

@@ -14,8 +14,7 @@
 
 
 
-HighScoreScreen::HighScoreScreen( HighScores& scores ) :
-	m_Scores( scores ),
+HighScoreScreen::HighScoreScreen() :
 	m_TimeOut( 400 ),
 	m_EntryTarget( -1 )
 {
@@ -52,10 +51,10 @@ void HighScoreScreen::Render()
 
 
 	int i;
-	for( i=0; i<m_Scores.NumScores(); ++i )
+	for( i=0; i<g_HighScores->NumScores(); ++i )
 	{
 		char buf[ 128 ];
-		sprintf( buf, "%d %s", m_Scores.Score(i), m_Scores.Name(i).c_str() );
+		sprintf( buf, "%d %s", g_HighScores->Score(i), g_HighScores->Name(i).c_str() );
 	
 		if( i==m_EntryTarget )
 		{
@@ -111,7 +110,7 @@ void HighScoreScreen::HandleKeyDown( SDL_Keysym& keysym )
 		return;
 	}
 
-	std::string name = m_Scores.Name( m_EntryTarget );
+	std::string name = g_HighScores->Name( m_EntryTarget );
 
 	if (code==SDLK_LEFT || code==SDLK_BACKSPACE)
 	{
@@ -137,7 +136,7 @@ void HighScoreScreen::HandleKeyDown( SDL_Keysym& keysym )
 				name += c;
 		}
 	}
-	m_Scores.SetName( m_EntryTarget, name );
+	g_HighScores->SetName( m_EntryTarget, name );
 }
 
 

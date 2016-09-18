@@ -7,23 +7,36 @@
 #include "leveldef.h"
 #include "zigconfig.h"
 #include "scene.h"
+#include "gameover.h"
 #include "titlescreen.h"
+#include "highscorescreen.h"
 
 #include <SDL.h>
 #include <SDL_keyboard.h>
 #include <SDL_events.h>
 
+// ugly. TODO: could ditch this, I'm sure.
+static Scene* s_CurrentScene = 0;
+
 class State;
 
+
+// Minimal statemachine
 static State* s_State = 0;
-static Scene* s_CurrentScene = 0;
 
 class State
 {
 public:
     State() {}
     virtual ~State() {}
-    // returns new state, or null to exit
+    // returns new state, or null to stop statemachine and exit
+    // State should delete itself before creating the new state,
+    // to ensure proper dtop/ctor ordering. eg:
+    //     if (done) {
+    //         delete this;
+    //         return new State_TITLE();
+    //     }
+    // Rationale: this allows states to pass info on to 
     virtual State* Update() = 0;
 };
 
@@ -42,56 +55,96 @@ public:
 };
 
 
+// DEMO - auto-play a random level
+class State_DEMO : public State
+{
+public:
+    State_DEMO();
+    virtual ~State_DEMO();
+    virtual State* Update();
+    Scene* m_Scene;
+    Player* m_Player;
+};
+
+// GAMEOVER - show gameover screen
+class State_GAMEOVER : public State
+{
+public:
+    State_GAMEOVER(int score, int perceivedlevel);
+    virtual ~State_GAMEOVER();
+    virtual State* Update();
+    Scene* m_Scene;
+};
+
+// HIGHSCORE - show highscore screen
+class State_HIGHSCORE : public State
+{
+public:
+    State_HIGHSCORE();
+    virtual ~State_HIGHSCORE();
+    virtual State* Update();
+    Scene* m_Scene;
+};
+
+
+// EXIT - just clean up
 class State_EXIT : public State
 {
 public:
-    State_EXIT() {}
-    virtual ~State_EXIT() { printf("byebye!\n"); }
-    virtual State* Update() {
-        delete this;
-        return 0;
-    }
+    State_EXIT();
+    virtual ~State_EXIT();
+    virtual State* Update();
 };
 
 
 class State_TITLE : public State
 {
 public:
-    State_TITLE() : m_Scene(new TitleScreen())
-    {
-        s_CurrentScene = m_Scene;
-    }
-
-    virtual ~State_TITLE()
-    {
-        delete m_Scene;
-        s_CurrentScene = 0;
-    }
-
-    virtual State* Update()
-    {
-        switch( m_Scene->Result() )
-        {
-        case DONE:
-            delete this;
-            return new State_EXIT();
-        case STARTGAME:
-            delete this;
-            return new State_GAME();
-        case CANCEL:
-            delete this;
-            return new State_EXIT();
-        case NONE:
-        default:
-            return this;
-        }
-    }
-
+    State_TITLE();
+    virtual ~State_TITLE();
+    virtual State* Update();
     Scene* m_Scene;
 };
 
 
+// -------------------
 
+State_TITLE::State_TITLE() : m_Scene(new TitleScreen())
+{
+    s_CurrentScene = m_Scene;
+}
+
+State_TITLE::~State_TITLE()
+{
+    delete m_Scene;
+    s_CurrentScene = 0;
+}
+
+State* State_TITLE::Update()
+{
+    switch( m_Scene->Result() )
+    {
+    case DONE:  // timed out
+        delete this;
+        return new State_DEMO();
+    case STARTGAME:
+        delete this;
+        return new State_GAME();
+    case CANCEL:
+        delete this;
+        return new State_EXIT();
+    case CONFIG:
+        delete this;
+        return new State_EXIT();
+    case NONE:
+    default:
+        return this;
+    }
+}
+
+
+
+// -------------------
 
 State_GAME::State_GAME() : m_Scene(0),
     m_Player(0),
@@ -170,9 +223,12 @@ State* State_GAME::Update()
         InitLevel();
         return this;
     case GAMEOVER:
-        // TODO: go to gameover state + highscore...
-        delete this;
-        return new State_TITLE();
+        {
+            const int perceivedlevel =
+                g_LevelDefs.size()*m_WrapCount + m_LevelIndex + 1;
+            delete this;
+            return new State_GAMEOVER( m_Player->Score(), perceivedlevel);
+        }
     case CANCEL:
         delete this;
         return new State_EXIT();
@@ -182,9 +238,111 @@ State* State_GAME::Update()
     }
 }
 
+// -------------------
+
+State_DEMO::State_DEMO() : m_Scene(0), m_Player(0)
+{
+    assert( g_GameState == 0 );
+    g_GameState = new GameState();
+    m_Player = new Player(true);    // player with autopilot
+    int num = (int)(Rnd(0.0f,(float)(g_LevelDefs.size()-2))+0.5f);
+    m_Scene = new Level( g_LevelDefs[num], num+1, true);
+    s_CurrentScene = m_Scene;
+}
+
+State_DEMO::~State_DEMO()
+{
+    delete m_Scene;
+    s_CurrentScene = 0;
+    delete g_GameState;
+    g_GameState = 0;
+
+    delete m_Player;
+}
 
 
+State* State_DEMO::Update()
+{
+    if (m_Scene->Result() == NONE )
+    {
+        return this;
+    }
+    else 
+    {
+        delete this;
+        return new State_TITLE();
+    }
+}
 
+// -------------------
+
+State_GAMEOVER::State_GAMEOVER(int score, int perceivedlevel) :
+   m_Scene( new GameOver(score,perceivedlevel))
+{
+    s_CurrentScene = m_Scene;
+}
+
+State_GAMEOVER::~State_GAMEOVER()
+{
+    delete m_Scene;
+    s_CurrentScene = 0;
+}
+
+
+State* State_GAMEOVER::Update()
+{
+    if (m_Scene->Result() != NONE )
+    {
+        delete this;
+        return new State_HIGHSCORE();
+    }
+    return this;
+}
+
+// -------------------
+
+State_HIGHSCORE::State_HIGHSCORE() :
+   m_Scene( new HighScoreScreen())
+{
+    s_CurrentScene = m_Scene;
+}
+
+State_HIGHSCORE::~State_HIGHSCORE()
+{
+    delete m_Scene;
+    s_CurrentScene = 0;
+}
+
+
+State* State_HIGHSCORE::Update()
+{
+    if (m_Scene->Result() != NONE )
+    {
+        delete this;
+        return new State_TITLE();
+    }
+    return this;
+}
+
+// -------------------
+
+
+State_EXIT::State_EXIT()
+{
+}
+
+State_EXIT::~State_EXIT()
+{
+    printf("byebye!\n");
+}
+
+State* State_EXIT::Update()
+{
+    delete this;
+    return 0;   // stop the statemachine now.
+}
+
+// -------------------
 
 static void execframe();
 
