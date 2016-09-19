@@ -3,31 +3,31 @@
 #include "agent.h"
 #include "agentmanager.h"
 #include "bullets.h"
-#include "completionscreen.h"
+//#include "completionscreen.h"
 #include "controller.h"
 #include "display.h"
 #include "drawing.h"
 #include "dudes.h"
-#include "gameover.h"
+//#include "gameover.h"
 #include "gamestate.h"
 #include "highscores.h"
-#include "highscorescreen.h"
+//#include "highscorescreen.h"
 #include "image.h"
-#include "level.h"
+//#include "level.h"
 #include "leveldef.h"
 #include "mathutil.h"
-#include "optionsscreen.h"
+//#include "optionsscreen.h"
 #include "player.h"
 #include "proceduraltextures.h"
 #include "resources.h"
-#include "soundexplore.h"
+//#include "soundexplore.h"
 #include "soundmgr.h"
 #include "texture.h"
 #include "titlescreen.h"
 #include "util.h"
 #include "wobbly.h"
 #include "log.h"
-#include "mainloop.h"
+//#include "mainloop.h"
 #include <SDL.h>
 
 #ifdef ZIG_INSTALL_DIR
@@ -59,6 +59,7 @@ static void InitTextures();
 static void FreeTextures();
 static void startup( int argc, char*argv[] );
 static void shutdown();
+static void mainloop();
 
 
 void startup( int argc, char*argv[] )
@@ -223,4 +224,30 @@ std::string ZigUserDir()
 
 
 
+
+void mainloop()
+{
+	Uint32 prevtime;
+
+    // Minimal statemachine
+    Scene* scene = new TitleScreen();
+	while( 1 )
+	{
+		prevtime = SDL_GetTicks();
+
+        scene = scene->ExecFrame();
+        if( scene== 0  ) {
+            break;
+        }
+
+		Uint32 currtime = SDL_GetTicks();	// currytime? mmmmmmmm
+		Uint32 elapsed = currtime-prevtime;
+
+		if( !g_Config.flatout )
+		{
+			if( elapsed < TICK_INTERVAL )
+				SDL_Delay( TICK_INTERVAL-elapsed );
+		}
+	}
+}
 

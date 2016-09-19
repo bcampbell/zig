@@ -19,6 +19,11 @@ class Scene
 public:
 	virtual ~Scene()	{};
 
+    // execute a single frame, returning the scene to be used next time
+    // Can be "this" (if still going), a new scene, or NULL to exit.
+    Scene* ExecFrame();
+
+protected:
 	// draw the scene
 	virtual void Render()=0;
 
@@ -48,6 +53,7 @@ public:
     // app has lost focus
     virtual void HandleFocusLost()
     {}
+
 
 private:
 };
