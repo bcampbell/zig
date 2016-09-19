@@ -5,6 +5,7 @@
 #include "player.h"
 #include "level.h"
 #include "leveldef.h"
+#include "highscores.h"
 #include "zigconfig.h"
 #include "scene.h"
 #include "gameover.h"
@@ -23,6 +24,7 @@ class State;
 
 // Minimal statemachine
 static State* s_State = 0;
+
 
 class State
 {
@@ -74,6 +76,7 @@ public:
     virtual ~State_GAMEOVER();
     virtual State* Update();
     Scene* m_Scene;
+    int m_Score;
 };
 
 // HIGHSCORE - show highscore screen
@@ -86,6 +89,15 @@ public:
     Scene* m_Scene;
 };
 
+// ENTERHIGHSCORE - enter a name in a slot on the highscore table
+class State_ENTERHIGHSCORE : public State
+{
+public:
+    State_ENTERHIGHSCORE(int scoreidx);
+    virtual ~State_ENTERHIGHSCORE();
+    virtual State* Update();
+    Scene* m_Scene;
+};
 
 // EXIT - just clean up
 class State_EXIT : public State
@@ -270,14 +282,15 @@ State* State_DEMO::Update()
     else 
     {
         delete this;
-        return new State_TITLE();
+        return new State_HIGHSCORE();
     }
 }
 
 // -------------------
 
 State_GAMEOVER::State_GAMEOVER(int score, int perceivedlevel) :
-   m_Scene( new GameOver(score,perceivedlevel))
+   m_Scene( new GameOver(score,perceivedlevel)),
+   m_Score(score)
 {
     s_CurrentScene = m_Scene;
 }
@@ -291,12 +304,24 @@ State_GAMEOVER::~State_GAMEOVER()
 
 State* State_GAMEOVER::Update()
 {
-    if (m_Scene->Result() != NONE )
+    if (m_Scene->Result() == NONE )
     {
-        delete this;
-        return new State_HIGHSCORE();
+        return this;
     }
-    return this;
+    else
+    {
+        int scoreidx = g_HighScores->Submit( m_Score );
+        if( scoreidx != -1 )
+        {
+            delete this;
+            return new State_ENTERHIGHSCORE(scoreidx);
+        }
+        else
+        {
+            delete this;
+            return new State_HIGHSCORE();
+        }
+    }
 }
 
 // -------------------
@@ -315,6 +340,34 @@ State_HIGHSCORE::~State_HIGHSCORE()
 
 
 State* State_HIGHSCORE::Update()
+{
+    if (m_Scene->Result() != NONE )
+    {
+        delete this;
+        return new State_TITLE();
+    }
+    return this;
+}
+
+// -------------------
+
+State_ENTERHIGHSCORE::State_ENTERHIGHSCORE(int scoreidx) :
+   m_Scene(0)
+{
+    HighScoreScreen* s = new HighScoreScreen();
+    m_Scene = s;
+    s_CurrentScene = m_Scene;
+    s->EntryMode(scoreidx);
+}
+
+State_ENTERHIGHSCORE::~State_ENTERHIGHSCORE()
+{
+    delete m_Scene;
+    s_CurrentScene = 0;
+}
+
+
+State* State_ENTERHIGHSCORE::Update()
 {
     if (m_Scene->Result() != NONE )
     {
