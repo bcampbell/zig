@@ -9,15 +9,16 @@
 #include "drawing.h"
 #include "texture.h"
 #include "gameover.h"
+#include "highscores.h"
+#include "highscorescreen.h"
+#include "player.h"
 #include "soundmgr.h"
 #include "titlescreen.h"
 #include "zig.h"
 
 
-GameOver::GameOver( int score, int level ) :
+GameOver::GameOver() :
 	m_Timer( 0.0f ),
-	m_Score( score ),
-	m_Level( level ),
 	m_Done( false )
 {
 	SoundMgr::Inst().Play( SFX_GAMEOVER );
@@ -36,11 +37,11 @@ void GameOver::Render()
 		glColor4f( 0.6f, 0.6f, 0.6f, 1.0f );
 		glTranslatef( 0.0f, -30.0f, 0.0f );
 		char buf[64];
-		sprintf( buf, "LEVEL %d", m_Level );
+		sprintf( buf, "LEVEL %d", g_GameState->PerceivedLevel() );
 		PlonkText( *g_Font, buf, true, 8.0f,8.0f );
 
 		glTranslatef( 0.0f, -20.0f, 0.0f );
-		sprintf( buf, "%d POINTS", m_Score );
+		sprintf( buf, "%d POINTS", g_GameState->m_Player->Score() );
 		PlonkText( *g_Font, buf, true, 12.0f,12.0f );
 	glPopMatrix();
 }
@@ -74,9 +75,15 @@ Scene* GameOver::NextScene()
 {
 	if( m_Done )
     {
-        // TODO: go to highscores!
+        int scoreidx = g_HighScores->Submit( g_GameState->m_Player->Score());
+
         delete this;
-        return new TitleScreen();
+        HighScoreScreen* hs = new HighScoreScreen();
+        if( scoreidx != -1 )
+        {
+            hs->EntryMode(scoreidx);
+        }
+        return hs;
     }
     return this;
 }

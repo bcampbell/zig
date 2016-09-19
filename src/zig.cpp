@@ -271,3 +271,34 @@ void GameState::StartNewDemo()
     m_Player = new Player(true);
 }
 
+bool GameState::LevelCompleted()
+{
+    ++m_Level;
+    if( m_Level < (int)g_LevelDefs.size() )
+    {
+        return false;
+    }
+    else
+    {
+        // wrapped...
+        m_Level = 0;
+        ++m_WrapCnt;
+        switch( m_WrapCnt )
+        {
+        case 0:
+            g_GameState->BigHeadMode = false;
+            g_GameState->NoExtraLives = false;
+            break;
+        case 1:
+            g_GameState->BigHeadMode = true;
+            g_GameState->NoExtraLives = false;
+            break;
+        case 2:
+            g_GameState->BigHeadMode = false;
+            g_GameState->NoExtraLives = true;
+            break;
+        }
+        return true;    // wrapped
+    }
+}
+

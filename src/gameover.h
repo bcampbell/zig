@@ -10,14 +10,12 @@
 class GameOver : public Scene
 {
 public:
-	GameOver( int score, int level );
+	GameOver();
 	virtual void Render();
 	virtual void Tick();
 	virtual Scene* NextScene();
 public:
 	float m_Timer;
-	int m_Score;
-	int m_Level;
 	bool m_Done;
 };
 

@@ -71,25 +71,13 @@ struct GameState {
     void StartNewGame();
     void StartNewDemo();
 
+    // current level, as displayed to user
     int PerceivedLevel() const
         { return g_LevelDefs.size()*m_WrapCnt + m_Level + 1; }
 
 
     // increment level - returns true if wrapped past last level
-    bool LevelCompleted()
-    {
-        ++m_Level;
-        if( m_Level < (int)g_LevelDefs.size() )
-        {
-            return false;
-        }
-        else
-        {
-            m_Level = 0;
-            ++m_WrapCnt;
-            return true;    // wrapped
-        }
-    }
+    bool LevelCompleted();
 
     // set if all blastable dudes blasted at level end
     bool KeepYourSectorTidy;

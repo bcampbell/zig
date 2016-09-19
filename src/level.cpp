@@ -18,6 +18,7 @@
 #include "drawing.h"
 #include "effects.h"
 #include "gameover.h"
+#include "highscorescreen.h"
 #include "humanoid.h"
 #include "leveldef.h"
 #include "mathutil.h"
@@ -122,11 +123,13 @@ Scene* Level::NextScene()
                 bool wrapped = g_GameState->LevelCompleted();
                 if(wrapped)
                 {
+                    // done all the levels - show the completion screen
                     delete this;
                     return new CompletionScreen( g_GameState->m_WrapCnt );
                 }
                 else
                 {
+                    // onward...
                     delete this;
                     return new Level();
                 }
@@ -134,12 +137,13 @@ Scene* Level::NextScene()
             }
         case demofinished:
             {
+                delete this;
+                return new HighScoreScreen();
             }
         case thatsitmangameovermangameover:
             {
                 delete this;
-                // TODO
-                return new GameOver(0,0 /* m_Player->Score(), perceivedlevel*/);
+                return new GameOver();
             }
         case quit:
             {

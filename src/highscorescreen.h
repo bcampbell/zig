@@ -11,7 +11,7 @@ class HighScores;
 class HighScoreScreen : public Scene
 {
 public:
-	HighScoreScreen( HighScores& scores );
+	HighScoreScreen();
 	virtual ~HighScoreScreen();
 	
 	void EntryMode( int scoreidx );
@@ -20,8 +20,7 @@ public:
 	virtual void Tick();
 	virtual Scene* NextScene();
 	virtual void HandleKeyDown( SDL_Keysym& keysym );
-public:
-	HighScoreScreen();
+private:
 
 	int m_TimeOut;
 
