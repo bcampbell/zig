@@ -38,6 +38,13 @@ ifeq ($(PLATFORM),win32)
   CXX=g++
 endif
 
+ifeq ($(PLATFORM),emscripten)
+  EXE = zig.html
+  CXX=em++
+  CXXFLAGS = --embed-file data -Wall -std=c++0x -O2 -s DISABLE_EXCEPTION_CATCHING=0 -s LEGACY_GL_EMULATION=1 -s USE_SDL=2 -s USE_ZLIB=1 -s USE_LIBPNG=1 -I /home/ben/proj/zig/dependencies/SDL2_mixer/installdir/include/SDL2
+  LIBS = --emrun
+endif
+
 
 all: $(EXE)
 

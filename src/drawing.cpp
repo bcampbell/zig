@@ -76,6 +76,9 @@ void PlonkText( Texture& font,
 
 void InitGLExtensions()
 {
+#ifdef __EMSCRIPTEN__
+    return;
+#endif
 	const char* p = (const char*)glGetString( GL_EXTENSIONS );
 	std::string extname;
 	while( *p )

@@ -3,32 +3,29 @@
 #include "agent.h"
 #include "agentmanager.h"
 #include "bullets.h"
-//#include "completionscreen.h"
 #include "controller.h"
 #include "display.h"
 #include "drawing.h"
 #include "dudes.h"
-//#include "gameover.h"
 #include "gamestate.h"
 #include "highscores.h"
-//#include "highscorescreen.h"
 #include "image.h"
-//#include "level.h"
 #include "leveldef.h"
 #include "mathutil.h"
-//#include "optionsscreen.h"
 #include "player.h"
 #include "proceduraltextures.h"
 #include "resources.h"
-//#include "soundexplore.h"
 #include "soundmgr.h"
 #include "texture.h"
 #include "titlescreen.h"
 #include "util.h"
 #include "wobbly.h"
 #include "log.h"
-//#include "mainloop.h"
 #include <SDL.h>
+
+#ifdef __EMSCRIPTEN__
+#include "emscripten.h"
+#endif
 
 #ifdef ZIG_INSTALL_DIR
 #include <unistd.h>
@@ -65,10 +62,19 @@ static void mainloop();
 void startup( int argc, char*argv[] )
 {
     InitZigUserDir();
+#ifdef __EMSCRIPTEN__
+    log_open("-");
+#else
     log_open(JoinPath(ZigUserDir(),"log.txt").c_str());
+#endif
     log_infof("Started\n");
 
     g_Config.Init( argc, argv );
+
+#ifdef __EMSCRIPTEN__
+    g_Config.fullscreen = false;
+    g_Config.nosound = true;
+#endif
 
     // set up memory pooling system for agents
     Agent_Startup();
@@ -128,24 +134,6 @@ void startup( int argc, char*argv[] )
 
 
 
-
-int main( int argc, char*argv[] )
-{
-    int retCode = 0;
-	try
-	{
-        startup(argc, argv);
-        mainloop();
-	}
-	catch( Wobbly& e )
-	{
-		// uhoh...
-		log_errorf("ERROR: %s\n", e.what() );
-        retCode = 1;
-	}
-    shutdown();
-	return retCode;
-}
 
 void shutdown()
 {
@@ -224,6 +212,60 @@ std::string ZigUserDir()
 
 
 
+#ifdef __EMSCRIPTEN__
+
+static Scene* s_Scene = 0;
+
+static void execframe()
+{
+    s_Scene = s_Scene->ExecFrame();
+    if( s_Scene == 0  ) {
+        emscripten_cancel_main_loop();
+        log_errorf("byebye!\n" );
+        shutdown();
+    }
+}
+
+
+int main( int argc, char*argv[] )
+{
+    int retCode = 0;
+	try
+	{
+        startup(argc, argv);
+        s_Scene = new TitleScreen();
+        emscripten_set_main_loop(execframe,0,1); // never returns
+		log_errorf("shouldn't see this...\n" );
+	}
+	catch( Wobbly& e )
+	{
+		// uhoh...
+		log_errorf("ERROR: %s\n", e.what() );
+        retCode = 1;
+	}
+    shutdown();
+	return retCode;
+}
+
+
+#else
+int main( int argc, char*argv[] )
+{
+    int retCode = 0;
+	try
+	{
+        startup(argc, argv);
+        mainloop();
+	}
+	catch( Wobbly& e )
+	{
+		// uhoh...
+		log_errorf("ERROR: %s\n", e.what() );
+        retCode = 1;
+	}
+    shutdown();
+	return retCode;
+}
 
 void mainloop()
 {
@@ -250,4 +292,5 @@ void mainloop()
 		}
 	}
 }
+#endif
 

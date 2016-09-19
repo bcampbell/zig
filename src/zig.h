@@ -16,7 +16,7 @@ class Display;
 class Texture;
 class Level;
 class Player;
-class GameState;
+struct GameState;
 class ControllerMgr;
 class HighScores;
 
