@@ -7,7 +7,11 @@
 #include "controller.h"
 #include "display.h"
 #include "drawing.h"
+#include "gameover.h"
+#include "highscorescreen.h"
+#include "level.h"
 #include "mathutil.h"
+#include "optionsscreen.h"
 #include "soundmgr.h"
 #include "texture.h"
 #include "titlescreen.h"
@@ -105,7 +109,7 @@ void TitleScreen::Tick()
 }
 
 
-SceneResult TitleScreen::Result()
+Scene* TitleScreen::NextScene()
 {
 
 	if( m_Menu.IsDone() )
@@ -113,19 +117,31 @@ SceneResult TitleScreen::Result()
 		switch( m_Menu.GetResult() )
 		{
 		case TitleMenu::ID_PLAY:
-			return STARTGAME;
+            {
+			    delete this;
+                g_GameState->StartNewGame();
+                return new Level();
+            }
 		case TitleMenu::ID_OPTIONS:
-			return CONFIG;
+            {
+			    delete this;
+                return new OptionsScreen();
+            }
 		case TitleMenu::ID_EXIT:
-			return CANCEL;
+            {
+                delete this;
+                return 0;
+            }
 		}
 	}
     else if (m_Menu.InactivityTime() > s_TimeOut)
     {
-        return DONE;
+        delete this;
+        g_GameState->StartNewDemo();
+        return new Level();
     }
 
-	return NONE;
+	return this;    // still running
 }
 
 

@@ -34,7 +34,7 @@ public:
 
 	virtual void Render();
 	virtual void Tick();
-	virtual SceneResult Result();
+    virtual Scene* NextScene();
 public:
 	bool m_Escaped;
 	bool m_Play;

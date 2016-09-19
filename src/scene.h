@@ -13,35 +13,10 @@
 // and any other sequence that needs to update and display.
 //
 
-
-enum SceneResult {
-    NONE=0, // scene is still running
-    HARDEXIT,
-    DONE,   // scene complete (eg level finished)
-    CANCEL, // cancelled, eg escape key pressed
-    STARTGAME,  // request to start a new game
-    GAMEOVER,   // game has finished
-    TIMEOUT,    // scene timed out (eg demo starts if title idle)
-    CONFIG      // request for config screen
-};
-
 class Scene
 {
 public:
-
-
-	// Run the scene.
-	// 
-	// Returns when the scene is over (ie when the derived IsFinished()
-	// returns true).
-	// If app window is closed, Run() throws a QuitNotification exception.
-	void Run();
-
 	virtual ~Scene()	{};
-
-	class QuitNotification
-	{
-	};
 
 	// draw the scene
 	virtual void Render()=0;
@@ -49,11 +24,16 @@ public:
 	// update the state of the scene
 	virtual void Tick()=0;
 
-	// derived classes must provide an IsFinished() which returns true when
-	// the scene is over.
-	//virtual bool IsFinished()=0;
-
-    virtual SceneResult Result()=0;
+    // Returns the scene to be used next time.
+    // Can be "this" (if still going), a new scene, or NULL to exit.
+    // Scenes are responsible for deleting themselves, eg:
+    //
+    //     if (done) {
+    //         delete this;
+    //         return new State_TITLE();
+    //     }
+    // Rationale: this allows scenes to call specific ctors for the next scene.
+    virtual Scene* NextScene()=0;
 
 	// if the derived scene wants to handle key events it can override this.
 	virtual void HandleKeyDown( SDL_Keysym& keysym )

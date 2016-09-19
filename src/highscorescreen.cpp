@@ -11,6 +11,7 @@
 #include "texture.h"
 #include "highscores.h"
 #include "highscorescreen.h"
+#include "titlescreen.h"
 
 
 
@@ -86,10 +87,17 @@ void HighScoreScreen::Tick()
 	}
 }
 
-SceneResult HighScoreScreen::Result()
+Scene* HighScoreScreen::NextScene()
 {
-	return ( m_TimeOut > 0 ) ? NONE:DONE;
+	if( m_TimeOut > 0 )
+    {
+        return this;    // still running
+    }
+
+    delete this;
+    return new TitleScreen();
 }
+
 
 
 void HighScoreScreen::HandleKeyDown( SDL_Keysym& keysym )

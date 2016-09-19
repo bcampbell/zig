@@ -1,7 +1,4 @@
-
 #include "zig.h"
-
-
 
 #include "agent.h"
 #include "agentmanager.h"
@@ -60,7 +57,6 @@ GameState* g_GameState = 0;
 
 static std::string s_ZigUserDir;
 
-static void PlayGame();
 static void InitZigUserDir();
 
 static void InitTextures();
@@ -135,79 +131,16 @@ int main( int argc, char*argv[] )
 			LevelParser parser( levelfile, g_LevelDefs );
 		}
 
-#ifdef CRIPPLED
-		CrippleClock::Init();
-#endif	// CRIPPLED
+        g_GameState = new GameState();
 
-#if 0
-        {
-            SoundExplore exp;
-            exp.Run();
-        }
-#endif
 
 		//----------------------------------------------
 		// MAIN
 		//----------------------------------------------
 
-		bool quit = false;
 
         mainloop();
-        quit=true;
 
-		while( !quit )
-		{
-#ifdef CRIPPLED
-			if( CrippleClock::Expired() )
-			{
-				quit = true;
-			}
-#endif	// CRIPPLED
-			// looping title sequence
-			bool go=false;
-			while( !quit && !go )
-			{
-				TitleScreen t;
-				t.Run();
-
-				if( t.Result() == CANCEL )
-					quit=true;
-				else if( t.Result() == STARTGAME )
-					go=true;
-				else if( t.Result() == TIMEOUT )
-				{
-					{
-						// Demo mode
-                        assert(!g_GameState);
-                        g_GameState = new GameState();
-						Player player(true);
-						int num = (int)(Rnd(0.0f,(float)(g_LevelDefs.size()-2))+0.5f);
-						Level l( g_LevelDefs[num], num+1, true);
-						l.Run();
-                        delete g_GameState;
-                        g_GameState = 0;
-					}
-
-					HighScoreScreen scorescreen;
-					scorescreen.Run();
-				}
-				else if( t.Result() == CONFIG )
-				{
-					OptionsScreen o;
-					o.Run();
-				}
-			}
-
-			if( !quit )
-				PlayGame();
-		}
-#ifdef CRIPPLED
-		{
-			NagScreen n;
-			n.Run();
-			s_LaunchWeb = n.LaunchWeb();
-		}
-#endif //CRIPPLED
 
 	}
 	catch( Wobbly& e )
@@ -215,17 +148,12 @@ int main( int argc, char*argv[] )
 		// uhoh...
 		log_errorf("ERROR: %s\n", e.what() );
 	}
-	catch( Scene::QuitNotification& )
-	{
-		// if we end up here, it means player has asked the game to close
-		// (via alt-f4, window decoration, whatever).
-		// Slight abuse of exceptions perhaps, but greatly simplifies the
-		// main loop!
-	}
 
-	SoundMgr::Destroy();
+    delete g_GameState;
     delete g_HighScores;
     delete g_ControllerMgr;
+
+	SoundMgr::Destroy();
 
 	// clean up global textures
 	if( g_Display )
@@ -278,89 +206,6 @@ void FreeTextures()
 }
 
 
-static void PlayGame()
-{
-    assert( g_GameState == 0 );
-    g_GameState = new GameState();
-
-	Player player;
-	int wrapcount = 0;	// how many times all levels completed
-	int levelindex=0;
-	bool gameover=false;
-
-	assert( g_LevelDefs.size() > 0 );
-
-	while( !gameover )
-	{
-		switch( wrapcount )
-		{
-		case 0:
-			g_GameState->BigHeadMode = false;
-			g_GameState->NoExtraLives = false;
-			break;
-		case 1:
-			g_GameState->BigHeadMode = true;
-			g_GameState->NoExtraLives = false;
-			break;
-		case 2:
-			g_GameState->BigHeadMode = false;
-			g_GameState->NoExtraLives = true;
-			break;
-		}
-
-		LevelDef* def;
-		if( levelindex < (int)g_LevelDefs.size() )
-			def = &g_LevelDefs[levelindex];
-		else
-			def = &g_LevelDefs.back();
-
-		const int perceivedlevel =
-			g_LevelDefs.size()*wrapcount + levelindex + 1;
-
-
-        SceneResult result = NONE;
-        {
-    		Level l( *def, perceivedlevel );
-	    	l.Run();
-            result = l.Result();
-        }
-
-		if( result == DONE )
-		{
-			++levelindex;
-			if( levelindex >= (int)g_LevelDefs.size() )
-			{
-				++wrapcount;
-				levelindex = 0;
-				CompletionScreen c( wrapcount );
-				c.Run();
-			}
-		}
-		else
-		{
-			gameover = true;
-			GameOver g( player.Score(), perceivedlevel );
-			g.Run();
-			if(result != CANCEL)
-			{
-
-				int scoreidx = g_HighScores->Submit( player.Score() );
-				HighScoreScreen scorescreen;
-				if( scoreidx != -1 )
-					scorescreen.EntryMode( scoreidx );
-
-				// This makes sure that keypresses are correctly
-				// mapped to characters (needed only for name entry).
-//				SDL_EnableUNICODE(1);
-				scorescreen.Run();
-//				SDL_EnableUNICODE(0);
-			}
-		}
-	}
-    delete g_GameState;
-    g_GameState = 0;
-}
-
 
 
 
@@ -379,5 +224,50 @@ static void InitZigUserDir()
 std::string ZigUserDir()
 {
 	return s_ZigUserDir;
+}
+
+
+
+
+GameState::GameState() :
+    KeepYourSectorTidy(false),
+    BigHeadMode(false),
+    NoExtraLives(false),
+    m_Level(0),
+    m_WrapCnt(0),
+    m_Demo(false),
+    m_Player(0)
+{
+}
+GameState::~GameState()
+{
+    if( m_Player )
+        delete m_Player;
+}
+
+void GameState::StartNewGame()
+{
+    KeepYourSectorTidy = false;
+    BigHeadMode = false;
+    NoExtraLives = false;
+    m_Level = 0;
+    m_WrapCnt = 0;
+    m_Demo = false;
+    if( m_Player )
+        delete m_Player;
+    m_Player = new Player();
+}
+
+void GameState::StartNewDemo()
+{
+    KeepYourSectorTidy = false;
+    BigHeadMode = false;
+    NoExtraLives = false;
+    m_Level = 0;
+    m_WrapCnt = 0;
+    m_Demo = true;
+    if( m_Player )
+        delete m_Player;
+    m_Player = new Player(true);
 }
 

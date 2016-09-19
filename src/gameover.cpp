@@ -10,6 +10,7 @@
 #include "texture.h"
 #include "gameover.h"
 #include "soundmgr.h"
+#include "titlescreen.h"
 #include "zig.h"
 
 
@@ -69,9 +70,15 @@ void GameOver::Tick()
     }
 }
 
-SceneResult GameOver::Result()
+Scene* GameOver::NextScene()
 {
-	return m_Done ? DONE : NONE;
+	if( m_Done )
+    {
+        // TODO: go to highscores!
+        delete this;
+        return new TitleScreen();
+    }
+    return this;
 }
 
 

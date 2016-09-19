@@ -1,11 +1,12 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 
-#include "soundexplore.h"
 #include "controller.h"
 #include "drawing.h"
-#include "soundmgr.h"
 #include "menusupport.h"
+#include "soundexplore.h"
+#include "soundmgr.h"
+#include "titlescreen.h"
 #include "zig.h"
 
 
@@ -105,9 +106,17 @@ void SoundExplore::Tick()
     m_Menu->Tick();
 }
 
-SceneResult SoundExplore::Result()
+Scene* SoundExplore::NextScene()
 {
-	return m_Menu->IsDone() ? DONE:NONE;
+	if (m_Menu->IsDone())
+    {
+        delete this;
+        return new TitleScreen();
+    }
+    else
+    {
+        return this;
+    }
 }
 
 

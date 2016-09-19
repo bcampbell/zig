@@ -13,15 +13,18 @@
 #include "background.h"
 #include "bonuses.h"
 #include "controller.h"
+#include "completionscreen.h"
 #include "display.h"
 #include "drawing.h"
 #include "effects.h"
+#include "gameover.h"
 #include "humanoid.h"
 #include "leveldef.h"
 #include "mathutil.h"
 #include "pausemenu.h"
 #include "soundmgr.h"
 #include "texture.h"
+#include "titlescreen.h"
 #include "zig.h"
 #ifdef CRIPPLED
 	#include "crippleclock.h"
@@ -44,18 +47,17 @@ template< typename T > void MultiDude( int number )
 		g_Agents->AddDude( new DudeSpawnEffect( new TYPE() ) ); \
 }
 
-Level::Level( LevelDef const& details, int levelnum, bool demomode ) :
+Level::Level() :
 	m_State(intro),
 	m_StateTimer(0.0f),
 	m_ArenaShrinkage(0.0f),
 	m_Arena( 0 ),
-	m_LevelDef(details),
-	m_LevelNum(levelnum),
+	m_LevelDef(0),
 	m_Background( 0 ),
-	m_AttractMode( demomode ),
+	m_AttractMode( g_GameState->m_Demo ),
 	m_PauseMenu( 0 ),
 	m_Attempt( 0 ),
-	m_BaiterDelay( details.m_BaiterStart ),
+	m_BaiterDelay( 0.0f ),
 	m_BaiterCount(0),
 	m_VictoryDuration( 0.0f ),
 	m_ScreenshotFlag( false )
@@ -63,12 +65,15 @@ Level::Level( LevelDef const& details, int levelnum, bool demomode ) :
 	assert( g_CurrentLevel == 0 );	// only one level at a time please.
 	g_CurrentLevel = this;
 
-	if( m_LevelDef.m_Retro )
+    m_LevelDef = &g_LevelDefs[g_GameState->m_Level];
+    m_BaiterDelay = m_LevelDef->m_BaiterStart;
+
+	if( m_LevelDef->m_Retro )
 		m_Background = new RetroBackground();
 	else
 		m_Background = new OriginalBackground();
 
-	m_Arena = new Arena( details.m_ArenaRadius );
+	m_Arena = new Arena( m_LevelDef->m_ArenaRadius );
 
 	g_Agents = new AgentManager();
 	
@@ -77,24 +82,19 @@ Level::Level( LevelDef const& details, int levelnum, bool demomode ) :
 	// create a heap of dudes
 	Populate();
 
-	if( m_LevelDef.m_Retro )
+	if( m_LevelDef->m_Retro )
 		g_Agents->AddUnderlay( new FadeText( vec2( 0.0f, 100.0f), "RETRO LEVEL!", 16.0f, 0.5f ) );
 	else
 		g_Agents->AddUnderlay( new FadeText( vec2( 0.0f, 100.0f), "GAME ON!", 16.0f, 0.5f ) );
 		
 	char buf[64];
-	sprintf( buf, "LEVEL %d", m_LevelNum );
+	sprintf( buf, "LEVEL %d", g_GameState->PerceivedLevel() );
 	g_Agents->AddUnderlay( new FadeText( vec2( 0.0f, 80.0f), buf, 10.0f, 0.5f ) );
 }
 
 
 Level::~Level()
 {
-#ifdef CRIPPLED
-	if( !m_AttractMode )
-		CrippleClock::WriteRemainingTime();
-#endif // CRIPPLED
-
 	assert(g_CurrentLevel==this);
 
 	if( m_PauseMenu )
@@ -114,14 +114,40 @@ Level::~Level()
 }
 
 
-SceneResult Level::Result()
+Scene* Level::NextScene()
 {
     switch(m_State) {
-        case completed: return DONE;
-        case demofinished: return DONE;
-        case thatsitmangameovermangameover: return GAMEOVER;
-        case quit: return CANCEL;
-        default: return NONE;
+        case completed:
+            {
+                bool wrapped = g_GameState->LevelCompleted();
+                if(wrapped)
+                {
+                    delete this;
+                    return new CompletionScreen( g_GameState->m_WrapCnt );
+                }
+                else
+                {
+                    delete this;
+                    return new Level();
+                }
+
+            }
+        case demofinished:
+            {
+            }
+        case thatsitmangameovermangameover:
+            {
+                delete this;
+                // TODO
+                return new GameOver(0,0 /* m_Player->Score(), perceivedlevel*/);
+            }
+        case quit:
+            {
+                delete this;
+                return new TitleScreen();
+            }
+        default:
+            return this;    // still going
     }
 }
 
@@ -265,7 +291,7 @@ void Level::DrawHUD()
 
 	glPushMatrix();
 	sprintf( buf, "LEVEL: %d  SCORE: %d  LIVES: %d",
-		m_LevelNum,
+		g_GameState->PerceivedLevel(),
 		g_Player->Score(),
 		g_Player->SpareLives() );
 	glTranslatef( tl.x+20.0f, tl.y-20.0f, 0.0f );
@@ -397,8 +423,8 @@ void Level::EvalState()
 void Level::Restart()
 {
 	++m_Attempt;
-	m_Arena->SetRadius( m_LevelDef.m_ArenaRadius );
-	m_BaiterDelay = m_LevelDef.m_BaiterStart;
+	m_Arena->SetRadius( m_LevelDef->m_ArenaRadius );
+	m_BaiterDelay = m_LevelDef->m_BaiterStart;
 	m_BaiterCount = 0;
 
 	g_Agents->Restart();
@@ -445,10 +471,10 @@ void Level::Populate()
 	std::list< Dude* > newdudes;
 
 	int i;
-	for( i=0; i<m_LevelDef.NumSpawnEntries(); ++i )
+	for( i=0; i<m_LevelDef->NumSpawnEntries(); ++i )
 	{
-		int quant = m_LevelDef.GetSpawnEntry(i).quantity;
-		DudeCreatorFn creatorfn = GetDudeCreator( m_LevelDef.GetSpawnEntry(i).dudetype );
+		int quant = m_LevelDef->GetSpawnEntry(i).quantity;
+		DudeCreatorFn creatorfn = GetDudeCreator( m_LevelDef->GetSpawnEntry(i).dudetype );
 
 		while( quant-- )
 		{
@@ -485,7 +511,7 @@ void Level::DoBaiters()
 			g_Agents->AddUnderlay( new FadeText( g_Player->Pos() + vec2( 0.0f, 40.0f), "LOOK OUT!!!" ) );
 		}
 		++m_BaiterCount;
-		m_BaiterDelay = m_LevelDef.m_BaiterInterval;
+		m_BaiterDelay = m_LevelDef->m_BaiterInterval;
 	}
 }
 
@@ -493,10 +519,10 @@ void Level::DoBaiters()
 // maybe spawn ufos
 void Level::DoUFOs()
 {
-	if( m_LevelDef.m_UFOProbability > 0.0f )
+	if( m_LevelDef->m_UFOProbability > 0.0f )
 	{
 		if( UFO::NumInstances()==0 &&
-			Rnd() <= m_LevelDef.m_UFOProbability )
+			Rnd() <= m_LevelDef->m_UFOProbability )
 		{
 			SoundMgr::Inst().Play( SFX_BAITERALERT );
 			MULTI( UFO, 1 );
@@ -507,7 +533,7 @@ void Level::DoUFOs()
 // update the arena size
 void Level::DoArenaShrinkage()
 {
-	float target = m_LevelDef.m_ArenaRadius - m_ArenaShrinkage;
+	float target = m_LevelDef->m_ArenaRadius - m_ArenaShrinkage;
 	if( target < (float)ARENA_RADIUS_MIN )
 		target = (float)ARENA_RADIUS_MIN;
 	float r = m_Arena->Radius();

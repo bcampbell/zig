@@ -1,12 +1,13 @@
-#include "drawing.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <assert.h>
 #include <string>
 
-#include "texture.h"
-#include "optionsscreen.h"
 #include "colours.h"
+#include "drawing.h"
+#include "texture.h"
+#include "titlescreen.h"
+#include "optionsscreen.h"
 
 
 void OptionsScreen::Render()
@@ -23,9 +24,14 @@ void OptionsScreen::Tick()
 	m_Menu.Tick();
 }
 	
-SceneResult OptionsScreen::Result()
+Scene* OptionsScreen::NextScene()
 {
-	return m_Menu.IsDone() ? DONE : NONE;
+	if (m_Menu.IsDone())
+    {
+        delete this;
+        return new TitleScreen();
+    }
+    return this;
 }
 
 

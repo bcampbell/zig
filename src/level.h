@@ -23,7 +23,7 @@ class Arena;
 class Level : public Scene
 {
 public:
-	Level( LevelDef const& details, int levelnum, bool demomode=false );
+	Level();
 	virtual ~Level();
 
 	// get the size of the bordering circle
@@ -33,12 +33,11 @@ public:
 	// Overrides to implement Scene class
 	virtual void Render();
 	virtual void Tick();
-	virtual SceneResult Result();
+	virtual Scene* NextScene();
 	virtual void HandleKeyDown( SDL_Keysym& keysym );
     virtual void HandleFocusLost();
 private:
 
-	Level();
 	void DrawAgent( Agent& a );
 	void DrawHUD();
 	void Restart();
@@ -65,8 +64,7 @@ private:
 	float m_ArenaShrinkage;
 	Arena* m_Arena;
 
-	LevelDef const& m_LevelDef;
-	int m_LevelNum;
+	LevelDef const* m_LevelDef;
 	Background* m_Background;
 	bool m_AttractMode;
 	PauseMenu*	m_PauseMenu;

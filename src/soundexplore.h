@@ -16,7 +16,7 @@ public:
 	~SoundExplore();
 	virtual void Render();
 	virtual void Tick();
-	virtual SceneResult Result();
+	virtual Scene* NextScene();
 private:
     SoundMenu* m_Menu;
 };

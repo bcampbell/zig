@@ -16,6 +16,7 @@ class Display;
 class Texture;
 class Level;
 class Player;
+class GameState;
 class ControllerMgr;
 class HighScores;
 
@@ -23,21 +24,6 @@ class HighScores;
 
 #define ZIGVERSION "1.1"
 
-
-// stuff that needs to persist over mulitple levels
-struct GameState {
-    GameState() : KeepYourSectorTidy(false), BigHeadMode(false), NoExtraLives(false) {};
-    ~GameState() {};
-
-    // set if all blastable dudes blasted at level end
-    bool KeepYourSectorTidy;
-
-    // double-size player
-    bool BigHeadMode;
-
-    // no more extra-life bonuses
-    bool NoExtraLives;
-};
 
 
 extern GameState* g_GameState;
@@ -75,6 +61,51 @@ extern Texture* g_Textures[TX_NUMTEXTURES];
 #define ARENA_RADIUS_MIN 150
 
 std::string ZigUserDir();
+
+
+// stuff that needs to persist over mulitple levels
+struct GameState {
+    GameState();
+    ~GameState();
+
+    void StartNewGame();
+    void StartNewDemo();
+
+    int PerceivedLevel() const
+        { return g_LevelDefs.size()*m_WrapCnt + m_Level + 1; }
+
+
+    // increment level - returns true if wrapped past last level
+    bool LevelCompleted()
+    {
+        ++m_Level;
+        if( m_Level < (int)g_LevelDefs.size() )
+        {
+            return false;
+        }
+        else
+        {
+            m_Level = 0;
+            ++m_WrapCnt;
+            return true;    // wrapped
+        }
+    }
+
+    // set if all blastable dudes blasted at level end
+    bool KeepYourSectorTidy;
+
+    // double-size player
+    bool BigHeadMode;
+
+    // no more extra-life bonuses
+    bool NoExtraLives;
+
+    int m_Level;
+    int m_WrapCnt;
+    bool m_Demo;
+
+    Player* m_Player;
+};
 
 
 #endif // ZIG_H

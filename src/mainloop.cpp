@@ -16,16 +16,13 @@
 #include <SDL_keyboard.h>
 #include <SDL_events.h>
 
-// ugly. TODO: could ditch this, I'm sure.
-static Scene* s_CurrentScene = 0;
-
-class State;
-
-
 // Minimal statemachine
-static State* s_State = 0;
+static Scene* s_Scene = 0;
 
 
+
+
+#if 0
 class State
 {
 public:
@@ -397,20 +394,23 @@ State* State_EXIT::Update()
 
 // -------------------
 
+
+#endif
+
+
 static void execframe();
 
 void mainloop()
 {
 	Uint32 prevtime;
 
-    s_State = new State_TITLE();
+    s_Scene = new TitleScreen();
 	while( 1 )
 	{
 		prevtime = SDL_GetTicks();
 
-
 		execframe();
-        if( s_State== 0  ) {
+        if( s_Scene== 0  ) {
             break;
         }
 
@@ -432,21 +432,19 @@ void mainloop()
 // perform a single iteration of the mainloop
 void execframe()
 {
-    s_State = s_State->Update();
+    s_Scene = s_Scene->NextScene();
 
-    if( s_State== 0  ) {
+    if( s_Scene== 0  ) {
+        // TODO: cleanup here
         return;
     }
 
-    Scene* scene = s_CurrentScene;
+    Scene* scene = s_Scene;
 
     g_ControllerMgr->Tick();
     
-    if (scene)
-    {
-        scene->Tick();
-        scene->Render();
-    }
+    scene->Tick();
+    scene->Render();
 
     g_Display->Present();
 
@@ -457,23 +455,21 @@ void execframe()
         switch( event.type )
         {
             case SDL_QUIT:
-                // TODO: kill.
-                throw Scene::QuitNotification();
-                break;
-            case SDL_TEXTINPUT:
-                if (scene)
-                { 
-                    scene->HandleTextInput(event.text);
+                {
+                    // Hard exit
+                    delete s_Scene;
+                    s_Scene = 0;
+                    // TODO: cleanup here, as above
+                    return;
                 }
+            case SDL_TEXTINPUT:
+                scene->HandleTextInput(event.text);
                 break;
             case SDL_KEYDOWN:
                 switch( event.key.keysym.sym )
                 {
                     default:
-                        if (scene)
-                        {
-                            scene->HandleKeyDown( event.key.keysym );
-                        }
+                        scene->HandleKeyDown( event.key.keysym );
                         break;
                 }
                 break;
@@ -502,10 +498,7 @@ void execframe()
                     }
                     else if( wev.event == SDL_WINDOWEVENT_FOCUS_LOST)
                     {
-                        if (scene)
-                        {
-                            scene->HandleFocusLost();
-                        }
+                        scene->HandleFocusLost();
                     }
                 }
                 break;

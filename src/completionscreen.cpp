@@ -3,6 +3,7 @@
 //#include "texture.h"
 //#include "colours.h"
 #include "zig.h"
+#include "level.h"
 
 #include <SDL_opengl.h>
 #include <assert.h>
@@ -67,9 +68,18 @@ void CompletionScreen::Tick()
 }
 	
 
-SceneResult CompletionScreen::Result()
+Scene* CompletionScreen::NextScene()
 {
-	return m_Done ? DONE : NONE;
+    if (m_Done)
+    {
+        // onward...
+        delete this;
+        return new Level();
+    }
+    else
+    {
+        return this;
+    }
 }
 
 
