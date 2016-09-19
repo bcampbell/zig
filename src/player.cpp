@@ -6,6 +6,7 @@
 #include "dudes.h"
 #include "drawing.h"
 #include "effects.h"
+#include "gamestate.h"
 #include "level.h"
 #include "player.h"
 #include "soundmgr.h"

@@ -3,6 +3,7 @@
 #include "agentmanager.h"
 #include "bonuses.h"
 #include "drawing.h"
+#include "gamestate.h"
 #include "zig.h"
 #include "effects.h"
 

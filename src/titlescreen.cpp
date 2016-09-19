@@ -8,6 +8,7 @@
 #include "display.h"
 #include "drawing.h"
 #include "gameover.h"
+#include "gamestate.h"
 #include "highscorescreen.h"
 #include "level.h"
 #include "mathutil.h"

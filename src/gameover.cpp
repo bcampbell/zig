@@ -9,6 +9,7 @@
 #include "drawing.h"
 #include "texture.h"
 #include "gameover.h"
+#include "gamestate.h"
 #include "highscores.h"
 #include "highscorescreen.h"
 #include "player.h"

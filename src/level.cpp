@@ -18,6 +18,7 @@
 #include "drawing.h"
 #include "effects.h"
 #include "gameover.h"
+#include "gamestate.h"
 #include "highscorescreen.h"
 #include "humanoid.h"
 #include "leveldef.h"
