@@ -199,7 +199,9 @@ void Autopilot::Tick()
 LatchedController::LatchedController( Controller& source ) :
     m_Source(source),
     m_XCnt(0),
-    m_YCnt(0)
+    m_YCnt(0),
+    m_PrevX(0.0f),
+    m_PrevY(0.0f)
 {
 }
 

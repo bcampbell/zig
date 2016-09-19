@@ -82,6 +82,7 @@ void RetroGrid::Calc( float x, float y, Colour& out )
 	out.r = (powf( rx, 128.0f ) + powf( ry, 128.0f ) );
 	out.g = powf( rx, 8.0f ) + powf( ry, 8.0f );
 	out.b = (powf( rx, 128.0f ) + powf( ry, 128.0f ) );
+    out.a = 1.0f;
 
 	out *= m_Brightness;
 }
