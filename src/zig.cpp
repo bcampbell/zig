@@ -34,11 +34,6 @@
 #endif
 
 
-#ifdef CRIPPLED
-	#include "crippleclock.h"
-	static bool s_LaunchWeb = false;
-#endif // CRIPPLED
-
 ZigConfig g_Config;
 std::vector<LevelDef> g_LevelDefs;
 
@@ -61,94 +56,97 @@ static void InitZigUserDir();
 
 static void InitTextures();
 static void FreeTextures();
+static void startup( int argc, char*argv[] );
+static void shutdown();
+
+
+void startup( int argc, char*argv[] )
+{
+    InitZigUserDir();
+    log_open(JoinPath(ZigUserDir(),"log.txt").c_str());
+    log_infof("Started\n");
+
+    g_Config.Init( argc, argv );
+
+    // set up memory pooling system for agents
+    Agent_Startup();
+
+    //log_open("-");
+    Resources::Init();
+
+    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK|SDL_INIT_GAMECONTROLLER) != 0)
+    {
+        Wobbly e("SDL_Init() failed: %s\n", SDL_GetError() );
+        throw e;
+    }
+
+#ifdef ZIG_INSTALL_DIR
+    if( chdir( ZIG_INSTALL_DIR ) < 0 )
+    {
+        throw Wobbly( "Couldn't change to " ZIG_INSTALL_DIR );
+    }
+#endif
+    g_ControllerMgr = new ControllerMgr();
+    g_HighScores = new HighScores();
+    g_Display = new Display( g_Config.fullscreen );
+
+    InitTextures();
+
+    //----------------------------------------------
+    // Sound Init
+#if !defined(DISABLE_SOUND)
+    if( !g_Config.nosound )
+    {
+        try
+        {
+            RealSoundMgr::Create();
+        }
+        catch( Wobbly& e )
+        {
+            log_errorf("Error starting sound: %s - running silent\n",e.what() );
+        }
+    }
+#endif
+    if( !SoundMgr::Running() )
+        NullSoundMgr::Create();
+
+    //----------------------------------------------
+
+    srand( SDL_GetTicks() );
+
+    //----------------------------------------------
+    {
+        std::string levelfile = Resources::Map( "levels" );
+        LevelParser parser( levelfile, g_LevelDefs );
+    }
+
+    g_GameState = new GameState();
+
+}
+
+
+
 
 int main( int argc, char*argv[] )
 {
+    int retCode = 0;
 	try
 	{
-		InitZigUserDir();
-        log_open(JoinPath(ZigUserDir(),"log.txt").c_str());
-        log_infof("Started\n");
-
-		g_Config.Init( argc, argv );
-
-
-		// set up memory pooling system for agents
-		Agent_Startup();
-
-        //log_open("-");
-		Resources::Init();
-
-		if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK|SDL_INIT_GAMECONTROLLER) != 0)
-		{
-			Wobbly e("SDL_Init() failed: %s\n", SDL_GetError() );
-			throw e;
-		}
-
-//		SDL_WM_SetCaption( "Zig", 0 );
-// TODO: SDL_SetWindowTitle(
-
-#ifdef ZIG_INSTALL_DIR
-		if( chdir( ZIG_INSTALL_DIR ) < 0 )
-		{
-			throw Wobbly( "Couldn't change to " ZIG_INSTALL_DIR );
-		}
-#endif
-        g_ControllerMgr = new ControllerMgr();
-        g_HighScores = new HighScores();
-		g_Display = new Display( g_Config.fullscreen );
-
-        InitTextures();
-
-		//----------------------------------------------
-		// Sound Init
-#if !defined(DISABLE_SOUND)
-		if( !g_Config.nosound )
-		{
-			try
-			{
-				RealSoundMgr::Create();
-			}
-			catch( Wobbly& e )
-			{
-				log_errorf("Error starting sound: %s - running silent\n",e.what() );
-			}
-		}
-#endif
-		if( !SoundMgr::Running() )
-			NullSoundMgr::Create();
-
-		//----------------------------------------------
-
-
-
-		srand( SDL_GetTicks() );
-
-
-		//----------------------------------------------
-		{
-			std::string levelfile = Resources::Map( "levels" );
-			LevelParser parser( levelfile, g_LevelDefs );
-		}
-
-        g_GameState = new GameState();
-
-
-		//----------------------------------------------
-		// MAIN
-		//----------------------------------------------
-
-
+        startup(argc, argv);
         mainloop();
-
-
 	}
 	catch( Wobbly& e )
 	{
 		// uhoh...
 		log_errorf("ERROR: %s\n", e.what() );
+        retCode = 1;
 	}
+    shutdown();
+	return retCode;
+}
 
+void shutdown()
+{
     delete g_GameState;
     delete g_HighScores;
     delete g_ControllerMgr;
@@ -163,14 +161,10 @@ int main( int argc, char*argv[] )
 
 	SDL_Quit();
 	Agent_Shutdown();
-
-#ifdef CRIPPLED
-	if( s_LaunchWeb )
-		CrippleClock::LaunchWebSite();
-#endif	// CRIPPLED
     log_close();
-	return 0;
 }
+
+
 
 // create/load global textures
 void InitTextures()
