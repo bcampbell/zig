@@ -38,7 +38,6 @@ public:
     virtual void HandleFocusLost();
 private:
 
-	void DrawAgent( Agent& a );
 	void DrawHUD();
 	void Restart();
 	void Populate();

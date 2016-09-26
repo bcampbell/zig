@@ -28,9 +28,6 @@
 #include "texture.h"
 #include "titlescreen.h"
 #include "zig.h"
-#ifdef CRIPPLED
-	#include "crippleclock.h"
-#endif // CRIPPLED
 
 // This template doesn't seem to work in visual c!!!
 
@@ -228,15 +225,6 @@ void Level::Tick()
 		GiveKeepYourSectorTidyBonus();
 
 	EvalState();
-
-#ifdef CRIPPLED
-	if( !m_AttractMode )
-	{
-		CrippleClock::ReduceRemainingTime( 1.0f/TARGET_FPS );
-		if( CrippleClock::Expired() )
-			m_State = thatsitmangameovermangameover;
-	}
-#endif // CRIPPLED
 }
 
 // pause if we lose focus
@@ -275,16 +263,6 @@ void Level::Render()
 		m_ScreenshotFlag = false;
 		g_Display->TakeScreenshot();
 	}
-}
-
-// helper for RenderAll()
-void Level::DrawAgent( Agent& a )
-{
-	glPushMatrix();
-	glTranslatef( a.Pos().x, a.Pos().y, 0.0f );
-	glRotatef( r2d( -a.Heading() ), 0.0f, 0.0f, 1.0f );
-	a.Draw();
-	glPopMatrix();
 }
 
 
