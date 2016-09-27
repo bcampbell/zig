@@ -160,43 +160,44 @@ Baiter::Baiter( vec2 const& pos ) : m_Spd( vec2::ZERO )
 
 void Baiter::Draw()
 {
+    const float verts[8*3*2] = {
+		-4.0f,4.0f, 0.0f,14.0f, 4.0f,4.0f,
+		 4.0f,4.0f, 14.0f,0.0f, 4.0f,-4.0f,
+		 -4.0f,-4.0f, 0.0f,-14.0f, 4.0f,-4.0f,
+		 -4.0f,4.0f, -14.0f,0.0f, -4.0f,-4.0f,
+
+		-2.0f,2.0f, 0.0f,10.0f, 2.0f,2.0f,
+		 2.0f,2.0f, 10.0f,0.0f, 2.0f,-2.0f,
+		 -2.0f,-2.0f, 0.0f,-10.0f, 2.0f,-2.0f,
+		 -2.0f,2.0f, -10.0f,0.0f, -2.0f,-2.0f,
+    };
+    const float colours[8*3*3] = {
+        0.6f,0.0f,0.0f, 0.6f,0.0f,0.0f, 0.6f,0.0f,0.0f,
+        0.6f,0.0f,0.0f, 0.6f,0.0f,0.0f, 0.6f,0.0f,0.0f,
+        0.6f,0.0f,0.0f, 0.6f,0.0f,0.0f, 0.6f,0.0f,0.0f,
+        0.6f,0.0f,0.0f, 0.6f,0.0f,0.0f, 0.6f,0.0f,0.0f,
+
+        1.0f,0.8f,0.0f, 1.0f,0.8f,0.0f, 1.0f,0.8f,0.0f,
+        1.0f,0.8f,0.0f, 1.0f,0.8f,0.0f, 1.0f,0.8f,0.0f,
+        1.0f,0.8f,0.0f, 1.0f,0.8f,0.0f, 1.0f,0.8f,0.0f,
+        1.0f,0.8f,0.0f, 1.0f,0.8f,0.0f, 1.0f,0.8f,0.0f,
+    };
+
+
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
 	glBegin( GL_TRIANGLES );
-		glColor3f( 0.6f, 0.0f, 0.0f );
-		glVertex2f( -4.0f, 4.0f );
-		glVertex2f( 0.0f, 14.0f );
-		glVertex2f( 4.0f, 4.0f );
-
-		glVertex2f( 4.0f, 4.0f );
-		glVertex2f( 14.0f, 0.0f );
-		glVertex2f( 4.0f, -4.0f );
-		
-		glVertex2f( -4.0f, -4.0f );
-		glVertex2f( 0.0f, -14.0f );
-		glVertex2f( 4.0f, -4.0f );
-
-		glVertex2f( -4.0f, 4.0f );
-		glVertex2f( -14.0f, 0.0f );
-		glVertex2f( -4.0f, -4.0f );
-		
-		glColor3f( 1.0f, 0.8f, 0.0f );
-		glVertex2f( -2.0f, 2.0f );
-		glVertex2f( 0.0f, 10.0f );
-		glVertex2f( 2.0f, 2.0f );
-
-		glVertex2f( 2.0f, 2.0f );
-		glVertex2f( 10.0f, 0.0f );
-		glVertex2f( 2.0f, -2.0f );
-		
-		glVertex2f( -2.0f, -2.0f );
-		glVertex2f( 0.0f, -10.0f );
-		glVertex2f( 2.0f, -2.0f );
-
-		glVertex2f( -2.0f, 2.0f );
-		glVertex2f( -10.0f, 0.0f );
-		glVertex2f( -2.0f, -2.0f );
+    int i;
+    const float* pc = colours;
+    const float* pv = verts;
+    for(i=0;i<8*3;++i)
+    {
+        glColor3f( pc[0], pc[1], pc[2]);
+        pc += 3;
+        glVertex2f( pv[0], pv[1] );
+        pv += 2;
+    }
 	glEnd();
 }
 
@@ -359,6 +360,7 @@ void Grunt::Draw()
 			
 			glColor3f( c.r, c.g, c.b );
 			glVertex2f( ss* -w/2.0f, -cs*(f-0.5f)*totallen);
+			glColor3f( c.r, c.g, c.b );
 			glVertex2f( ss* w/2.0f, -cs*(f-0.5f)*totallen);
 		}
 	glEnd();
@@ -413,8 +415,8 @@ void Wiggler::Draw()
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
+    glColor3f( 0.0f, 1.0f, 0.0f );
 	glBegin( GL_TRIANGLES );
-		glColor3f( 0.0f, 1.0f, 0.0f );
 		glVertex2f( 0.0f, 10.0f );
 		glVertex2f( 5.0f, -10.0f );
 		glVertex2f( -5.0f, -10.0f );
@@ -482,12 +484,16 @@ void Flanker::Draw()
 
 		glColor3f( 0.6f, 0.2f, 0.85f );
 		glVertex2f( 0.0f, 10.0f );
+		glColor3f( 0.6f, 0.2f, 0.85f );
 		glVertex2f( 0.0f, -10.0f );
+		glColor3f( 0.6f, 0.2f, 0.85f );
 		glVertex2f( -10.0f, -4.0f );
 		
 		glColor3f( 0.5f, 0.0f, 0.7f );
 		glVertex2f( 0.0f, 10.0f );
+		glColor3f( 0.5f, 0.0f, 0.7f );
 		glVertex2f( 10.0f, -4.0f );
+		glColor3f( 0.5f, 0.0f, 0.7f );
 		glVertex2f( 0.0f, -10.0f );
 
 		glEnd();
@@ -497,19 +503,17 @@ void Flanker::Draw()
 		// charge!
 		glBegin( GL_TRIANGLES );
 		glColor3f( 0.9f, 0.2f, 0.2f );
-//		glVertex2f( 0.0f, 10.0f );
-//		glVertex2f( 0.0f, -2.0f );
-//		glVertex2f( -7.0f, -10.0f );
 		glVertex2f( 0.0f, 11.0f );
+		glColor3f( 0.9f, 0.2f, 0.2f );
 		glVertex2f( 0.0f, -11.0f );
+		glColor3f( 0.9f, 0.2f, 0.2f );
 		glVertex2f( -9.0f, -4.0f );
 		
 		glColor3f( 0.5f, 0.0f, 0.5f );
-//		glVertex2f( 0.0f, 10.0f );
-//		glVertex2f( 7.0f, -10.0f );
-//		glVertex2f( 0.0f, -2.0f );
 		glVertex2f( 0.0f, 11.0f );
+		glColor3f( 0.5f, 0.0f, 0.5f );
 		glVertex2f( 9.0f, -4.0f );
+		glColor3f( 0.5f, 0.0f, 0.5f );
 		glVertex2f( 0.0f, -11.0f );
 		glEnd();
 	}
@@ -594,9 +598,8 @@ void WallHugger::Draw()
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
-	glBegin( GL_TRIANGLES );
-	glColor3f( 0.0f, 0.0f, 1.0f );
 	glColor3f( 0.5f, 0.0f, 0.7f );
+	glBegin( GL_TRIANGLES );
 	glVertex2f( 0.0f, 10.0f );
 	glVertex2f( 15.0f, -10.0f );
 	glVertex2f( -15.0f, -10.0f );
@@ -1079,9 +1082,10 @@ void HeavyThing::Draw()
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
-	glColor3f( 0.0f, 0.5f, 0.0f );
 	glBegin( GL_TRIANGLE_FAN );
+		glColor3f( 0.5f, 0.5f, 0.5f );
 		glVertex2f( 0.0f, 0.0f );
+		glColor3f( 1.0f, 1.0f, 1.0f );
 		glVertex2f( 8.0f, 16.0f );
 		glColor3f( 1.0f, 1.0f, 1.0f );
 		glVertex2f( 16.0f, 8.0f );
@@ -1328,7 +1332,6 @@ void Amoeba::Draw()
 		glColor4f( 0.2f, 0.0f, 0.7f, 0.2f );
 		glVertex2f( 0.0f, 0.0f );
 
-		glColor4f( 0.6f, 0.0f, 0.0f, 0.8f );
 
 
 		float theta = m_Timer;
@@ -1340,15 +1343,18 @@ void Amoeba::Draw()
 
 		it = m_Verts.begin();
 		vec2 first = it->Heading * (r + sin(theta + it->Phase)*var);
+		glColor4f( 0.6f, 0.0f, 0.0f, 0.8f );
 		glVertex2f( first.x, first.y );
 		++it;
 		
 		while( it!=m_Verts.end() )
 		{
 			vec2 v = it->Heading * (r + sin(theta + it->Phase)*var);
+            glColor4f( 0.6f, 0.0f, 0.0f, 0.8f );
 			glVertex2f( v.x, v.y );
 			++it;
 		}
+		glColor4f( 0.6f, 0.0f, 0.0f, 0.8f );
 		glVertex2f( first.x, first.y );
 	glEnd();
 }
@@ -1459,12 +1465,16 @@ void Zipper::Draw()
 	glBegin( GL_TRIANGLES );
 	glColor3f( 1.0f, 0.2f, 0.2f );
 	glVertex2f( 0.0f, 16.0f );
+	glColor3f( 1.0f, 0.2f, 0.2f );
 	glVertex2f( 0.0f, 3.0f );
+	glColor3f( 1.0f, 0.2f, 0.2f );
 	glVertex2f( 10.0f, -3.0f );
 	
 	glColor3f( 0.7f, 0.0f, 0.0f );
 	glVertex2f( 0.0f, 16.0f );
+	glColor3f( 0.7f, 0.0f, 0.0f );
 	glVertex2f( -10.0f, -3.0f );
+	glColor3f( 0.7f, 0.0f, 0.0f );
 	glVertex2f( 0.0f, 3.0f );
 	glEnd();
 }
@@ -2103,8 +2113,8 @@ void MineLayer::Draw()
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
 
+    glColor3f(c.r, c.g, c.b ); // yellow 
 	glBegin(GL_TRIANGLE_FAN );
-		glColor3f(c.r, c.g, c.b ); // yellow 
 		glVertex2f( 0.0f, 0.0f );
 		glVertex2f(-8.0,-8.0);
 		glVertex2f(-16.0, 0.0);
@@ -2183,25 +2193,30 @@ void Mine::Draw()
 
 		// not exploding
 		glDisable( GL_BLEND );
-		Colour c=evilrange.Get(m_Cyc,false);
-		c = ColourLerp( c, Colour::WHITE, factor*factor*factor );
-		glColor3f( c.r, c.g, c.b );
+		Colour c1=evilrange.Get(m_Cyc,false);
+		c1 = ColourLerp( c1, Colour::WHITE, factor*factor*factor );
 
+		Colour c2=evilrange.Get(m_Cyc+0.50f,false);
+		c2 = ColourLerp( c2, Colour::WHITE, factor*factor*factor );
 		glBegin( GL_LINES );
+            glColor3f( c1.r, c1.g, c1.b );
 			glVertex2f( 0.0f, 5.0f );
+            glColor3f( c1.r, c1.g, c1.b );
 			glVertex2f( 0.0f,-5.0f );
 
+            glColor3f( c1.r, c1.g, c1.b );
 			glVertex2f( 5.0f, 0.0f );
+            glColor3f( c1.r, c1.g, c1.b );
 			glVertex2f(-5.0f, 0.0f );
 
-		c=evilrange.Get(m_Cyc+0.50f,false);
-		c = ColourLerp( c, Colour::WHITE, factor*factor*factor );
-		glColor3f( c.r, c.g, c.b );
-
+            glColor3f( c2.r, c2.g, c2.b );
 			glVertex2f(-3.0f,-3.0f );
+            glColor3f( c2.r, c2.g, c2.b );
 			glVertex2f( 3.0f, 3.0f );
 
+            glColor3f( c2.r, c2.g, c2.b );
 			glVertex2f( 3.0f,-3.0f );
+            glColor3f( c2.r, c2.g, c2.b );
 			glVertex2f(-3.0f, 3.0f );
 		glEnd();
 	}
@@ -2391,41 +2406,59 @@ void Divider::Draw()
 		// light
 		glColor3f( 0.8f, 0.8f, 1.0f );
 		glVertex2f( -16.0f, 8.0f );
+		glColor3f( 0.8f, 0.8f, 1.0f );
 		glVertex2f( -8.0f, 8.0f );
+		glColor3f( 0.8f, 0.8f, 1.0f );
 		glVertex2f( -4.0f, 0.0f );
 
 		glColor3f( 0.5f, 0.5f, 0.8f );
 		glVertex2f( -8.0f, 8.0f );
+		glColor3f( 0.5f, 0.5f, 0.8f );
 		glVertex2f( 8.0f, 8.0f );
+		glColor3f( 0.5f, 0.5f, 0.8f );
 		glVertex2f( -4.0f, 0.0f );
 
+		glColor3f( 0.5f, 0.5f, 0.8f );
 		glVertex2f( 8.0f, 8.0f );
+		glColor3f( 0.5f, 0.5f, 0.8f );
 		glVertex2f( 4.0f, 0.0f );
+		glColor3f( 0.5f, 0.5f, 0.8f );
 		glVertex2f( -4.0f, 0.0f );
 
 		glColor3f( 0.2f, 0.2f, 0.6f );
 		glVertex2f( 8.0f, 8.0f );
+		glColor3f( 0.2f, 0.2f, 0.6f );
 		glVertex2f( 16.0f, 8.0f );
+		glColor3f( 0.2f, 0.2f, 0.6f );
 		glVertex2f( 4.0f, 0.0f );
 
 		// dark
 		glColor3f( 0.5f, 0.5f, 0.7f );
 		glVertex2f( -16.0f, -8.0f );
+		glColor3f( 0.5f, 0.5f, 0.7f );
 		glVertex2f( -8.0f, -8.0f );
+		glColor3f( 0.5f, 0.5f, 0.7f );
 		glVertex2f( -4.0f, 0.0f );
 
 		glColor3f( 0.2f, 0.2f, 0.5f );
 		glVertex2f( -8.0f, -8.0f );
+		glColor3f( 0.2f, 0.2f, 0.5f );
 		glVertex2f( 8.0f, -8.0f );
+		glColor3f( 0.2f, 0.2f, 0.5f );
 		glVertex2f( -4.0f, 0.0f );
 
+		glColor3f( 0.2f, 0.2f, 0.5f );
 		glVertex2f( 8.0f, -8.0f );
+		glColor3f( 0.2f, 0.2f, 0.5f );
 		glVertex2f( 4.0f, 0.0f );
+		glColor3f( 0.2f, 0.2f, 0.5f );
 		glVertex2f( -4.0f, 0.0f );
 
 		glColor3f( 0.0f, 0.0f, 0.3f );
 		glVertex2f( 8.0f, -8.0f );
+		glColor3f( 0.0f, 0.0f, 0.3f );
 		glVertex2f( 16.0f, -8.0f );
+		glColor3f( 0.0f, 0.0f, 0.3f );
 		glVertex2f( 4.0f, 0.0f );
 
 	
