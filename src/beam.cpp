@@ -5,6 +5,23 @@
 #include "zig.h"
 #include <SDL_opengl.h>
 
+struct vert_xyuv { float x,y,u,v; };
+
+void drawWideBeam(float width, float length, float time);
+
+void drawQuads_xyuv( const vert_xyuv* verts, const int* indices, int numQuads)
+{
+    glBegin( GL_QUADS );
+    int i;
+    for (i=0; i<numQuads*4; ++i)
+    {
+        const vert_xyuv& v = verts[indices[i]];
+        glTexCoord2f( v.u, v.v );
+        glVertex2f( v.x, v.y );
+    }
+    glEnd();
+}
+
 
 
 Beam::Beam( Agent& owner, vec2 const& relpos, float relheading, Params const* params ):
@@ -74,6 +91,102 @@ void Beam::Tick()
 }
 
 
+#define N_BEAM_SEGS 64
+
+//static
+void Beam::DrawBeamOn( float width, float length, float time)
+{
+
+        drawWideBeam(width*2,length,time);
+
+        glColor3f( 1.0f, 1.0f, 1.0f);
+        glEnable( GL_TEXTURE_2D );
+        glBindTexture( GL_TEXTURE_2D,g_Textures[TX_NARROWBEAMGRADIENT]->ID() );
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+        glBegin( GL_QUADS );
+        {
+            const int n_segs = N_BEAM_SEGS;
+            float ystep = length/(float)n_segs;
+            float y=0;
+            int i;
+            for(i=0; i<=n_segs; ++i)
+            {
+                float x = width/2;
+
+    //            x += Rnd(-1.0f,1.0f);
+
+                glTexCoord2f(0.0f,(1.0f/n_segs)*i);
+                glVertex2f( -x, y );
+                glTexCoord2f(1.0f,(1.0f/n_segs)*i);
+                glVertex2f( x, y );
+
+                glTexCoord2f(1.0f,(1.0f/n_segs)*(i+1));
+                glVertex2f( x, y+ystep);
+                glTexCoord2f(0.0f,(1.0f/n_segs)*(i+1));
+                glVertex2f( -x, y+ystep );
+
+                y += ystep;
+            }
+        }
+        glEnd();
+}
+
+// draw as long segmented rectangle upwards
+void drawWideBeam(float width, float length, float time)
+{
+    vert_xyuv verts[(N_BEAM_SEGS+1)*2 ];
+    int indices[N_BEAM_SEGS*4];
+
+    {
+        vert_xyuv *p = verts;
+        int i;
+        for(i=0; i<(N_BEAM_SEGS+1); ++i)
+        {
+            float t= (float)i/(float)(N_BEAM_SEGS+1);
+            float y = length*t;
+            float theta = time + t*2.0f*3.14f;
+
+            float wibble = width/2 + (sin(theta) * sin(theta*theta))*width/2 + sin(theta*8.0f)*width/5 + sin(theta*19.0f)*width/10;
+
+            // -ve x
+            p->x = -(width/2 + wibble);
+            p->y = y;
+            p->u = 0.2f;    // u
+            p->v = 0.0f;    // v
+            ++p;
+            // +ve x
+            p->x = (width/2 + wibble);
+            p->y = y;
+            p->u = 0.8f;    // u
+            p->v = 0.0f;    // v
+            ++p;
+        }
+    }
+
+
+    {
+        // quads
+        int *p = indices;
+        int i;
+        for(i=0; i<N_BEAM_SEGS; ++i)
+        {
+            int base = i*2;
+            *p++ = base + 0;
+            *p++ = base + 1;
+            *p++ = base + 3;
+            *p++ = base + 2;
+        }
+    }
+
+
+    glEnable( GL_TEXTURE_2D );
+    glBindTexture( GL_TEXTURE_2D,g_Textures[TX_WIDEBEAMGRADIENT]->ID() );
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+    glColor3f( 0.8f, 0.0f, 0.0f);
+    drawQuads_xyuv(verts,indices,N_BEAM_SEGS);
+}
+
+
 
 void Beam::Draw()
 {
@@ -87,88 +200,17 @@ void Beam::Draw()
 	if( m_State == WARMUP )
 	{
 		float factor = Rnd();
-		w = 2.0f * (1.0f-factor);
+		w = 1.0f + (1.0f*factor);
         l = m_Timer * 1000.0f;
         if(l>m_Params.length)
             l = m_Params.length;
 
-        glColor3f( 0.2f, 0.0f, 0.0f);
-        glEnable( GL_TEXTURE_2D );
-        glBindTexture( GL_TEXTURE_2D,g_Textures[TX_WIDEBEAMGRADIENT]->ID() );
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-        const int n_segs = 16;
-        glBegin( GL_QUAD_STRIP );
-        {
-            int i;
-            for(i=0; i<=n_segs; ++i)
-            {
-                float t=(float)i/(float)n_segs;
-                float y = t*l;
-                float x = w*2;
-
-                glTexCoord2f(0.2f,0.0f);
-                glVertex2f( -x, y );
-                glTexCoord2f(0.8f,0.0f);
-                glVertex2f( x, y );
-            }
-        }
-        glEnd();
+        drawWideBeam(w,l,m_Timer);
 	}
 	else
     {
-            // ON
-            w = m_Params.width + Rnd(-2.0f,2.0f);
-            c = Colour( 1.0f,1.0f,1.0f,1.0f);
-
-
-        // draw as long segmented rectangle upwards
-        glColor3f( 1.0f, 0.0f, 0.0f);
-        glEnable( GL_TEXTURE_2D );
-        glBindTexture( GL_TEXTURE_2D,g_Textures[TX_WIDEBEAMGRADIENT]->ID() );
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-        const int n_segs = 16;
-        glBegin( GL_QUAD_STRIP );
-        {
-            int i;
-            for(i=0; i<=n_segs; ++i)
-            {
-                float t=(float)i/(float)n_segs;
-                float y = t*l;
-                float x = w*2;
-
-                float theta = 8*t - m_Timer*2;
-
-                x += (sin(theta*3)*sin(theta*5))*14.0f;  //Rnd(-8.0f,8.0f);
-
-                glTexCoord2f(0.2f,0.0f);
-                glVertex2f( -x, y );
-                glTexCoord2f(0.8f,0.0f);
-                glVertex2f( x, y );
-            }
-        }
-        glEnd();
-
-        glColor3f( 1.0f, 1.0f, 1.0f);
-        glEnable( GL_TEXTURE_2D );
-        glBindTexture( GL_TEXTURE_2D,g_Textures[TX_NARROWBEAMGRADIENT]->ID() );
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-        glBegin( GL_QUAD_STRIP );
-        {
-            int i;
-            for(i=0; i<=n_segs; ++i)
-            {
-                float y = i*(l/n_segs);
-                float x = w/2;
-
-    //            x += Rnd(-1.0f,1.0f);
-
-                glTexCoord2f(0.0f,(1.0f/n_segs)*i);
-                glVertex2f( -x, y );
-                glTexCoord2f(1.0f,(1.0f/n_segs)*i);
-                glVertex2f( x, y );
-            }
-        }
-        glEnd();
+        // ON
+        DrawBeamOn(m_Params.width + Rnd(-2.0f, 2.0f), l, m_Timer);
     }
 }
 

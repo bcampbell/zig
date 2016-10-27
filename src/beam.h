@@ -31,6 +31,8 @@ public:
 	virtual void Tick();
 	virtual void Respawn();
 	virtual void OnHitPlayer( Player& player );
+
+    static void DrawBeamOn( float width, float length, float time);
 private:
 	Agent& m_Owner;
 	vec2 m_RelPos;
