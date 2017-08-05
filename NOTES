@@ -8,5 +8,27 @@ minelayers...  maybe do straight runs?
 dude which expands when you shoot it? (then explodes in shower of shards) pufferfish?
 
 
+recording:
+
+$ recordmydesktop --windowid $(xwininfo | awk '/Window id:/ {print $4}') -o screencast.ogv --fps 60 --overwrite --no-cursor --no-frame
+
+http://forum.kerbalspaceprogram.com/threads/58448-Recording-video-and-audio-on-Linux
+http://www.tecmint.com/record-ubuntu-desktop-screen-using-avconv/
+http://stackoverflow.com/questions/4292535/linux-screen-desktop-video-capture-over-network-and-vnc-framerate?rq=1
+http://www.bauer-power.net/2010/05/alternative-to-gtk-recordmydesktop-in.html
+
+
+
+
+Use full gnome desktop
+unplug headphones/external speakers (!)
+run pavucontrol
+use pavucontrol to set ffmpeg recording from internal stero monitor
+record losslessly:
+  $ ffmpeg -framerate 60 -video_size 640x480 -f xgrab -i :0.0+10,40 -f alsa -ac 2 -i pulse -vcodec libx264 -crf 0 -preset ultrafast output.mkv
+
+compress video:
+  $ ffmpeg -i output.mkv -vcodec libx264 -preset slow -crf 22 -acodec copy output_tiny.mkv
+
 
 
