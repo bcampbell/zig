@@ -52,6 +52,21 @@ void Arena::Draw()
 
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
+
+#if 0
+    // marker at 'north' - handy for debugging
+    
+    glPushMatrix();
+    glTranslatef(0.0f, m_Radius,0.0f);
+	glColor3f( 1.0f, 1.0f, 1.0f );
+    glBegin(GL_TRIANGLES);
+        glVertex2f(0.0f, 0.0f);
+        glVertex2f(8.0f, -4.0f);
+        glVertex2f(-8.0f, -4.0f);
+    glEnd();
+    glPopMatrix();
+#endif
+
 	glColor3f( 0.0f, 0.0f, 1.0f );
 	glBegin(GL_LINE_LOOP);
 	for( theta=0.0f; theta<twopi; theta=theta + twopi/SEGMENTS)

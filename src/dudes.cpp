@@ -62,6 +62,7 @@ static const DudeCreationInfo s_DudeCreationTable[] =
 	{ "Agitator",	Agitator::Create },
 	{ "Boid",		Boid::Create },
 	{ "Divider",	Divider::Create },
+	{ "Puffer",     Puffer::Create },
 };
 
 
@@ -105,11 +106,21 @@ void Dude::OnHitBullet( Bullet& bullet )
 }
 
 
-void Dude::StandardDeath( Bullet& causeofdeath, int points, int fragcount )
+void Dude::StandardDeath( Bullet& b, int points, int fragcount )
+{
+    StandardDeath(b.Owner(), points, fragcount);
+}
+
+void Dude::BigArseDeath( Bullet& b, int points)
+{
+    BigArseDeath(b.Owner(), points);
+}
+
+void Dude::StandardDeath( Player& causeofdeath, int points, int fragcount )
 {
 	char scoretext[32];
 	sprintf(scoretext,"%d",points);
-	causeofdeath.Owner().GivePoints( points );
+	causeofdeath.GivePoints( points );
 
 	g_Agents->AddUnderlay( new FadeText( Pos(), scoretext ) );
 	int i;
@@ -120,11 +131,11 @@ void Dude::StandardDeath( Bullet& causeofdeath, int points, int fragcount )
 	SpawnBonusMaybe(Pos());
 }
 
-void Dude::BigArseDeath( Bullet& causeofdeath, int points )
+void Dude::BigArseDeath( Player& causeofdeath, int points )
 {
 	char scoretext[32];
 	sprintf(scoretext,"%d",points);
-	causeofdeath.Owner().GivePoints( points );
+	causeofdeath.GivePoints( points );
 
 	g_Agents->AddUnderlay( new FadeText( Pos(), scoretext ) );
 	int i;
@@ -600,29 +611,50 @@ void WallHugger::Draw()
 	glShadeModel( GL_FLAT );
 	glColor3f( 0.5f, 0.0f, 0.7f );
 	glBegin( GL_TRIANGLES );
-	glVertex2f( 0.0f, 10.0f );
-	glVertex2f( 15.0f, -10.0f );
-	glVertex2f( -15.0f, -10.0f );
+	glVertex2f( 0.0f, 5.0f );
+	glVertex2f( 15.0f, -5.0f );
+	glVertex2f( -15.0f, -5.0f );
 	glEnd();
 }
 
+// custom mod function to handle -ve values as expected
+static float zigmod(float a, float n)
+{
+    return a - floorf(a/n) * n;
+}
+
+
 void WallHugger::Tick()
 {
-	//
-	vec2 plrpos = g_Player->Pos();
-	float da = fmod( atan2( plrpos.x, plrpos.y )+pi - m_Angle, twopi );
-	if( da<pi )
-		m_AngularSpd -= m_AngularAccel;
-	else
-		m_AngularSpd += m_AngularAccel;
+    if( g_Player->Pos().LenSq() > 4.0f ) {
 
-	// move
-	m_Angle += m_AngularSpd;
-	m_AngularSpd *= 0.95f;
+    	float pa = atan2f(g_Player->Pos().y, g_Player->Pos().x);
 
-	TurnTo( m_Angle+pi );
+        float d = pa - m_Angle;
+        d = zigmod(d+pi, twopi) - pi;
+
+
+        if( d>0.0f) {
+            m_AngularSpd +=0.001f;
+        } else {
+            m_AngularSpd -=0.001f;
+        }
+
+    }
+
+    m_Angle = m_Angle+m_AngularSpd;
+    while( m_Angle<-pi) {
+        m_Angle += twopi;
+    }
+    while( m_Angle>pi) {
+        m_Angle -= twopi;
+    }
+    m_AngularSpd *= 0.95f;
+
+
+	TurnTo( - m_Angle - (pi/2.0f) );
 	float r = g_CurrentLevel->ArenaRadius();
-	MoveTo( vec2(r*(float)sin(m_Angle), r*(float)cos(m_Angle)) );
+	MoveTo( vec2(r*cosf(m_Angle), r*sinf(m_Angle)) );
 
 	if( Rnd() < 0.02 )
 	{
@@ -652,9 +684,11 @@ void WallHugger::OnHitBullet( Bullet& bullet )
 
 void WallHugger::Respawn()
 {
-	m_Angle = Rnd( 0.0, twopi );
+	m_Angle = Rnd( -pi,pi );
 	m_AngularSpd = 0.0f;
 	m_AngularAccel = Rnd( 0.0009f, 0.0011f );
+	float r = g_CurrentLevel->ArenaRadius();
+	MoveTo( vec2(r*cosf(m_Angle), r*sinf(m_Angle)) );
 }
 
 
@@ -2505,4 +2539,94 @@ void Divider::OnHitBullet( Bullet& bullet )
 	bullet.ReducePower( bullet.Power() );
 }
 
+
+//--------------------
+// Puffer
+//--------------------
+
+
+const float Puffer::s_RadiusMin = 8.0f;
+
+Puffer::Puffer()
+{
+	SetFlags( flagCanHitBullet|
+		flagCanHitPlayer|
+		flagLocksLevel );
+	Respawn();
+}
+
+void Puffer::Respawn()
+{
+    m_Hit=0;
+    m_ExpansiveVel = 0.0f;
+	RandomPos();
+	m_Vel = Rotate( vec2( 0.0f, 0.5f ), Rnd(0,twopi) );
+	SetRadius( s_RadiusMin );
+}
+
+
+void Puffer::Draw()
+{
+	glDisable( GL_BLEND );
+	glDisable( GL_TEXTURE_2D );
+	glShadeModel( GL_FLAT );
+
+    float f = ((float)m_Hit)/3.0f;
+	Colour const c( 1.0f, 1.0f-f, 1.0f-f );
+	glColor3f( c.r, c.g, c.b );
+	DrawCircle( vec2::ZERO, Radius() );
+}
+
+
+void Puffer::Tick()
+{
+    MoveWithinArena( *this, m_Vel );
+
+    float r = Radius();
+    r += m_ExpansiveVel;
+    SetRadius(r);
+
+    const float k=0.0075f;   // spring constant
+    const float mass = 0.75f;
+    m_ExpansiveVel *= 0.90f;    // friction
+    m_ExpansiveVel += mass * -k * (r-s_RadiusMin);
+
+
+
+
+    /*
+    m_Puff += (m_TargetPuff - m_Puff) * 0.1f;
+	SetRadius( s_RadiusMin + m_Puff*(s_RadiusMax-s_RadiusMin) );
+    if (m_Puff> 0.95f)
+    {
+//		StandardDeath( bullet, 100 );
+		Die();
+    }
+    */
+}
+
+void Puffer::OnHitBullet( Bullet& bullet )
+{
+
+    if (Radius()>35.0f) {
+        m_Hit += bullet.Power();
+        if( m_Hit > 4) {
+            StandardDeath( bullet.Owner(), 100 );
+            Die();
+            return;
+        }
+    }
+    else
+    {
+        m_Hit = 0;
+    }
+
+    // apply impulse
+    m_ExpansiveVel += 1.0f * (float)bullet.Power();
+	bullet.ReducePower(bullet.Power());
+
+
+    
+
+}
 

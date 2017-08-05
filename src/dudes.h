@@ -51,9 +51,12 @@ protected:
 	Dude( bool worldspace=false );
 
 	// a standard death sequence - explosion, point assignment etc...
-	void StandardDeath( Bullet& causeofdeath, int points, int fragcount=20 );
+	void StandardDeath( Player& causeofdeath, int points, int fragcount=20 );
+	void BigArseDeath( Player& causeofdeath, int points );
 
-	void BigArseDeath( Bullet& causeofdeath, int points );
+    // TODO: kill these!
+	void StandardDeath( Bullet& b, int points, int fragcount=20 );
+	void BigArseDeath( Bullet& b, int points );
 
 
 private:
@@ -538,6 +541,25 @@ private:
 	float m_RotSpd;
 	float m_Timer;
 	float m_HappyOrbit;
+};
+
+
+
+class Puffer : public Dude
+{
+public:
+	Puffer();
+	virtual void Draw();
+	virtual void Tick();
+	virtual void OnHitBullet( Bullet& bullet );
+	virtual void Respawn();
+	static void Create( std::list<Dude*>& newdudes )
+		{ newdudes.push_back( new Puffer() ); }
+private:
+    static const float s_RadiusMin;
+    int     m_Hit;
+	vec2	m_Vel;
+    float   m_ExpansiveVel;
 };
 
 #endif	// DUDES_H
