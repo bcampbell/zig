@@ -281,7 +281,10 @@ void RealSoundMgr::GenerateSounds()
 
 	SetRetromatFreq( m_DeviceFreq );
 
-	m_Sounds[ SFX_PLAYERFIRE ] = Gen( GenerateLaser );
+	m_Sounds[ SFX_PLAYERFIRE ] = Gen( GenerateSmallThud );
+	m_Sounds[ SFX_SMALLTHUD ] = Gen( GenerateLaser );
+//	m_Sounds[ SFX_PLAYERFIRE ] = Gen( GenerateLaser );
+//	m_Sounds[ SFX_SMALLTHUD ] = Gen( GenerateSmallThud );
 	m_Sounds[ SFX_ELECTRIC ] = Gen( GenerateElectric );
 	m_Sounds[ SFX_DULLBLAST ] = Gen( GenerateDullBlast );
 	m_Sounds[ SFX_BAITERALERT ] = Gen( GenerateBaiterAlert );

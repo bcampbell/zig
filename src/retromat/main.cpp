@@ -1,7 +1,6 @@
 // front end for stand-alone retromat app.
 
 #include "retromat.h"
-#include "effects.h"
 
 #include <Stk.h>
 #include <RtWvOut.h>

@@ -291,6 +291,25 @@ void GenerateThrust( std::vector<float>& out )
     }
 }
 
+void GenerateSmallThud( std::vector<float>& out )
+{
+
+    float duration = 0.4f;
+    float t;
+    SquareOsc osc;
+    OnePole filt;
+    for (t=0.0f; t<duration; t+=g_RStep)
+    {
+        float s = t/duration;
+        filt.setCutoff(100.0f*(1.0f-s), g_RFreq);
+        osc.setFrequency(5000.0f - s*4980.0f);
+        float v = osc.tick();
+        v = filt.tick(v);
+        v *= 0.5f;
+		out.push_back( v );
+    }
+}
+
 
 
 

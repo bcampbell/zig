@@ -1669,6 +1669,7 @@ void Tank::OnHitBullet( Bullet& bullet )
 	}
 	else
 	{
+		SoundMgr::Inst().Play( SFX_SMALLTHUD );
 		int i;
 		m_Flash = 1.0f;
 		for(i=0;i<5;++i)
