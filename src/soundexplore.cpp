@@ -21,24 +21,23 @@ public:
 private:
 	virtual void OnSelect( int id );
 	virtual void OnFocus( int id );
+	virtual void OnLeft( int id );
+	virtual void OnRight( int id );
     void Shush();
     bool m_Done;
     ScopedSnd m_Snd;
+public:
+    int m_Current;
 };
 
 SoundMenu::SoundMenu() :
-    m_Done(false)
+    m_Done(false),
+    m_Current(0)
 {
     vec2 pos(0.0f,100.0f);
-    int i;
-    for (i=0; i<SFX_NUM_EFFECTS; ++i)
-    {
-        char txt[64];
-        sprintf(txt,"SOUND %d",i);
-        pos.y -= 32.0f;
-        MenuItem* item = new MenuItem(i,pos,txt);
-        AddItem(item);
-    }
+    pos.y -= 32.0f;
+    MenuItem* item = new MenuItem(0,pos,"PLAY");
+    AddItem(item);
 
     pos.y -= 40.0f;
     AddItem( new MenuItem(-1,pos,"EXIT", true, CTRL_BTN_ESC )); 
@@ -65,9 +64,36 @@ void SoundMenu::OnSelect( int id )
         m_Done = true;
         return;
     }
-    m_Snd.Start((sfxid_t)id);
+    //m_Snd.Start((sfxid_t)m_Current);
+    
+    SoundMgr::Inst().Play((sfxid_t)m_Current);
+
 }
 
+
+void SoundMenu::OnLeft( int id )
+{
+    if(id==0)
+    {
+        --m_Current;
+        if(m_Current<0)
+        {
+            m_Current=0;
+        }
+    }
+}
+
+void SoundMenu::OnRight( int id )
+{
+    if(id==0)
+    {
+        ++m_Current;
+        if(m_Current>(SFX_NUM_EFFECTS-1))
+        {
+            m_Current = SFX_NUM_EFFECTS-1;
+        }
+    }
+}
 
 void SoundMenu::OnFocus( int id )
 {
@@ -97,6 +123,12 @@ void SoundExplore::Render()
 		glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 		glTranslatef( 0.0f, 150.0f, 0.0f );
 		PlonkText( *g_Font, "SOUNDS", true );
+	glPopMatrix();
+	glPushMatrix();
+        char buf[16];
+        sprintf(buf, "%d", m_Menu->m_Current);
+		glTranslatef( 80.0f, 100.0f-32.0f, 0.0f );
+        PlonkText( *g_Font, buf, true, 16.0f, 16.0f );
 	glPopMatrix();
     m_Menu->Draw();
 }

@@ -14,6 +14,7 @@ struct ZigConfig
 	int soundfreq;
 	int soundbuffer;
 	bool sounddebug;
+	bool soundexplore;
 
 	// dev settings
 	bool nomultitexture;
@@ -29,6 +30,7 @@ struct ZigConfig
 		soundfreq( 22050 ),	// MIX_DEFAULT_FREQUENCY
 		soundbuffer( 1024 ),
 		sounddebug( false ),
+		soundexplore( false ),
 		nomultitexture(false),
 		flatout(false)
 	{}

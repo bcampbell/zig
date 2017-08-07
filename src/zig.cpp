@@ -23,6 +23,9 @@
 #include "log.h"
 #include <SDL.h>
 
+
+#include "soundexplore.h"
+
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"
 #endif
@@ -272,7 +275,13 @@ void mainloop()
 	Uint32 prevtime;
 
     // Minimal statemachine
-    Scene* scene = new TitleScreen();
+    Scene* scene;
+    if( g_Config.soundexplore) {
+        scene = new SoundExplore();
+    } else {
+        scene = new TitleScreen();
+    }
+
 	while( 1 )
 	{
 		prevtime = SDL_GetTicks();

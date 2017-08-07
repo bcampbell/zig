@@ -29,6 +29,8 @@ static void ApplyOption( ZigConfig& cfg, std::vector<std::string> const& opts )
 		cfg.nosound = true;
 	else if( o == "sounddebug" )
 		cfg.sounddebug = true;
+	else if( o == "soundexplore" )
+		cfg.soundexplore = true;
 	else if( o == "nomultitexture" )
 		cfg.nomultitexture = true;
 	else if( o == "flatout" )
