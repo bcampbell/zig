@@ -1442,8 +1442,7 @@ void Amoeba::OnHitBullet( Bullet& bullet )
 //--------------------------------------
 // Zipper
 //--------------------------------------
-
-Zipper::Zipper() : m_CountDown(0)
+Zipper::Zipper()
 {
 	SetRadius(10.0f);
 	SetFlags( flagCanHitBullet|
@@ -1452,32 +1451,27 @@ Zipper::Zipper() : m_CountDown(0)
 	Respawn();
 }
 
-Zipper::Zipper(vec2 const& pos ) : m_CountDown(0)
+Zipper::Zipper(vec2 const& pos, float heading ) : m_Timer(0.0f), m_Spd(2.0f)
 {
 	SetRadius(16.0f);
 	SetFlags( flagCanHitBullet|
 		flagCanHitPlayer |
 		flagLocksLevel );
 	MoveTo(pos);
-	NewDirection();
+    TurnTo(heading); 
+//	NewDirection();
 }
 
-void Zipper::NewDirection()
-{
-	TurnTo( Rnd( -pi, pi ) );
-	m_Spd = Rotate( vec2(0.0f,5.0f), Heading() );
-}
 
 void Zipper::Respawn()
 {
-	RandomPos();
-//	NewDirection();
-	TurnTo( Rnd( -pi, pi ) );
-	m_Spd = Rotate( vec2(0.0f,1.0f), Heading() );
+    Die();
+    return;
 }
 
 void Zipper::Tick()
 {
+    /*
 	if( m_Spd.LenSq() < 0.5f*0.5f )
 		NewDirection();
 
@@ -1485,6 +1479,14 @@ void Zipper::Tick()
 		NewDirection();
 
 	m_Spd *= 0.99f;
+*/
+    Forward(m_Spd);
+	TurnToward( g_Player->Pos(), m_Timer / 40.0f );
+    m_Spd += 0.05f;
+    if (m_Timer>4.0f)
+    {
+        Die();
+    }
 
 }
 
@@ -1527,7 +1529,7 @@ void Zipper::OnHitBullet( Bullet& bullet )
 
 
 const int ZipperMat::HitPoints = 20;
-const float ZipperMat::Interval = 1.0f;
+const float ZipperMat::Interval = 0.2f;
 
 ZipperMat::ZipperMat() : m_Life( HitPoints )
 {
@@ -1548,13 +1550,13 @@ void ZipperMat::Respawn()
 void ZipperMat::Tick()
 {
 	MoveWithinArena( *this, m_Spd );
-	TurnBy( twopi/64.0f );
+	TurnBy( twopi/256.0f );
 
 	m_Timer += 1.0f/TARGET_FPS;
 	if( m_Timer >= Interval )
 	{
 		m_Timer = 0.0f;
-		g_Agents->AddDude( new Zipper( Pos() ) );
+		g_Agents->AddDude( new Missile( Pos(),Heading() ) );
 	}
 
 	m_Flash *= 0.95f;

@@ -343,7 +343,7 @@ class Zipper : public Dude
 {
 public:
 	Zipper();
-	Zipper( vec2 const& pos );
+	Zipper( vec2 const& pos, float heading );
 	virtual void Draw();
 	virtual void Tick();
 	virtual void OnHitBullet( Bullet& bullet );
@@ -351,9 +351,8 @@ public:
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Zipper() ); }
 private:
-	void NewDirection();
-	int m_CountDown;
-	vec2 m_Spd;
+	float m_Spd;
+    float m_Timer;
 
 };
 
