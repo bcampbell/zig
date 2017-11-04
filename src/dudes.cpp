@@ -595,27 +595,35 @@ void Flanker::Respawn()
 // WallHugger
 //--------------------
 
-WallHugger::WallHugger() : m_Life(10)
+WallHugger::WallHugger() : m_Life(10), m_Flash(0.0f), m_FireTimer(0.0f)
 {
 	SetRadius(15.0f);
 	SetFlags( flagCanHitBullet|
 		flagLocksLevel );
+	m_AngularAccel = Rnd( 0.0009f, 0.0011f );
+	m_MaxSpd = Rnd( 0.01f, 0.015f );
+
 	Respawn();
-	Tick();	// sort out correct position and heading
 }
 
-void WallHugger::Draw()
+
+
+void WallHugger::Respawn()
 {
-	glDisable( GL_BLEND );
-	glDisable( GL_TEXTURE_2D );
-	glShadeModel( GL_FLAT );
-	glColor3f( 0.5f, 0.0f, 0.7f );
-	glBegin( GL_TRIANGLES );
-	glVertex2f( 0.0f, 5.0f );
-	glVertex2f( 15.0f, -5.0f );
-	glVertex2f( -15.0f, -5.0f );
-	glEnd();
+	m_Angle = Rnd( -pi,pi );
+	m_AngularSpd = 0.0f;
+    m_FireTimer = 0.0f;
+    m_Flash = 0.0f;
+    Orient();
 }
+
+void WallHugger::Orient()
+{
+	TurnTo( - m_Angle - (pi/2.0f) );
+	float r = g_CurrentLevel->ArenaRadius();
+	MoveTo( vec2(r*cosf(m_Angle), r*sinf(m_Angle)) );
+}
+
 
 // custom mod function to handle -ve values as expected
 static float zigmod(float a, float n)
@@ -626,6 +634,7 @@ static float zigmod(float a, float n)
 
 void WallHugger::Tick()
 {
+    m_Flash *= 0.8f;
     if( g_Player->Pos().LenSq() > 4.0f ) {
 
     	float pa = atan2f(g_Player->Pos().y, g_Player->Pos().x);
@@ -633,34 +642,62 @@ void WallHugger::Tick()
         float d = pa - m_Angle;
         d = zigmod(d+pi, twopi) - pi;
 
-
-        if( d>0.0f) {
-            m_AngularSpd +=0.001f;
+        const float accel = m_AngularAccel;
+        const float maxSpd = m_MaxSpd;
+        const float thresh = 0.5f/twopi;
+        if( d>thresh) {
+            m_AngularSpd +=accel;
+            if(m_AngularSpd>maxSpd) {
+                m_AngularSpd = maxSpd;
+            }
+        } else if (d< -thresh) {
+            m_AngularSpd -= accel;
+            if(m_AngularSpd<-maxSpd) {
+                m_AngularSpd = -maxSpd;
+            }
         } else {
-            m_AngularSpd -=0.001f;
+            m_AngularSpd *= 0.9f;
         }
 
     }
 
     m_Angle = m_Angle+m_AngularSpd;
+    m_Angle = zigmod(m_Angle, twopi);
+    /*
     while( m_Angle<-pi) {
         m_Angle += twopi;
     }
     while( m_Angle>pi) {
         m_Angle -= twopi;
     }
-    m_AngularSpd *= 0.95f;
+    */
 
 
 	TurnTo( - m_Angle - (pi/2.0f) );
 	float r = g_CurrentLevel->ArenaRadius();
 	MoveTo( vec2(r*cosf(m_Angle), r*sinf(m_Angle)) );
 
+    /*
 	if( Rnd() < 0.02 )
 	{
 		g_Agents->AddDude( new Missile( Pos(), Heading() ) );
 //		SoundMgr::Inst().Play( SFX_LAUNCH );
 	}
+    */
+
+
+    m_FireTimer += 1.0f/TARGET_FPS;
+    if( m_FireTimer > 8.0f )
+    {
+        m_FireTimer = 0.0f;
+		Beam::Params beamparams;
+		beamparams.warmuptime = 2.0f;
+		beamparams.ontime = 2.0f;
+		beamparams.width = 28.0f;
+		beamparams.length = 1200.0f;
+		Beam* b1 = new Beam( *this, vec2( 0.0f, 8 ), 0.0f, &beamparams );
+		g_Agents->AddDude( b1 );
+    }
 }
 
 void WallHugger::OnHitBullet( Bullet& bullet )
@@ -674,6 +711,8 @@ void WallHugger::OnHitBullet( Bullet& bullet )
 	}
 	else
 	{
+		SoundMgr::Inst().Play( SFX_SMALLTHUD );
+        m_Flash = 1.0f;
 		int i;
 		for(i=0;i<5;++i)
 			g_Agents->AddDude(new Frag(Pos()));
@@ -681,16 +720,57 @@ void WallHugger::OnHitBullet( Bullet& bullet )
 	bullet.ReducePower( absorbed );
 }
 
-
-void WallHugger::Respawn()
+void WallHugger::Draw()
 {
-	m_Angle = Rnd( -pi,pi );
-	m_AngularSpd = 0.0f;
-	m_AngularAccel = Rnd( 0.0009f, 0.0011f );
-	float r = g_CurrentLevel->ArenaRadius();
-	MoveTo( vec2(r*cosf(m_Angle), r*sinf(m_Angle)) );
-}
+	glDisable( GL_BLEND );
+	glDisable( GL_TEXTURE_2D );
+	glShadeModel( GL_FLAT );
 
+	Colour c1 = ColourLerp( Colour( 0.8f, 0.8f, 1.0f ), Colour::WHITE, m_Flash ); 
+	Colour c2 = ColourLerp( Colour( 0.5f, 0.5f, 8.0f ), Colour::WHITE, m_Flash ); 
+	Colour c3 = ColourLerp( Colour( 0.2f, 0.2f, 6.0f ), Colour::WHITE, m_Flash ); 
+
+	glColor3f( c2.r, c2.g, c2.b );
+	glBegin( GL_TRIANGLES );
+        glVertex2f( 8.0f, 0.0f );
+        glVertex2f( 8.0f, -5.0f );
+        glVertex2f( -8.0f, -5.0f );
+        glVertex2f( -8.0f, -5.0f );
+        glVertex2f( -8.0f, 0.0f );
+        glVertex2f( 8.0f, 0.0f );
+	glEnd();
+	glBegin( GL_TRIANGLES );
+		// light
+        glColor3f( c1.r, c1.g, c1.b );
+		glVertex2f( -16.0f, 8.0f );
+        glColor3f( c1.r, c1.g, c1.b );
+		glVertex2f( -8.0f, 8.0f );
+        glColor3f( c1.r, c1.g, c1.b );
+		glVertex2f( -4.0f, 0.0f );
+
+        glColor3f( c2.r, c2.g, c2.b );
+		glVertex2f( -8.0f, 8.0f );
+        glColor3f( c2.r, c2.g, c2.b );
+		glVertex2f( 8.0f, 8.0f );
+        glColor3f( c2.r, c2.g, c2.b );
+		glVertex2f( -4.0f, 0.0f );
+
+        glColor3f( c2.r, c2.g, c2.b );
+		glVertex2f( 8.0f, 8.0f );
+        glColor3f( c2.r, c2.g, c2.b );
+		glVertex2f( 4.0f, 0.0f );
+        glColor3f( c2.r, c2.g, c2.b );
+		glVertex2f( -4.0f, 0.0f );
+
+        glColor3f( c3.r, c3.g, c3.b );
+		glVertex2f( 8.0f, 8.0f );
+        glColor3f( c3.r, c3.g, c3.b );
+		glVertex2f( 16.0f, 8.0f );
+        glColor3f( c3.r, c3.g, c3.b );
+		glVertex2f( 4.0f, 0.0f );
+	glEnd();
+
+}
 
 
 //--------------------

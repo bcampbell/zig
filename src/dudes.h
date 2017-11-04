@@ -164,9 +164,14 @@ public:
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new WallHugger() ); }
 private:
+    void Orient();
+
 	int		m_Life;
+    float   m_Flash;
+    float   m_FireTimer;
 	float	m_Angle;
 	float	m_AngularSpd;
+	float	m_MaxSpd;
 	float	m_AngularAccel;
 };
 
@@ -351,8 +356,8 @@ public:
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Zipper() ); }
 private:
-	float m_Spd;
     float m_Timer;
+	float m_Spd;
 
 };
 

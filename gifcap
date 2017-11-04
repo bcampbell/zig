@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+if [ "$#" -ne 2 ];then
+    echo "usage:"
+    echo "$0 <windowname> <outputdir>"
+    exit 1
+fi
+
+OUTDIR=$2
+
+FOO=`xwininfo -name $1`
+SIZE=`echo $FOO | perl -n -e'/-geometry\s+(\d+)x(\d+)[+](\d+)[+](\d+)/ && print $1."x".$2'`
+OFFSET=`echo $FOO | perl -n -e'/-geometry\s+(\d+)x(\d+)[+](\d+)[+](\d+)/ && print $3.",".$4'`
+
+
+mkdir -p $OUTDIR
+ffmpeg -f x11grab -r 50 -s $SIZE -i :0.0+$OFFSET $OUTDIR/out%04d.gif
+
+# $ gifsicle --delay 2 --loop /tmp/bar/*.gif >animation.gif
+# $ convert -layers Optimize animation.gif animation_optimized.gif
+
+
