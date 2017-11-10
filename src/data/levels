@@ -228,8 +228,9 @@ LEVEL
 
 
 LEVEL
-	WallHugger 4
+	WallHugger 1
 	Obstacle 10
+    Tank 5
 
 #40
 LEVEL
