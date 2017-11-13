@@ -137,7 +137,6 @@ inline void Agent::Forward( float dist )
 
 inline void Agent::TurnBy( float angle )
 {
-	const float twopi = (float)(2.0*M_PI);
 	assert( angle < twopi && angle > -twopi );
 //	m_Heading = (float)fmod( m_Heading+angle, (float)(2.0*M_PI) );
 	m_Heading += angle;

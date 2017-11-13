@@ -56,8 +56,8 @@ void MenuItem::Draw()
 		Colour c = focusrange.Get( m_Cyc, false );
 		glColor4f( c.r, c.g, c.b, c.a );
 
-		xsize = 24.0f + sin( m_Cyc*M_PI*2.0f)*1.0f;
-		ysize = 24.0f + cos( m_Cyc*M_PI*2.0f)*1.0f;;
+		xsize = 24.0f + sinf( m_Cyc*twopi)*1.0f;
+		ysize = 24.0f + cosf( m_Cyc*twopi)*1.0f;;
 	}
 	else
 	{
