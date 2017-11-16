@@ -1,7 +1,5 @@
 (D) add controls for touch devices
-(A) wallhugger: Make visible!
 (C) wallhugger: less inertia
-(A) divider: appear in earlier levels
 (B) thruster whine is a little annoying
 (B) minelayer: better visuals
 (C) minelayer: try more regular laying pattern
@@ -24,4 +22,4 @@
 (D) social: record-to-gif
 (C) thrust sfx stays on if quit from pause while thrusting
 (B) add credits
-
+(A) BUG zig: agent.h:141: void Agent::TurnBy(float): Assertion `angle < twopi && angle > -twopi' failed.

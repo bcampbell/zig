@@ -677,15 +677,16 @@ void WallHugger::Tick()
 	float r = g_CurrentLevel->ArenaRadius();
 	MoveTo( vec2(r*cosf(m_Angle), r*sinf(m_Angle)) );
 
-    /*
-	if( Rnd() < 0.02 )
-	{
-		g_Agents->AddDude( new Missile( Pos(), Heading() ) );
-//		SoundMgr::Inst().Play( SFX_LAUNCH );
+    m_FireTimer += 1.0f/TARGET_FPS;
+    if( m_FireTimer > 1.0f )
+    {
+        m_FireTimer = 0.0f;
+        vec2 pos = Pos() + Rotate(vec2(0,16.0f),Heading());
+
+		g_Agents->AddDude( new Missile( pos, Heading() ) );
 	}
-    */
 
-
+#if 0
     m_FireTimer += 1.0f/TARGET_FPS;
     if( m_FireTimer > 8.0f )
     {
@@ -698,6 +699,7 @@ void WallHugger::Tick()
 		Beam* b1 = new Beam( *this, vec2( 0.0f, 8 ), 0.0f, &beamparams );
 		g_Agents->AddDude( b1 );
     }
+#endif
 }
 
 void WallHugger::OnHitBullet( Bullet& bullet )

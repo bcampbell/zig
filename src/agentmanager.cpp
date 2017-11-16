@@ -39,7 +39,7 @@ AgentManager::~AgentManager()
 void AgentManager::AddDude( Dude* dude )
 {
 	dude->Lock();
-	m_Dudes.push_back( dude);
+	m_Dudes.push_front( dude);
 
 	// update counts
 	const int flags = dude->Flags();
