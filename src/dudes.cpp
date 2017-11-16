@@ -681,7 +681,7 @@ void WallHugger::Tick()
     if( m_FireTimer > 1.0f )
     {
         m_FireTimer = 0.0f;
-        vec2 pos = Pos() + Rotate(vec2(0,16.0f),Heading());
+        vec2 pos = Pos() + Rotate(vec2(0,10.0f),Heading());
 
 		g_Agents->AddDude( new Missile( pos, Heading() ) );
 	}
@@ -1712,7 +1712,8 @@ void Tank::Tick()
 
 	if( ++m_FireTimer > 40 )
 	{
-		g_Agents->AddDude( new Missile( Pos(), Heading() ) );
+        vec2 pos = Pos() + Rotate(vec2(0,16.0f),Heading());
+		g_Agents->AddDude( new Missile( pos, Heading() ) );
 //		SoundMgr::Inst().Play( SFX_LAUNCH );
 		m_FireTimer = 0;
 	}
