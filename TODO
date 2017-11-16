@@ -1,9 +1,9 @@
 (D) add controls for touch devices
 (C) wallhugger: less inertia
 (B) thruster whine is a little annoying
-(B) minelayer: better visuals
+(A) minelayer: better visuals
 (C) minelayer: try more regular laying pattern
-(B) minelayer: bigger explosion
+(A) minelayer: bigger explosion
 (C) fatzapper: improve fire visuals
 (C) fatzapper: reuse firing elsewhere? (megazapper boss? Wallhugger!)
 (C) glow around retro dudes
@@ -21,5 +21,9 @@
 (D) social: highscore sharing - (what services are out there?)
 (D) social: record-to-gif
 (C) thrust sfx stays on if quit from pause while thrusting
-(B) add credits
+(A) add credits
 (A) BUG zig: agent.h:141: void Agent::TurnBy(float): Assertion `angle < twopi && angle > -twopi' failed.
+(A) Windows build process
+(A) zippermat: better visuals
+(A) agitator: better visuals
+(B) show level number on highscore table
