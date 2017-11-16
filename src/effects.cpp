@@ -286,12 +286,12 @@ Exhaust::Exhaust( Agent const& emitter, vec2 const& basespd ) :
 {
 	SetFlags( flagIndestructible );
 	MoveTo( emitter.Pos() );
-	float heading = emitter.Heading() + (float)M_PI;
+	float heading = emitter.Heading() + (float)pi;
 	m_Spd = Rotate( vec2( 0.0f, Rnd(5.0f,8.0f) ),
 		heading + Rnd( -0.05f, 0.05f ) );
 	m_Spd += basespd;
 
-	TurnTo( Rnd(0.0f, 2.0f*(float)M_PI ) );
+	TurnTo( Rnd(0.0f, twopi) );
 }
 
 void Exhaust::Draw()

@@ -18,6 +18,8 @@ extern float g_RStep;   // 1/g_RFreq
 
 class ADSR;
 
+const float RETRO_PI = 3.14159265358979323846f;
+const float RETRO_TWOPI = 2.0f * RETRO_PI;
 
 // Base oscillator class
 class Osc
@@ -43,7 +45,7 @@ public:
     virtual float tick()
     {
         Advance();
-        float samp = sinf(m_t*2.0f*M_PI);
+        float samp = sinf(m_t*RETRO_TWOPI);
         assert( samp>=-1.0f);
         assert( samp<=1.0f);
         //printf("%f %f\n", m_t,samp);
@@ -153,7 +155,7 @@ public:
 
     void setCutoff( float cutoffFreq, float sampleFreq)
     {
-        float pole = expf(-2.0f*M_PI*cutoffFreq/sampleFreq);
+        float pole = expf(-RETRO_TWOPI*cutoffFreq/sampleFreq);
         setPole(pole);
     }
 

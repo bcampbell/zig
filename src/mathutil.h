@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-const float pi = (float)M_PI;
+const float pi = 3.14159265358979323846f;
 const float twopi = 2.0f*pi;
 const float halfpi = pi/2.0f;
 
