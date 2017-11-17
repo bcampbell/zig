@@ -19,7 +19,7 @@ CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
 LDLIBS += $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
 endif
 
-ifeq ($(UNAME), Darwin)
+ifeq ($(shell uname), Darwin)
   objs += osx_glue.o
   CXXFLAGS += $(shell pkg-config --cflags libpng)
   CXXFLAGS += -F ~/Library/Frameworks
