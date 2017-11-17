@@ -8,13 +8,22 @@
 
 Scene* Scene::ExecFrame()
 {
-
+    static int n=0;
     g_ControllerMgr->Tick();
     
     Tick();
     Render();
 
-    g_Display->Present();
+    if (g_Config.flatout) {
+        ++n;
+        if( n>100 ) {
+            n=0;
+            g_Display->Present();
+        }
+    } else {
+        g_Display->Present();
+    }
+
 
     SDL_PumpEvents();
     SDL_Event event;
