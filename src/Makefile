@@ -25,8 +25,9 @@ ifeq ($(shell uname), Darwin)
   CXXFLAGS += -F ~/Library/Frameworks
   # need to explicitly add include paths to allow SDL-prefered includes
   # (ie include <SDL2_mixer.h> instead of <SDL2_mixer/SDL2_mixer.h>
-  CXXFLAGS += -I ~/Library/Frameworks/SDL2.framework/Headers
-  CXXFLAGS += -I ~/Library/Frameworks/SDL2_mixer.framework/Headers
+  CPPFLAGS += -I ~/Library/Frameworks/SDL2.framework/Headers
+  CPPFLAGS += -I ~/Library/Frameworks/SDL2_mixer.framework/Headers
+  LDFLAGS += -F ~/Library/Frameworks
   LDLIBS += $(shell pkg-config --libs libpng)
   LDLIBS += -lz -framework OpenGL -framework Foundation -framework SDL2 -framework SDL2_mixer
   # Make sure SDL2 & SDL2_mixer will be found when bundled
