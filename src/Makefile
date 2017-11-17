@@ -13,6 +13,8 @@ OBJS = $(patsubst %.cpp,%.o,$(SRCS) )
 
 ifeq ($(PLATFORM),linux)
   CXXFLAGS = -Wall -std=c++0x -ggdb $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
+  CXXFLAGS += -ggdb
+#  CXXFLAGS += -O2 
   LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
 endif
 ifeq ($(PLATFORM),osx)

@@ -1638,7 +1638,8 @@ void ZipperMat::Tick()
 	if( m_Timer >= Interval )
 	{
 		m_Timer = 0.0f;
-		g_Agents->AddDude( new Missile( Pos(),Heading() ) );
+        vec2 pos = Pos() + Rotate(vec2(0,16.0f),Heading());
+		g_Agents->AddDude( new Missile( pos,Heading() ) );
 	}
 
 	m_Flash *= 0.95f;
@@ -1652,13 +1653,14 @@ void ZipperMat::Draw()
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
 
+    float s = 10.0f + sinf(m_Timer)*4.0f;
 	Colour c = ColourLerp( Colour( 0.0f, 1.0f, 0.0f ), Colour::WHITE, m_Flash );
 	glColor3f( c.r, c.g, c.b );
 	glBegin( GL_QUADS );
-	glVertex2f( -10.0f, -10.0f );
-	glVertex2f( 10.0f, -10.0f );
-	glVertex2f( 10.0f, 10.0f );
-	glVertex2f( -10.0f, 10.0f );
+	glVertex2f( -s, -s );
+	glVertex2f( s, -s );
+	glVertex2f( s, s );
+	glVertex2f( -s, s );
 	glEnd();
 }
 
