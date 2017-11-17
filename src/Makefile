@@ -1,78 +1,60 @@
-#ARCH := $(firstword $(shell uname -m))	# x86_64, i386, etc..
-#SYS := $(firstword $(shell uname -s))	# Linux, Darwin, etc...
+# -- Config --
 
-# which platform? linux, win32 or osx
-PLATFORM=$(shell ./zig-platform)
+exe=zig
+srcs=$(wildcard *.cpp)
+srcs += retromat/retromat.cpp retromat/sidstyle.cpp retromat/gen.cpp
+objs := $(srcs:.cpp=.o)
+deps := $(objs:.o=.d)
 
-EXE = zig
 
-SRCS=$(wildcard *.cpp)
-SRCS += retromat/retromat.cpp retromat/sidstyle.cpp retromat/gen.cpp
-
-OBJS = $(patsubst %.cpp,%.o,$(SRCS) )
-
-ifeq ($(PLATFORM),linux)
-  CXXFLAGS = -Wall -std=c++0x -ggdb $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
-  CXXFLAGS += -ggdb
+CXX = g++
+CPPFLAGS = -MMD -MP
+CXXFLAGS = -Wall -std=c++0x 
+CXXFLAGS += -ggdb
+LDFLAGS = -ggdb
 #  CXXFLAGS += -O2 
-  LIBS = $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
+
+ifeq ($(shell uname), Linux)
+CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
+LDLIBS += $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
 endif
-ifeq ($(PLATFORM),osx)
-  CXXFLAGS = -Wall -O2 $(shell pkg-config --cflags libpng)
+
+ifeq ($(UNAME), Darwin)
+  objs += osx_glue.o
+  CXXFLAGS += $(shell pkg-config --cflags libpng)
   CXXFLAGS += -F ~/Library/Frameworks
   # need to explicitly add include paths to allow SDL-prefered includes
   # (ie include <SDL2_mixer.h> instead of <SDL2_mixer/SDL2_mixer.h>
   CXXFLAGS += -I ~/Library/Frameworks/SDL2.framework/Headers
   CXXFLAGS += -I ~/Library/Frameworks/SDL2_mixer.framework/Headers
-
-  LIBS = $(shell pkg-config --libs libpng)
-  LIBS += -lz -framework OpenGL -framework Foundation -framework SDL2 -framework SDL2_mixer
+  LDLIBS += $(shell pkg-config --libs libpng)
+  LDLIBS += -lz -framework OpenGL -framework Foundation -framework SDL2 -framework SDL2_mixer
   # Make sure SDL2 & SDL2_mixer will be found when bundled
-  LIBS += -Xlinker -rpath -Xlinker @executable_path/../Frameworks
-  OBJS += osx_glue.o
+  LDLIBS += -Xlinker -rpath -Xlinker @executable_path/../Frameworks
 endif
+
 ifeq ($(PLATFORM),win32)
-  EXE = zig.exe
-  CXXFLAGS = -Wall -std=c++0x -O2 -Dmain=SDL_main -I/mingw32/include/libpng16
-  CXXFLAGS += -I/c/site/SDL2_mixer-2.0.0/i686-w64-mingw32/include/SDL2 -I/c/site/SDL2-2.0.3/i686-w64-mingw32/include/SDL2
-  LIBS = -L/c/site/SDL2_mixer-2.0.0/i686-w64-mingw32/lib -L/c/site/SDL2-2.0.3/i686-w64-mingw32/lib
-  LIBS += -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lopengl32 -lpng16 -lz -mwindows
-  CXX=g++
+  exe = zig.exe
+  CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng)
+  LDLIBS += $(shell pkg-config --libs sdl2 SDL2_mixer libpng)
+  CXXFLAGS += -Dmain=SDL_main
+  #LIBS += -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lopengl32 -lpng16 -lz -mwindows
 endif
 
 ifeq ($(PLATFORM),emscripten)
-  EXE = zig.html
-  CXX=em++
-  CXXFLAGS = --embed-file data -Wall -std=c++0x -O2 -s DISABLE_EXCEPTION_CATCHING=0 -s LEGACY_GL_EMULATION=1 -s USE_SDL=2 -s USE_ZLIB=1 -s USE_LIBPNG=1 -I /home/ben/proj/zig/dependencies/SDL2_mixer/installdir/include/SDL2
+  exe = zig.html
+  CXX = em++
+  CXXFLAGS = --embed-file data -s DISABLE_EXCEPTION_CATCHING=0 -s LEGACY_GL_EMULATION=1 -s USE_SDL=2 -s USE_ZLIB=1 -s USE_LIBPNG=1 -I /home/ben/proj/zig/dependencies/SDL2_mixer/installdir/include/SDL2
   LIBS = --emrun
 endif
 
+# -- Rules --
 
-all: $(EXE)
-
-
-$(EXE): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJS) $(LIBS)
-
-
-%.o: %.cpp .deps
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -MMD -MP -MF .deps/$*.d $< -o $@
-
-.deps:
-	mkdir .deps
-	mkdir .deps/retromat
-
--include .deps/*.d
-
-ifeq ($(PLATFORM),osx)
-%.o: %.mm
-	$(CXX) -c $(CXXFLAGS) $< -o $@ 
-endif
+$(exe): $(objs)
+	$(CXX) $(LDFLAGS) -o $(exe) $(objs) $(LDLIBS)
 
 .PHONY: clean
-clean:
-	rm -rf $(OBJS) $(EXE) .deps
+clean: ; $(RM) $(exe) $(objs) $(deps)
 
-
-
+-include $(deps)
 
