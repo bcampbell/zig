@@ -53,6 +53,9 @@ endif
 $(exe): $(objs)
 	$(CXX) $(LDFLAGS) -o $(exe) $(objs) $(LDLIBS)
 
+%.o: %.mm
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
 .PHONY: clean
 clean: ; $(RM) $(exe) $(objs) $(deps)
 
