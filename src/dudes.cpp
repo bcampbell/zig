@@ -1611,7 +1611,9 @@ void Zipper::OnHitBullet( Bullet& bullet )
 
 
 const int ZipperMat::HitPoints = 20;
-const float ZipperMat::Interval = 0.2f;
+const int ZipperMat::NumShots = 20;
+const float ZipperMat::FireTime = 2.0f;
+const float ZipperMat::ChargeTime = 2.0f;
 
 ZipperMat::ZipperMat() : m_Life( HitPoints )
 {
@@ -1627,41 +1629,104 @@ void ZipperMat::Respawn()
 	m_Spd = Rotate( vec2(0.0f,2.0f), Rnd( -pi, pi ) );
 	m_Timer = 0.0f;
 	m_Flash = 0.0f;
+    m_State = charging;
+    m_Inflation = 0.0f;
+    m_FireCnt = 0;
 }
 
 void ZipperMat::Tick()
 {
 	MoveWithinArena( *this, m_Spd );
 	TurnBy( twopi/256.0f );
-
-	m_Timer += 1.0f/TARGET_FPS;
-	if( m_Timer >= Interval )
-	{
-		m_Timer = 0.0f;
-        vec2 pos = Pos() + Rotate(vec2(0,16.0f),Heading());
-		g_Agents->AddDude( new Missile( pos,Heading() ) );
-	}
-
 	m_Flash *= 0.95f;
+
+    m_Spd *= 0.99f;
+	m_Timer += 1.0f/TARGET_FPS;
+    switch(m_State) {
+        case charging:
+            m_Inflation = (m_Timer / ChargeTime);
+        	if( m_Timer >= ChargeTime )
+            {
+                m_State = firing;
+                m_FireCnt = 0;
+                m_Timer = 0;
+                m_Inflation = 1.0f;
+            }
+            break;
+        case firing:
+            m_Inflation = ((float)(NumShots-m_FireCnt) / (float)NumShots);
+        	if( m_Timer >= FireTime/NumShots )
+        	{
+                m_Spd += Rotate(vec2(0,-0.75f),Heading());  // thrust!
+
+                vec2 pos = Pos() + Rotate(vec2(0,16.0f),Heading());
+        		g_Agents->AddDude( new Missile( pos,Heading() ) );
+        		m_Timer = 0.0f;
+                if(++m_FireCnt >= NumShots ) {
+                    m_State = charging;
+                }
+        	}
+            break;
+    }
+    SetRadius(8.0f + (4.0f * m_Inflation));
 }
+
 
 
 
 void ZipperMat::Draw()
 {
+    Colour basec;
+    Colour chargecolour(0,0,1);
+    Colour firecolour(1.0f,0,0);
+    float s = Radius();
+    basec = ColourLerp( chargecolour, firecolour, m_Inflation );
+
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
-	glShadeModel( GL_FLAT );
+	//glShadeModel( GL_FLAT );
+	glShadeModel( GL_SMOOTH );
 
-    float s = 10.0f + sinf(m_Timer)*4.0f;
-	Colour c = ColourLerp( Colour( 0.0f, 1.0f, 0.0f ), Colour::WHITE, m_Flash );
-	glColor3f( c.r, c.g, c.b );
+//	Colour c1 = ColourLerp( chargecolour, Colour::WHITE, m_Flash );
+	Colour c2 = ColourLerp( basec, Colour::WHITE, m_Flash );
+	Colour c1 = c2;
 	glBegin( GL_QUADS );
-	glVertex2f( -s, -s );
-	glVertex2f( s, -s );
-	glVertex2f( s, s );
-	glVertex2f( -s, s );
+	glColor3f( c1.r, c1.g, c1.b );
+	glVertex2f( -s, -s*0.5f  );
+	glColor3f( c1.r, c1.g, c1.b );
+	glVertex2f( s, -s*0.5f );
+	glColor3f( c2.r, c2.g, c2.b );
+	glVertex2f( s/2, s );
+	glColor3f( c2.r, c2.g, c2.b );
+	glVertex2f( -s/2, s );
 	glEnd();
+
+    // draw glow
+	glEnable( GL_TEXTURE_2D );
+	glBindTexture( GL_TEXTURE_2D, g_Textures[TX_BLUEGLOW]->ID() );
+	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_ONE, GL_ONE );
+
+    float glowf = (m_State==firing) ? m_Inflation : (m_Inflation*m_Inflation*m_Inflation);
+	glColor3f( glowf, glowf, glowf  );
+
+    s = s * 1.5f * Rnd(0.9f,1.10f);
+	glBegin( GL_QUADS );
+		glTexCoord2f( 0.0f, 1.0f );
+		glVertex2f( -s, s+10.0f );
+		glTexCoord2f( 1.0f,1.0f);
+		glVertex2f( s, s+10.0f );
+		glTexCoord2f( 1.0f, 0.0f);
+		glVertex2f( s, 10.0f-s );
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2f( -s, 10.0f-s );
+	glEnd();
+
 }
 
 

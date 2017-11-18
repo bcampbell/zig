@@ -373,12 +373,17 @@ public:
 		{ newdudes.push_back( new ZipperMat() ); }
 private:
 	static const int HitPoints;
-	static const float Interval;
+	static const int NumShots;
+	static const float FireTime;
+	static const float ChargeTime;
 	
 	vec2	m_Spd;
 	int		m_Life;
 	float	m_Flash;
+	float	m_Inflation;
 	float	m_Timer;
+	enum {charging,firing} m_State;
+    int     m_FireCnt;
 };
 
 
