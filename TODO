@@ -22,8 +22,9 @@
 (D) social: record-to-gif
 (C) thrust sfx stays on if quit from pause while thrusting
 (A) add credits
-(A) BUG zig: agent.h:141: void Agent::TurnBy(float): Assertion `angle < twopi && angle > -twopi' failed.
 (A) Windows build process
 (A) zippermat: better visuals
 (A) agitator: better visuals
 (B) show level number on highscore table
+(A) instructions
+(B) odd spawn-in effect on zippermat

@@ -171,7 +171,6 @@ void Player::Tick()
 
 	m_Vel *= 0.95f;	// drag
 	m_RotSpd *= 0.8f;
-
 }
 
 
@@ -264,6 +263,10 @@ void Player::ApplyVelocity()
 		MoveTo( corrected );
 	}
 
+    float vlen = m_Vel.Len();
+    if( vlen==0.0f) {
+        return;
+    }
 	vec2 newpos = Pos() + m_Vel;
 	if( newpos.LenSq() > r*r )
 	{
@@ -277,7 +280,6 @@ void Player::ApplyVelocity()
 		// Modified to keep circle _inside_ other circle rather than
 		// outside!
 		vec2 c = vec2::ZERO - Pos();
-		float vlen = m_Vel.Len();
 		vec2 vn = m_Vel/vlen;
 		float d = Dot( c, vn );
 		float dist = sqrt( r*r - c.LenSq() + d*d ) + d;

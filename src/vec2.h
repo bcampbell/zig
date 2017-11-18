@@ -3,8 +3,8 @@
 #ifndef VEC2_H
 #define VEC2_H
 
-#include <math.h>
-
+#include <cmath>
+#include <cassert>
 
 class vec2
 {
@@ -45,8 +45,13 @@ public:
 		{ x -= other.x; y -= other.y; return *this; }
 	vec2& operator*=( float scale )
 		{ x *= scale; y *= scale; return *this; }
-	vec2& operator/=( float scale )
-		{ x /= scale; y /= scale; return *this; }
+	vec2& operator/=( float d )
+	{
+        assert(std::isnormal(d));
+        x /= d;
+        y /= d;
+        return *this;
+    }
 	vec2 const& operator+() const
 		{ return *this; }
 	vec2 operator-() const
@@ -57,7 +62,7 @@ public:
 	friend vec2 operator*( vec2 const& v, float s );
 	friend vec2 operator*( float s, vec2 const& v );
 	friend vec2 operator/( vec2 const& v, float d );
-	friend vec2 operator/( float d, vec2 const& v );
+//	friend vec2 operator/( float d, vec2 const& v );
 	friend vec2 Rotate( vec2 const& v, float theta );
 	friend float Dot( vec2 const& v1, vec2 const& v2 );
 
@@ -76,10 +81,13 @@ inline vec2 operator*( float s, vec2 const& v )
 	{ return vec2( v.x*s, v.y*s ); }
 
 inline vec2 operator/( vec2 const& v, float d )
-	{ return vec2( v.x/d, v.y/d ); }
+	{
+        assert(std::isnormal(d));
+        return vec2( v.x/d, v.y/d );
+    }
 
-inline vec2 operator/( float d, vec2 const& v )
-	{ return vec2( v.x/d, v.y/d ); }
+//inline vec2 operator/( float d, vec2 const& v )
+//	{ return vec2( v.x/d, v.y/d ); }
 
 
 inline vec2 Rotate( vec2 const& v, float theta )
