@@ -13,6 +13,10 @@ void BlueGlow::Calc( float x, float y, Colour& out )
 {
 	float r = 2.0f*sqrtf( ((x-0.5f)*(x-0.5f) + (y-0.5f)*(y-0.5f) ) );
 	float ir = 1.0f-r;
+    if (ir<0)
+    {
+        ir = 0.0f;
+    }
 
 	out.r = ir*ir;
 	out.g = ir*ir;
