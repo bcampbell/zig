@@ -1610,9 +1610,9 @@ void Zipper::OnHitBullet( Bullet& bullet )
 //--------------------------------------
 
 
-const int ZipperMat::HitPoints = 20;
-const int ZipperMat::NumShots = 20;
-const float ZipperMat::FireTime = 2.0f;
+const int ZipperMat::HitPoints = 8;
+const int ZipperMat::NumShots = 10;
+const float ZipperMat::FireTime = 1.0f;
 const float ZipperMat::ChargeTime = 2.0f;
 
 ZipperMat::ZipperMat() : m_Life( HitPoints )
@@ -1632,6 +1632,7 @@ void ZipperMat::Respawn()
     m_State = charging;
     m_Inflation = 0.0f;
     m_FireCnt = 0;
+    SetRadius(8.0f + (2.0f * m_Inflation));
 }
 
 void ZipperMat::Tick()
@@ -1668,7 +1669,7 @@ void ZipperMat::Tick()
         	}
             break;
     }
-    SetRadius(8.0f + (4.0f * m_Inflation));
+    SetRadius(8.0f + (2.0f * m_Inflation));
 }
 
 
@@ -1677,7 +1678,7 @@ void ZipperMat::Tick()
 void ZipperMat::Draw()
 {
     Colour basec;
-    Colour chargecolour(0,0,1);
+    Colour chargecolour(0.5f,0.5f,1);
     Colour firecolour(1.0f,0,0);
     float s = Radius();
     basec = ColourLerp( chargecolour, firecolour, m_Inflation );
@@ -1687,18 +1688,17 @@ void ZipperMat::Draw()
 	//glShadeModel( GL_FLAT );
 	glShadeModel( GL_SMOOTH );
 
-//	Colour c1 = ColourLerp( chargecolour, Colour::WHITE, m_Flash );
 	Colour c2 = ColourLerp( basec, Colour::WHITE, m_Flash );
 	Colour c1 = c2;
 	glBegin( GL_QUADS );
 	glColor3f( c1.r, c1.g, c1.b );
-	glVertex2f( -s, -s*0.5f  );
+	glVertex2f( -s, -s  );
 	glColor3f( c1.r, c1.g, c1.b );
-	glVertex2f( s, -s*0.5f );
+	glVertex2f( s, -s );
 	glColor3f( c2.r, c2.g, c2.b );
-	glVertex2f( s/2, s );
+	glVertex2f( 8.0f, s );
 	glColor3f( c2.r, c2.g, c2.b );
-	glVertex2f( -s/2, s );
+	glVertex2f( -8.0f, s );
 	glEnd();
 
     // draw glow
