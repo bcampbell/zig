@@ -14,6 +14,7 @@
 #include "weapons.h"
 #include "zig.h"
 
+#include <cmath>
 #include <assert.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -281,10 +282,8 @@ void Player::ApplyVelocity()
 		// outside!
 		vec2 c = vec2::ZERO - Pos();
 		vec2 vn = m_Vel/vlen;
-		float d = Dot( c, vn );
-		float dist = sqrt( r*r - c.LenSq() + d*d ) + d;
-
 		// move to collision point
+		float dist = r - c.Len();
 		vec2 colpoint = Pos() + (vn * dist);
 		newpos = colpoint;
 
@@ -301,6 +300,8 @@ void Player::ApplyVelocity()
 		m_Vel = vlen * reflect;
 	}
 	MoveTo( newpos );
+    assert(!std::isnan(Pos().x) && !std::isnan(Pos().y));
+    assert(!std::isnan(m_Vel.x) && !std::isnan(m_Vel.y));
 }
 
 
