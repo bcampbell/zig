@@ -8,7 +8,7 @@ deps := $(objs:.o=.d)
 
 
 CXX = g++
-CPPFLAGS = -MMD -MP
+CPPFLAGS = -MMD -MP -DENABLE_CHEATS
 CXXFLAGS = -Wall -std=c++0x 
 CXXFLAGS += -ggdb
 LDFLAGS = -ggdb

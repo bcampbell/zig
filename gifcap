@@ -14,7 +14,18 @@ OFFSET=`echo $FOO | perl -n -e'/-geometry\s+(\d+)x(\d+)[+](\d+)[+](\d+)/ && prin
 
 
 mkdir -p $OUTDIR
-ffmpeg -f x11grab -r 50 -s $SIZE -i :0.0+$OFFSET $OUTDIR/out%04d.gif
+
+echo -n "in "
+for i in 3 2 1
+do
+    echo -n $i...
+    sleep 1
+done
+echo "go!"
+
+
+
+ffmpeg -f x11grab -r 50 -s $SIZE -i :0.0+$OFFSET -vcodec gif $OUTDIR/out%04d.gif
 
 # $ gifsicle --delay 2 --loop /tmp/bar/*.gif >animation.gif
 # $ convert -layers Optimize animation.gif animation_optimized.gif
