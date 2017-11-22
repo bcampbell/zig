@@ -522,6 +522,7 @@ public:
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Agitator() ); }
 private:
+    void DrawShape( vec2 const& pos, float r );
 	static const float s_RadiusMin;
 	static const float s_RadiusMax;
 	static const float s_MaxJitter;

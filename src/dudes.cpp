@@ -2472,7 +2472,7 @@ const float Agitator::s_RadiusMin = 10.0f;
 const float Agitator::s_RadiusMax = 16.0f;
 const float Agitator::s_MaxJitter = 3.0f;
 const float Agitator::s_MaxSpd = 5.0f;
-const float Agitator::s_HitDamage = 0.25f;
+const float Agitator::s_HitDamage = 0.2f;
 
 Agitator::Agitator() :
 	m_Agitation( 0.0f ),
@@ -2492,40 +2492,67 @@ void Agitator::Respawn()
 	SetRadius( s_RadiusMin + m_Agitation*(s_RadiusMax-s_RadiusMin) );
 }
 
+void Agitator::DrawShape( vec2 const& pos, float r )
+{
+	float theta;
+	const float step = twopi / 9.0f;
+	glBegin( GL_TRIANGLE_FAN );
+    float off = Rnd(0,twopi/6.0f);
+	for( theta=0.0f; theta<twopi; theta += step )
+	{
+		const float x = pos.x + r*sin(theta+off);
+		const float y = pos.y + r*cos(theta+off);
+		glVertex2f( x,y );
+	}
+	glEnd();
+}
 
 void Agitator::Draw()
 {
-
-	float j = m_Agitation*8.0f;
-	vec2 offset( Rnd(-j,j), Rnd(-j,j) );
-
-	glDisable( GL_BLEND );
+	glShadeModel( GL_SMOOTH );
+	glEnable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
-	glShadeModel( GL_FLAT );
-	glColor3f( 1.0f, 0.3f, 0.3f );
-	DrawCircle( offset, Radius() );
+	glBlendFunc( GL_ONE, GL_ONE);
 
-	Colour const c( 1.0f, 1.0f, 1.0f );
-	glColor3f( c.r, c.g, c.b );
-	DrawCircle( vec2::ZERO, Radius() );
+    float cols[4*4] = {
+        1.0f,0.0f, 0.0f, 1.0f,
+        0.0f,1.0f, 0.0f, 0.1f,
+        0.0f,0.0f, 1.0f, 0.1f,
+        0.0f,0.5f, 0.5f, 0.1f,
+    };
+    int i;
+    for (i=0; i<3; ++i )
+    {
+    	float j = 1.0f + (m_Agitation)*10.0f;
+	    vec2 offset( Rnd(-j,j), Rnd(-j,j) );
+        const float* f= &cols[i*4];
+	    glColor4f( f[0], f[1], f[2], f[3] );
+	    DrawShape( offset, Radius() );
+    }
+/*
+	Colour const c( 1.0f, 1.0f, 1.0f, 0.5f );
+	glColor4f( c.r, c.g, c.b, c.a );
+	DrawCircleFilled( vec2::ZERO, Radius() );
+    */
 	
 }
 
 void Agitator::Tick()
 {
-	if( m_Agitation > 0.0f )
+//	if( m_Agitation > 0.0f )
+    if (1)
 	{
 		// go toward player
 		vec2 mv = ( g_Player->Pos() - Pos() );
 		mv.Normalise();
-		mv *= m_Agitation*s_MaxSpd;
+		mv *= (0.1f+m_Agitation)*s_MaxSpd;
 
 		// jitter
 		float j = m_Agitation*s_MaxJitter;
 		mv += vec2( Rnd(-j,j), Rnd(-j,j) );
 		MoveBy( mv );
 
-//		m_Agitation *= 0.99f;
+		m_Agitation *= 0.99f;
 //		if( m_Agitation < 0.01f )
 //		{
 //			m_Agitation = 0.0f;
