@@ -167,6 +167,7 @@ void KeyboardController::Tick()
         keys[SDL_SCANCODE_LCTRL] ||
 #endif
         keys[SDL_SCANCODE_SPACE] ||
+        keys[SDL_SCANCODE_KP_ENTER] ||
         keys[SDL_SCANCODE_RETURN])
     {
         buttons |= CTRL_BTN_FIRE;
