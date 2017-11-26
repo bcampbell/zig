@@ -1533,56 +1533,53 @@ void Amoeba::OnHitBullet( Bullet& bullet )
 //--------------------------------------
 Zipper::Zipper()
 {
+	SetFlags( flagCanHitBullet|flagCanHitPlayer|flagLocksLevel );
 	SetRadius(10.0f);
-	SetFlags( flagCanHitBullet|
-		flagCanHitPlayer |
-		flagLocksLevel );
 	Respawn();
-}
-
-Zipper::Zipper(vec2 const& pos, float heading ) : m_Timer(0.0f), m_Spd(2.0f)
-{
-	SetRadius(16.0f);
-	SetFlags( flagCanHitBullet|
-		flagCanHitPlayer |
-		flagLocksLevel );
-	MoveTo(pos);
-    TurnTo(heading); 
-//	NewDirection();
 }
 
 
 void Zipper::Respawn()
 {
-    Die();
-    return;
+	RandomPos();
+    m_MoveTimer = 0.0f;
+    m_Vel = vec2(0,0);
 }
 
 void Zipper::Tick()
 {
-    /*
-	if( m_Spd.LenSq() < 0.5f*0.5f )
-		NewDirection();
 
-	if( MoveWithinArena( *this, m_Spd ) )
-		NewDirection();
+	MoveBy( m_Vel );
 
-	m_Spd *= 0.99f;
-*/
-    Forward(m_Spd);
-	TurnToward( g_Player->Pos(), m_Timer / 40.0f );
-    m_Spd += 0.05f;
-    if (m_Timer>4.0f)
-    {
-        Die();
+	m_Vel *= 0.95f;
+
+    m_MoveTimer += (1.0f/TARGET_FPS);
+    if( m_MoveTimer > 0.5f) {
+        m_MoveTimer = 0.0f;
+    	const float m = 3.0f;
+	    m_Vel.x += Rnd(-m,m);
+    	m_Vel.y += Rnd(-m,m);
+
+
+    	vec2 homing = g_Player->Pos() - Pos();
+    	homing.Normalise();
+	    homing *= 5.0f;
+
+    	m_Vel += homing;
     }
-
 }
 
 
 
 void Zipper::Draw()
 {
+    float f = m_MoveTimer/0.5f;  //m_Vel.Len()/16.0f;
+    if( f> 1.0f) {
+        f=1.0f;
+    }
+    f= 1.0f-f;
+    Agitator::StaticDraw( 0.2f, Radius());
+    return;
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
@@ -2516,6 +2513,12 @@ void Agitator::DrawShape( vec2 const& pos, float r )
 
 void Agitator::Draw()
 {
+    StaticDraw(m_Agitation, Radius());
+}
+
+void Agitator::StaticDraw(float agitation, float radius)
+{
+
 	glShadeModel( GL_SMOOTH );
 	glEnable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
@@ -2530,11 +2533,11 @@ void Agitator::Draw()
     int i;
     for (i=0; i<3; ++i )
     {
-    	float j = 1.0f + (m_Agitation)*10.0f;
+    	float j = 1.0f + agitation*10.0f;
 	    vec2 offset( Rnd(-j,j), Rnd(-j,j) );
         const float* f= &cols[i*4];
 	    glColor4f( f[0], f[1], f[2], f[3] );
-	    DrawShape( offset, Radius() );
+	    DrawShape( offset, radius );
     }
 /*
 	Colour const c( 1.0f, 1.0f, 1.0f, 0.5f );
@@ -2744,6 +2747,7 @@ Puffer::Puffer()
 
 void Puffer::Respawn()
 {
+    m_MoveTimer = 0.0f;
     m_Hit=0;
     m_ExpansiveVel = 0.0f;
 	RandomPos();
@@ -2767,8 +2771,8 @@ void Puffer::Draw()
 
 void Puffer::Tick()
 {
-    MoveWithinArena( *this, m_Vel );
-
+    
+   // MoveWithinArena( *this, m_Vel );
     float r = Radius();
     r += m_ExpansiveVel;
     SetRadius(r);
@@ -2790,6 +2794,25 @@ void Puffer::Tick()
 		Die();
     }
     */
+
+	MoveBy( m_Vel );
+
+	m_Vel *= 0.9f;
+
+    m_MoveTimer += (1.0f/TARGET_FPS);
+    if( m_MoveTimer > 0.3f) {
+        m_MoveTimer = 0.0f;
+    	const float m = 3.0f;
+	    m_Vel.x += Rnd(-m,m);
+    	m_Vel.y += Rnd(-m,m);
+
+
+    	vec2 homing = g_Player->Pos() - Pos();
+    	homing.Normalise();
+	    homing *= 5.0f;
+
+    	m_Vel += homing;
+    }
 }
 
 void Puffer::OnHitBullet( Bullet& bullet )
@@ -2808,7 +2831,14 @@ void Puffer::OnHitBullet( Bullet& bullet )
         m_Hit = 0;
     }
 
+
     // apply impulse
+    vec2 impact = Rotate(vec2(0,1),bullet.Heading());
+    impact.Normalise();
+    impact *= 1.0f * (float)bullet.Power();
+    m_Vel += impact;
+
+
     m_ExpansiveVel += 1.0f * (float)bullet.Power();
 	bullet.ReducePower(bullet.Power());
 

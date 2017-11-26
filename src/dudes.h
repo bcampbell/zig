@@ -355,8 +355,8 @@ public:
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Zipper() ); }
 private:
-    float m_Timer;
-	float m_Spd;
+    float   m_MoveTimer;
+	vec2    m_Vel;
 
 };
 
@@ -520,8 +520,10 @@ public:
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Agitator() ); }
+
+    static void StaticDraw(float agitation, float radius);
+    static void DrawShape( vec2 const& pos, float r );
 private:
-    void DrawShape( vec2 const& pos, float r );
 	static const float s_RadiusMin;
 	static const float s_RadiusMax;
 	static const float s_MaxJitter;
@@ -569,6 +571,7 @@ private:
     int     m_Hit;
 	vec2	m_Vel;
     float   m_ExpansiveVel;
+    float   m_MoveTimer;
 };
 
 #endif	// DUDES_H
