@@ -32,6 +32,7 @@ extern ZigConfig g_Config;
 extern std::vector<LevelDef> g_LevelDefs;
 
 extern Player* g_Player;
+extern float g_Time;
 extern Level* g_CurrentLevel;
 
 

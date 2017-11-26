@@ -39,6 +39,7 @@ ZigConfig g_Config;
 std::vector<LevelDef> g_LevelDefs;
 
 Player* g_Player=0;
+float g_Time=0; // in seconds
 Level* g_CurrentLevel=0;
 Texture* g_Font=0;
 
@@ -290,6 +291,8 @@ void mainloop()
         if( scene== 0  ) {
             break;
         }
+
+        g_Time += (1.0f / TARGET_FPS);
 
 		Uint32 currtime = SDL_GetTicks();	// currytime? mmmmmmmm
 		Uint32 elapsed = currtime-prevtime;

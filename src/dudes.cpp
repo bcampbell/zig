@@ -169,7 +169,7 @@ Baiter::Baiter( vec2 const& pos ) : m_Spd( vec2::ZERO )
 	MoveTo(pos);
 }
 
-void Baiter::Draw()
+void Baiter::StaticDraw()
 {
     const float verts[8*3*2] = {
 		-4.0f,4.0f, 0.0f,14.0f, 4.0f,4.0f,
@@ -244,14 +244,14 @@ void Baiter::Respawn()
 // Obstacle
 //--------------------
 
-Obstacle::Obstacle() : m_Cyc(0.0f)
+Obstacle::Obstacle()
 {
 	SetRadius(10.0f);
 	SetFlags( flagCanHitBullet| flagCanHitPlayer );
 	RandomPos();
 }
 
-Obstacle::Obstacle( vec2 const& pos ) : m_Cyc(0.0f)
+Obstacle::Obstacle( vec2 const& pos )
 {
 	SetRadius(10.0f);
 	SetFlags( flagCanHitBullet| flagCanHitPlayer );
@@ -260,6 +260,11 @@ Obstacle::Obstacle( vec2 const& pos ) : m_Cyc(0.0f)
 }
 
 void Obstacle::Draw()
+{
+    StaticDraw();
+}
+
+void Obstacle::StaticDraw()
 {
 	// evil, menacing colours.
 	static const Colour evilcolours[] =
@@ -270,9 +275,7 @@ void Obstacle::Draw()
 
 	static const ColourRange evilrange( evilcolours, 2 );
 
-	m_Cyc += 0.01f;
-
-	Colour c=evilrange.Get(m_Cyc,false);
+	Colour c=evilrange.Get(g_Time/2.0f,false);
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
@@ -321,10 +324,14 @@ Grunt::Grunt()
 void Grunt::Respawn()
 {
 	RandomPos();
-	m_Cyc = 0.0f;
 }
 
 void Grunt::Draw()
+{
+    StaticDraw( (g_Player->Pos() - Pos()).Len() );
+}
+
+void Grunt::StaticDraw(float playerProximty)
 {
 	static const Colour colours[] =
 	{
@@ -346,7 +353,7 @@ void Grunt::Draw()
 	const float glowzonemax = 150.0f;
 
 	Colour base( 0.5f, 0.5f, 0.5f );
-	float dist = ((g_Player->Pos() - Pos()).Len() - glowzonemin) / (glowzonemax-glowzonemin);
+	float dist = (playerProximty - glowzonemin) / (glowzonemax-glowzonemin);
 	if( dist > 1.0f )
 		dist = 1.0f;
 	if( dist < 0.0f )
@@ -358,15 +365,16 @@ void Grunt::Draw()
 	glBegin( GL_TRIANGLE_STRIP );
 		int seg;
 
+        float cyc = g_Time*0.5f;
 		for( seg=0; seg<=segcount; ++seg )
 		{
 			float f = (float)seg/(float)segcount;
-			float ss = 1.0f + f*sin( m_Cyc*10.0f )*0.4f;
-			float cs = 1.0f + f*cos( m_Cyc*10.0f )*0.4f;
+			float ss = 1.0f + f*sin( cyc*10.0f )*0.4f;
+			float cs = 1.0f + f*cos( cyc*10.0f )*0.4f;
 			
 			const float w = (1.0f-f)*segw0 + f*segw1;
 
-			Colour c = range.Get( m_Cyc+(1.0f-f)*0.2f, false );
+			Colour c = range.Get( cyc+(1.0f-f)*0.2f, false );
 			c = ColourLerp( c, base, dist );
 			
 			glColor3f( c.r, c.g, c.b );
@@ -380,7 +388,6 @@ void Grunt::Draw()
 void Grunt::Tick()
 {
 	Forward( 1.0f );
-	m_Cyc += 0.01f;
 	TurnToward( g_Player->Pos(), pi/16.0f );
 }
 

@@ -81,10 +81,11 @@ class Baiter : public Dude
 public:
 	Baiter();
 	Baiter( vec2 const& pos );
-	virtual void Draw();
+	virtual void Draw() { StaticDraw(); };
 	virtual void Tick();
 	virtual void OnHitBullet( Bullet& bullet );
 	virtual void Respawn();
+    static void StaticDraw();
 private:
 	vec2 m_Spd;
 };
@@ -102,8 +103,7 @@ public:
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Obstacle() ); }
-private:
-	float m_Cyc;
+	static void StaticDraw();
 };
 
 class Grunt : public Dude
@@ -116,8 +116,7 @@ public:
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Grunt() ); }
-private:
-	float m_Cyc;
+    static void StaticDraw(float playerProximty);
 };
 
 
