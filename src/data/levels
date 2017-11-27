@@ -14,8 +14,8 @@
 # UFO - asteroids-style UFO
 # WallHugger - moves around edge of arena, firing inward.
 # Wiggler - Wiggles toward player
-# Zipper - Moves in straight line, periodically picks a new random direction
-# ZipperMat - generates Zippers
+# Swarmer - pulses fast toward player
+# ZipperMat - 
 # Invader - An invader. Possibly from space.
 # Snake - Multi-segmented homing snake
 # MineLayer - Mine-laying dude
@@ -23,7 +23,6 @@
 # EdgePuller
 # Divider - double-beam thingy
 # Agitator - gets mad when you shoot it
-
 
 #1
 LEVEL
@@ -62,9 +61,9 @@ LEVEL
 	Obstacle 10
 
 LEVEL
-	Zipper 10
-	Wiggler 10
+	Tank 1
 	Obstacle 8
+	Spiker 4
 
 LEVEL
 	Snowflake 20
@@ -84,9 +83,8 @@ LEVEL
 	Wiggler 5
 
 LEVEL
-	Tank 1
+	Swarmer 10
 	Obstacle 8
-	Spiker 4
 
 LEVEL
 	Agitator 5
@@ -106,8 +104,8 @@ LEVEL
 
 LEVEL
 	ZipperMat 1
-	Zipper 4
-	Obstacle 8
+	Swarmer 2
+	Obstacle 16
 
 LEVEL
 	Obstacle 10
@@ -122,7 +120,7 @@ LEVEL
 LEVEL
 	Agitator 5
 	ZipperMat 1
-	Zipper 5
+	Swarmer 5
 	Obstacle 10
 
 #20
@@ -173,9 +171,9 @@ LEVEL
 	Obstacle 10
 
 LEVEL
-	FatZapper 1
-	Obstacle 20
-	HeavyThing 8
+    Obstacle 8
+    Swarmer 10
+    ZipperMat 2
 
 #30
 LEVEL
@@ -192,7 +190,7 @@ LEVEL
 LEVEL
 	Divider 1
 	Wiggler 20
-	Zipper 10
+	Swarmer 10
 	Obstacle 20
 
 LEVEL
@@ -216,7 +214,7 @@ LEVEL
 	Obstacle 10
 	WallHugger 1
 	ZipperMat 1
-	Zipper 10
+	Swarmer 10
 
 LEVEL
 	FatZapper 4
@@ -249,7 +247,7 @@ LEVEL
 LEVEL
 	Spiker 8
 	ZipperMat 1
-	Zipper 4
+	Swarmer 4
 	Obstacle 8
 
 LEVEL
