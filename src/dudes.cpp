@@ -50,7 +50,7 @@ static const DudeCreationInfo s_DudeCreationTable[] =
 	{ "UFO",		UFO::Create },
 	{ "WallHugger",	WallHugger::Create },
 	{ "Wiggler",	Wiggler::Create },
-	{ "Zipper",		Zipper::Create },
+	{ "Swarmer",	Swarmer::Create },
 	{ "ZipperMat",	ZipperMat::Create },
 	{ "Invader",	Invader::Create },
 	{ "Snake",		Snake::Create },
@@ -1529,9 +1529,9 @@ void Amoeba::OnHitBullet( Bullet& bullet )
 }
 
 //--------------------------------------
-// Zipper
+// Swarmer
 //--------------------------------------
-Zipper::Zipper()
+Swarmer::Swarmer()
 {
 	SetFlags( flagCanHitBullet|flagCanHitPlayer|flagLocksLevel );
 	SetRadius(10.0f);
@@ -1539,14 +1539,16 @@ Zipper::Zipper()
 }
 
 
-void Zipper::Respawn()
+void Swarmer::Respawn()
 {
 	RandomPos();
     m_MoveTimer = 0.0f;
     m_Vel = vec2(0,0);
 }
 
-void Zipper::Tick()
+
+
+void Swarmer::Tick()
 {
 
 	MoveBy( m_Vel );
@@ -1571,38 +1573,78 @@ void Zipper::Tick()
 
 
 
-void Zipper::Draw()
+void Swarmer::Draw()
 {
     float f = m_MoveTimer/0.5f;  //m_Vel.Len()/16.0f;
     if( f> 1.0f) {
         f=1.0f;
     }
-    f= 1.0f-f;
-    Agitator::StaticDraw( 0.2f, Radius());
-    return;
-	glDisable( GL_BLEND );
-	glDisable( GL_TEXTURE_2D );
-	glShadeModel( GL_FLAT );
+    StaticDraw();
+}
 
-	glBegin( GL_TRIANGLES );
-	glColor3f( 1.0f, 0.2f, 0.2f );
-	glVertex2f( 0.0f, 16.0f );
-	glColor3f( 1.0f, 0.2f, 0.2f );
-	glVertex2f( 0.0f, 3.0f );
-	glColor3f( 1.0f, 0.2f, 0.2f );
-	glVertex2f( 10.0f, -3.0f );
-	
-	glColor3f( 0.7f, 0.0f, 0.0f );
-	glVertex2f( 0.0f, 16.0f );
-	glColor3f( 0.7f, 0.0f, 0.0f );
-	glVertex2f( -10.0f, -3.0f );
-	glColor3f( 0.7f, 0.0f, 0.0f );
-	glVertex2f( 0.0f, 3.0f );
+void Swarmer::StaticDraw()
+{
+    // draw glow
+	glEnable( GL_TEXTURE_2D );
+	glBindTexture( GL_TEXTURE_2D, g_Textures[TX_BLUEGLOW]->ID() );
+	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_ONE, GL_ONE );
+
+	glColor3f( 0.2f,0.0f,0.0f  );
+
+    float s =  Rnd(12.0f,24.0f);
+	glBegin( GL_QUADS );
+		glTexCoord2f( 0.0f, 1.0f );
+		glVertex2f( -s, s );
+		glTexCoord2f( 1.0f,1.0f);
+		glVertex2f( s, s );
+		glTexCoord2f( 1.0f, 0.0f);
+		glVertex2f( s, -s );
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2f( -s, -s );
 	glEnd();
+
+	glShadeModel( GL_SMOOTH );
+	glEnable( GL_BLEND );
+	glDisable( GL_TEXTURE_2D );
+	glBlendFunc( GL_ONE, GL_ONE);
+
+    float cols[3*4] = {
+        0.5f,0.0f, 0.0f, 1.0f,
+        0.0f,0.5f, 0.0f, 1.0f,
+        0.8f,0.6f, 0.0f, 1.0f,
+    };
+
+    int i;
+    for (i=0; i<3; ++i )
+    {
+    	float j = 2.0f;
+	    vec2 pos( Rnd(-j,j), Rnd(-j,j) );
+        const float* f= &cols[i*4];
+	    glColor4f( f[0], f[1], f[2], f[3] );
+
+        float theta;
+        const float step = twopi / 9.0f;
+        glBegin( GL_TRIANGLE_FAN );
+        float off = Rnd(0,twopi/6.0f);
+        float r = Rnd( 6.0f,12.0f);
+        for( theta=0.0f; theta<twopi; theta += twopi/3 )
+        {
+            const float x = pos.x + r*sin(theta+off);
+            const float y = pos.y + r*cos(theta+off);
+            glVertex2f( x,y );
+        }
+        glEnd();
+    }
 }
 
 
-void Zipper::OnHitBullet( Bullet& bullet )
+void Swarmer::OnHitBullet( Bullet& bullet )
 {
 	StandardDeath( bullet, 100 );
 	Die();

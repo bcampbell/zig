@@ -343,17 +343,18 @@ private:
 };
 
 
-class Zipper : public Dude
+class Swarmer : public Dude
 {
 public:
-	Zipper();
-	Zipper( vec2 const& pos, float heading );
+	Swarmer();
+	Swarmer( vec2 const& pos, float heading );
 	virtual void Draw();
 	virtual void Tick();
 	virtual void OnHitBullet( Bullet& bullet );
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
-		{ newdudes.push_back( new Zipper() ); }
+		{ newdudes.push_back( new Swarmer() ); }
+    static void StaticDraw();
 private:
     float   m_MoveTimer;
 	vec2    m_Vel;
