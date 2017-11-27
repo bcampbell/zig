@@ -77,7 +77,7 @@ DudeCreatorFn GetDudeCreator( std::string const& dudetype )
 			return s_DudeCreationTable[i].creator;
 	}
 
-	throw Wobbly( "Unknown Dude type!" );
+	throw Wobbly( "Unknown Dude type '%s'", dudetype.c_str() );
 }
 
 
