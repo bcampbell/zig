@@ -1629,7 +1629,6 @@ void Swarmer::StaticDraw()
 	    glColor4f( f[0], f[1], f[2], f[3] );
 
         float theta;
-        const float step = twopi / 9.0f;
         glBegin( GL_TRIANGLE_FAN );
         float off = Rnd(0,twopi/6.0f);
         float r = Rnd( 6.0f,12.0f);
@@ -2777,7 +2776,8 @@ void Divider::OnHitBullet( Bullet& bullet )
 //--------------------
 
 
-const float Puffer::s_RadiusMin = 8.0f;
+const float Puffer::s_MinArea = 8.0f * 8.0f * pi;
+const float Puffer::s_MaxArea = 80.0f * 80.0f * pi;
 
 Puffer::Puffer()
 {
@@ -2789,14 +2789,24 @@ Puffer::Puffer()
 
 void Puffer::Respawn()
 {
-    m_MoveTimer = 0.0f;
-    m_Hit=0;
-    m_ExpansiveVel = 0.0f;
+    m_Accel = Rnd(0.075f,0.2f);
+    m_Area = s_MinArea;
+    m_RespiteTimer = 0.0f;
 	RandomPos();
 	m_Vel = Rotate( vec2( 0.0f, 0.5f ), Rnd(0,twopi) );
-	SetRadius( s_RadiusMin );
+    UpdateRadius();
+    SetRadius( sqrtf(m_Area/pi) );
 }
 
+void Puffer::UpdateRadius()
+{
+    float targ = sqrtf(m_Area/pi);
+
+    float r=Radius();
+
+
+	SetRadius( r + (targ-r)*0.1f );
+}
 
 void Puffer::Draw()
 {
@@ -2804,7 +2814,7 @@ void Puffer::Draw()
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
 
-    float f = ((float)m_Hit)/3.0f;
+    float f = (m_Area-s_MinArea) / (s_MaxArea-s_MinArea);
 	Colour const c( 1.0f, 1.0f-f, 1.0f-f );
 	glColor3f( c.r, c.g, c.b );
 	DrawCircle( vec2::ZERO, Radius() );
@@ -2813,19 +2823,16 @@ void Puffer::Draw()
 
 void Puffer::Tick()
 {
-    
-   // MoveWithinArena( *this, m_Vel );
-    float r = Radius();
-    r += m_ExpansiveVel;
-    SetRadius(r);
-
-    const float k=0.0075f;   // spring constant
-    const float mass = 0.75f;
-    m_ExpansiveVel *= 0.90f;    // friction
-    m_ExpansiveVel += mass * -k * (r-s_RadiusMin);
-
-
-
+    m_RespiteTimer += (1.0f/TARGET_FPS);
+    if( m_RespiteTimer > 0.1f) {
+        // deflate
+        m_Area -= 40.0f;
+        if( m_Area < s_MinArea)
+        {
+            m_Area = s_MinArea;
+        }
+        UpdateRadius();
+    }
 
     /*
     m_Puff += (m_TargetPuff - m_Puff) * 0.1f;
@@ -2842,50 +2849,44 @@ void Puffer::Tick()
 	m_Vel *= 0.9f;
 
     m_MoveTimer += (1.0f/TARGET_FPS);
-    if( m_MoveTimer > 0.3f) {
+    if( m_MoveTimer > 5.0f) {
         m_MoveTimer = 0.0f;
-    	const float m = 3.0f;
-	    m_Vel.x += Rnd(-m,m);
-    	m_Vel.y += Rnd(-m,m);
-
-
-    	vec2 homing = g_Player->Pos() - Pos();
-    	homing.Normalise();
-	    homing *= 5.0f;
-
-    	m_Vel += homing;
+        m_Accel = Rnd(0.075f,0.2f);
     }
+    const float s=32.0f;
+    vec2 targ = g_Player->Pos() + vec2(Rnd(-s,s), Rnd(-s,s));
+    vec2 homing = targ - Pos();
+    homing.Normalise();
+    homing *= m_Accel;
+
+    m_Vel += homing;
 }
 
 void Puffer::OnHitBullet( Bullet& bullet )
 {
-
-    if (Radius()>35.0f) {
-        m_Hit += bullet.Power();
-        if( m_Hit > 4) {
-            StandardDeath( bullet.Owner(), 100 );
-            Die();
-            return;
-        }
-    }
-    else
+    m_RespiteTimer = 0.0f;
+    m_Area += bullet.Power() * 600.0f; 
+    UpdateRadius();
+    if (m_Area >= s_MaxArea )
     {
-        m_Hit = 0;
+        StandardDeath( bullet.Owner(), 200 );
+        int i;
+        const int num = 50;
+        for (i=0; i<num; ++i) {
+            float a = twopi * ((float)i/(float)num);
+    		g_Agents->AddDude( new Missile( Pos() + Rotate(vec2(0,16.0f),a),a ));
+        }
+        Die();
+        return;
     }
-
 
     // apply impulse
     vec2 impact = Rotate(vec2(0,1),bullet.Heading());
     impact.Normalise();
-    impact *= 1.0f * (float)bullet.Power();
+    float f = (m_Area-s_MinArea) / (s_MaxArea-s_MinArea);
+    impact *= (1.0f-f)*2.0f * (float)bullet.Power();
     m_Vel += impact;
 
-
-    m_ExpansiveVel += 1.0f * (float)bullet.Power();
 	bullet.ReducePower(bullet.Power());
-
-
-    
-
 }
 

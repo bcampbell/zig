@@ -568,11 +568,16 @@ public:
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Puffer() ); }
 private:
-    static const float s_RadiusMin;
-    int     m_Hit;
+    static const float s_MinArea;
+    static const float s_MaxArea;
+
+    float   m_Area;
+    float   m_RespiteTimer;
 	vec2	m_Vel;
-    float   m_ExpansiveVel;
+    float   m_Accel;
     float   m_MoveTimer;
+
+    void UpdateRadius();
 };
 
 #endif	// DUDES_H
