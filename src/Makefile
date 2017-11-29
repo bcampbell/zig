@@ -34,11 +34,12 @@ ifeq ($(shell uname), Darwin)
   LDLIBS += -Xlinker -rpath -Xlinker @executable_path/../Frameworks
 endif
 
-ifeq ($(PLATFORM),win32)
+ifeq ($(shell uname),MINGW64_NT-10.0)
   exe = zig.exe
   CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng)
   LDLIBS += $(shell pkg-config --libs sdl2 SDL2_mixer libpng)
   CXXFLAGS += -Dmain=SDL_main
+  LDLIBS += -lopengl32
   #LIBS += -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lopengl32 -lpng16 -lz -mwindows
 endif
 
