@@ -2840,13 +2840,8 @@ void Puffer::StaticDraw(float r, float time)
 {
 	static const Colour colours[] =
 	{
-		Colour( 1.0f, 0.0f, 0.0f),
-		Colour( 1.0f, 1.0f, 0.0f),
-		Colour( 0.0f, 1.0f, 0.0f),
-		Colour( 0.0f, 1.0f, 1.0f),
-		Colour( 0.0f, 0.0f, 1.0f),
-		Colour( 1.0f, 0.0f, 1.0f),
-		Colour( 1.0f, 0.0f, 0.0f),
+		Colour( 1.0f, 0.0f, 0.0f, 1.0f),
+		Colour( 1.0f, 0.0f, 0.0f, 0.5f),
 	};
 	static const ColourRange range( colours, sizeof(colours)/sizeof(Colour) );
 
@@ -2860,7 +2855,7 @@ void Puffer::StaticDraw(float r, float time)
     float tscale[4] = {1.0f, 0.8f, 3.2f, 7.9f};
     float amp[4] = {1.0f, 0.6f, 1.1f, 0.9f};
 
-    const int nseg = 64;
+    const int nseg = 24;
     float mag1[nseg];
     float mag2[nseg];
 
@@ -2879,10 +2874,9 @@ void Puffer::StaticDraw(float r, float time)
 
     wrapfloats(mag1, mag2, nseg);
 
-    Colour const red( 1.0f, 0,0 );
-    Colour const black( 0,0,0 );
-    Colour const outer = ColourLerp( black, red, f);
-    Colour const inner = ColourLerp(range.Get(time/4, false), red, f);
+    Colour c = range.Get(time*4,false);
+    Colour const outer = ColourLerp( Colour(0,0,1,1), c, f);
+    Colour const inner = ColourLerp( Colour(0,0,0,1), c, f);
 
     vec2 verts[nseg];
     Colour cols[nseg];
@@ -2895,29 +2889,21 @@ void Puffer::StaticDraw(float r, float time)
 
 //    Colour const outer( 1.0f, 0,0 );
 
-	glDisable( GL_BLEND );
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_SMOOTH );
 	glBegin( GL_TRIANGLE_FAN );
-        glColor3f( inner.r, inner.g, inner.b );
+        glColor4f( inner.r, inner.g, inner.b, inner.a );
         glVertex2f(0,0);
         for(i=0; i<nseg; ++i) {
-	        glColor3f( cols[i].r, cols[i].g, cols[i].b );
+	        glColor4f( cols[i].r, cols[i].g, cols[i].b, cols[i].a );
             glVertex2f(verts[i].x,verts[i].y);
         }
-        glColor3f( cols[0].r, cols[0].g, cols[0].b );
+        glColor4f( cols[0].r, cols[0].g, cols[0].b, cols[0].a );
         glVertex2f(verts[0].x,verts[0].y);
     glEnd();
-/*
-    // outline
-	glShadeModel( GL_FLAT );
-    glColor3f( 0,0,0.4);
-	glBegin( GL_LINE_LOOP );
-        for(i=0; i<nseg; ++i) {
-            glVertex2f(verts[i].x,verts[i].y);
-        }
-    glEnd();
-    */
 }
 
 
@@ -2971,7 +2957,7 @@ void Puffer::OnHitBullet( Bullet& bullet )
     {
         StandardDeath( bullet.Owner(), 200 );
         int i;
-        const int num = 50;
+        const int num = 32;
         for (i=0; i<num; ++i) {
             float a = twopi * ((float)i/(float)num);
     		g_Agents->AddDude( new Missile( Pos() + Rotate(vec2(0,16.0f),a),a ));
