@@ -1790,6 +1790,7 @@ void ZipperMat::OnHitBullet( Bullet& bullet )
 		for(i=0;i<5;++i)
 			g_Agents->AddDude(new Frag(Pos()));
 		m_Flash = 1.0f;
+        SoundMgr::Inst().Play( SFX_SMALLTHUD );
 	}
 	bullet.ReducePower( absorbed );
 }
@@ -2965,6 +2966,8 @@ void Puffer::OnHitBullet( Bullet& bullet )
         Die();
         return;
     }
+
+    SoundMgr::Inst().Play( SFX_SMALLTHUD );
 
     // apply impulse
     vec2 impact = Rotate(vec2(0,1),bullet.Heading());
