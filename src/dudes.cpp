@@ -2810,14 +2810,114 @@ void Puffer::UpdateRadius()
 
 void Puffer::Draw()
 {
+    StaticDraw(Radius(), g_Time);
+}
+
+//TODO: don't think this is quite right, but hey.
+void wrapfloats(const float *in, float* out, int n)
+{
+    int ease = n/4;
+    int i;
+    for (i=0; i<ease; ++i)
+    {
+        float t = (float)i/(float)ease;
+        out[i] = in[i]*(0.5f+t/2) + in[(n-i)-1]*(0.5-t/2);
+    }
+    for (i=ease; i<n-ease; ++i)
+    {
+        out[i] = in[i];
+    }
+    for (i=n-ease; i<n; ++i)
+    {
+        float t = (float)(ease-(n-i))/(float)ease;
+        out[i] = in[i]*(0.5f+t/2) + in[(n-i)-1]*(0.5-t/2);
+    }
+}
+
+
+
+void Puffer::StaticDraw(float r, float time)
+{
+	static const Colour colours[] =
+	{
+		Colour( 1.0f, 0.0f, 0.0f),
+		Colour( 1.0f, 1.0f, 0.0f),
+		Colour( 0.0f, 1.0f, 0.0f),
+		Colour( 0.0f, 1.0f, 1.0f),
+		Colour( 0.0f, 0.0f, 1.0f),
+		Colour( 1.0f, 0.0f, 1.0f),
+		Colour( 1.0f, 0.0f, 0.0f),
+	};
+	static const ColourRange range( colours, sizeof(colours)/sizeof(Colour) );
+
+
+    float area = pi *r*r;
+
+
+    float f = (area-s_MinArea) / (s_MaxArea-s_MinArea);
+
+    float freq[4] = {5.0f, 4.4f, 7.2f, 1.7f};
+    float tscale[4] = {1.0f, 0.8f, 3.2f, 7.9f};
+    float amp[4] = {1.0f, 0.6f, 1.1f, 0.9f};
+
+    const int nseg = 64;
+    float mag1[nseg];
+    float mag2[nseg];
+
+    int i;
+    for(i=0; i<nseg; ++i)
+    {
+        float g = (float)i/(float)nseg;
+        float foo=0.0f;
+        int j;
+        for( j=0; j<4; ++j )
+        {
+            foo += amp[j] * sin(g*twopi*freq[j] + time*tscale[j]);
+        }
+        mag1[i] = r + r*(1-f)*0.05f*foo;
+    }
+
+    wrapfloats(mag1, mag2, nseg);
+
+    Colour const red( 1.0f, 0,0 );
+    Colour const black( 0,0,0 );
+    Colour const outer = ColourLerp( black, red, f);
+    Colour const inner = ColourLerp(range.Get(time/4, false), red, f);
+
+    vec2 verts[nseg];
+    Colour cols[nseg];
+    for(i=0; i<nseg; ++i)
+    {
+        float g = (float)i/(float)nseg;
+        verts[i] = Rotate(vec2(0,mag2[i]), g*twopi);
+	    cols[i] = outer;
+    }
+
+//    Colour const outer( 1.0f, 0,0 );
+
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
+	glShadeModel( GL_SMOOTH );
+	glBegin( GL_TRIANGLE_FAN );
+        glColor3f( inner.r, inner.g, inner.b );
+        glVertex2f(0,0);
+        for(i=0; i<nseg; ++i) {
+	        glColor3f( cols[i].r, cols[i].g, cols[i].b );
+            glVertex2f(verts[i].x,verts[i].y);
+        }
+        glColor3f( cols[0].r, cols[0].g, cols[0].b );
+        glVertex2f(verts[0].x,verts[0].y);
+    glEnd();
+/*
+    // outline
 	glShadeModel( GL_FLAT );
-
-    float f = (m_Area-s_MinArea) / (s_MaxArea-s_MinArea);
-	Colour const c( 1.0f, 1.0f-f, 1.0f-f );
-	glColor3f( c.r, c.g, c.b );
-	DrawCircle( vec2::ZERO, Radius() );
+    glColor3f( 0,0,0.4);
+	glBegin( GL_LINE_LOOP );
+        for(i=0; i<nseg; ++i) {
+            glVertex2f(verts[i].x,verts[i].y);
+        }
+    glEnd();
+    */
 }
 
 

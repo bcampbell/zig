@@ -567,9 +567,10 @@ public:
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Puffer() ); }
-private:
+    static void StaticDraw(float r, float time);
     static const float s_MinArea;
     static const float s_MaxArea;
+private:
 
     float   m_Area;
     float   m_RespiteTimer;
