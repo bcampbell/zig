@@ -2277,7 +2277,9 @@ void Snake::Create( std::list<Dude*>& newdudes )
 // MineLayer
 //--------------------
 
-const float MineLayer::s_DropInterval = 2.0f;
+const float MineLayer::s_DropInterval = 0.5f;
+const float MineLayer::s_QuietDuration = 8.0f;
+const int MineLayer::s_DropNum = 8;
 
 MineLayer::MineLayer() : m_Life(10)
 {
@@ -2293,13 +2295,14 @@ void MineLayer::OnHitBullet( Bullet& bullet )
 	m_Life -= absorbed;
 	if( m_Life > 0 )
 	{
+        SoundMgr::Inst().Play( SFX_SMALLTHUD );
 		int i;
 		for(i=0;i<5;++i)
 			g_Agents->AddDude(new Frag(Pos()));
 	}
 	else
 	{
-		StandardDeath( bullet, 50 );
+		BigArseDeath( bullet, 400 );
 		Die();
 	}
 
@@ -2311,54 +2314,121 @@ void MineLayer::Respawn()
 	m_Spd = Rotate( vec2(0.0f, 2.0f ), Rnd(0.0f,twopi) );
 //	m_Spd = vec2::ZERO;
 	RandomPos();
-	m_Timer = Rnd( 0.0f, s_DropInterval );
+    m_State = quiet;
+	m_Timer = Rnd( 0.0f, s_QuietDuration*0.5f );
 	m_Flash = 0.0f;
+    m_Pop = 0.0f;
 }
 
 
 void MineLayer::Tick()
 {
 	MoveWithinArena( *this, m_Spd );
-	TurnBy( pi/32.0f );
-	Forward( 1.0f );
+
+
+
+//	Forward( 1.0f );
 	m_Timer += 1.0f/TARGET_FPS;
-	
-//	if( m_Timer >= s_DropInterval )
-//	{
-		if( Rnd() < 0.01f )
+
+
+    if(m_State == quiet ) {
+        float f = m_Timer/s_QuietDuration;
+        f=f*f;
+    	TurnBy( (1-f)*(pi/8.0f) );
+		if( m_Timer >= s_QuietDuration ) {
+			//SoundMgr::Inst().Play( SFX_BAITERALERT );
+            m_State = dropping;
+            m_DropCnt = 0;
+            m_Spd = m_Spd.Normalised() * 4.0f;
+            m_Timer = 0.0f;
+        }
+    } else {
+		if( m_Timer >= s_DropInterval )
 		{
 			g_Agents->AddDude( new Mine( Pos() ) );
-		}
-		if( m_Timer >= s_DropInterval*2.0f )
+            SoundMgr::Inst().Play( SFX_SMALLTHUD );
 			m_Timer = 0.0f;
-//	}
+            m_Pop = 1.0f;
+            m_DropCnt++;
+            if(m_DropCnt >= s_DropNum) {
+                m_State =quiet;
+                m_Spd = m_Spd.Normalised() * 2.0f;
+            }
+		}
+	}
 	m_Flash *= 0.95f;
+    m_Pop *= 0.95f;
+
 }
 
 void MineLayer::Draw()
 {
-	Colour c = ColourLerp(
-		Colour(1.0, 1.0, 0.0),
-		Colour::WHITE,
-		m_Flash );
+    StaticDraw(m_Flash,m_Pop);
 
-	glDisable( GL_BLEND );
-	glDisable( GL_TEXTURE_2D );
-	glShadeModel( GL_FLAT );
-
-    glColor3f(c.r, c.g, c.b ); // yellow 
-	glBegin(GL_TRIANGLE_FAN );
-		glVertex2f( 0.0f, 0.0f );
-		glVertex2f(-8.0,-8.0);
-		glVertex2f(-16.0, 0.0);
-		glVertex2f(-8.0, 8.0);
-		glVertex2f( 8.0, 8.0);
-		glVertex2f( 16.0, 0.0);
-		glVertex2f( 8.0,-8.0);
-		glVertex2f(-8.0,-8.0);
-	glEnd();
 }
 
+
+static vec2 Jitter(float mag)
+{
+    return Rotate( vec2(0.0f,Rnd(mag)), Rnd(0,twopi));
+}
+
+void MineLayer::StaticDraw(float flash, float pop)
+{
+	static const Colour raw[] =
+	{
+		Colour( 1.0f, 0.0f, 0.0f),
+		Colour( 1.0f, 1.0f, 0.0f),
+		Colour( 0.0f, 1.0f, 0.0f),
+		Colour( 0.0f, 1.0f, 1.0f),
+		Colour( 0.0f, 0.0f, 1.0f),
+		Colour( 1.0f, 0.0f, 1.0f),
+	};
+
+	static const ColourRange rawrange( raw, 6 );
+
+
+    const int NQUADS = 4;
+
+    vec2 verts[4*NQUADS];
+    Colour cols[4*NQUADS];
+    int i;
+    for (i=0; i<NQUADS; ++i ) {
+        float t = (int)i/(float)(NQUADS-1); // 0..1
+        float s = 4.0f;
+        float x0 = s + (1.0f-t)*6.0f;
+        float y0 = s + (1.0f-t)*6.0f;
+        float x1 = -x0;
+        float y1 = -y0;
+        const float jit=5.0f*pop; //sin(g_Time);
+//        off += Rotate(vec2(0,4.0f),Heading());
+        float foo = 0.25f; 
+	    Colour c0 = ColourLerp( rawrange.Get(g_Time + t,false), Colour::WHITE, flash );
+	    Colour c1 = ColourLerp( rawrange.Get(g_Time +foo + t,false), Colour::WHITE, flash );
+	    Colour c2 = ColourLerp( rawrange.Get(g_Time +2*foo + t,false), Colour::WHITE, flash );
+	    Colour c3 = ColourLerp( rawrange.Get(g_Time +3*foo + t,false), Colour::WHITE, flash );
+        cols[i*4 + 0] = c0;
+        cols[i*4 + 1] = c1;
+        cols[i*4 + 2] = c2;
+        cols[i*4 + 3] = c3;
+        verts[i*4 + 0] = vec2(x0,y0)+Jitter(jit);
+        verts[i*4 + 1] = vec2(x1,y0)+Jitter(jit);
+        verts[i*4 + 2] = vec2(x1,y1)+Jitter(jit);
+        verts[i*4 + 3] = vec2(x0,y1)+Jitter(jit);
+    }
+	glEnable( GL_BLEND );
+	//glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	glBlendFunc( GL_ONE,GL_ONE );
+	glDisable( GL_TEXTURE_2D );
+	glShadeModel( GL_SMOOTH );
+	glBegin(GL_QUADS );
+        for (i=0;i<NQUADS*4; ++i ) {
+            glColor4f( cols[i].r, cols[i].g, cols[i].b, cols[i].a);
+            glVertex2f( verts[i].x, verts[i].y );
+        }
+	glEnd();
+
+}
 
 //--------------------
 // Mine
@@ -2397,6 +2467,8 @@ void Mine::Draw()
 		Colour( 0.0f, 0.0f, 0.5f, 0.0f),
 	};
 	static const ColourRange exploderange( explodecolours, 4 );
+
+
 
 	m_Cyc += 0.1f;
 	if( m_Exploding )
@@ -2452,6 +2524,10 @@ void Mine::Draw()
             glColor3f( c2.r, c2.g, c2.b );
 			glVertex2f(-3.0f, 3.0f );
 		glEnd();
+//        glEnable(GL_BLEND);
+//        glBlendFunc(GL_ONE,GL_ONE);
+//        glColor3f(factor, 0.0f, 0.0f);
+//        DrawCircle(vec2(0,0), s_ExplosionR1);
 	}
 }
 
@@ -2485,7 +2561,8 @@ void Mine::Tick()
 		if( m_Timer >= s_FuseTime )
 		{
 			// kaboom.
-			SoundMgr::Inst().Play( SFX_BIGEXPLOSION );
+//			SoundMgr::Inst().Play( SFX_BIGEXPLOSION );
+			SoundMgr::Inst().Play( SFX_PLAYERTOAST );
 			m_Timer = 0.0f;
 			m_Exploding = true;
 			SetFlags( flagCanHitPlayer );
@@ -2952,7 +3029,7 @@ void Puffer::Tick()
 void Puffer::OnHitBullet( Bullet& bullet )
 {
     m_RespiteTimer = 0.0f;
-    m_Area += bullet.Power() * 600.0f; 
+    m_Area += bullet.Power() * 1200.0f; 
     UpdateRadius();
     if (m_Area >= s_MaxArea )
     {

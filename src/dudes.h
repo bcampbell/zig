@@ -481,12 +481,18 @@ public:
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new MineLayer() ); }
+    static void StaticDraw(float flash, float pop);
 private:
 	static const float s_DropInterval;
+	static const float s_QuietDuration;
+	static const int s_DropNum;
 	vec2	m_Spd;
 	float	m_Timer;
 	int		m_Life;
 	float	m_Flash;
+    float   m_Pop;
+    int     m_DropCnt;
+    enum {quiet,dropping} m_State;
 };
 
 class Mine : public Dude

@@ -40,7 +40,6 @@ void PlonkText(
 
 
 void DrawCircle( vec2 const& pos, float r );
-void DrawCircleFilled( vec2 const& pos, float r );
 
 #endif // DRAWING_H
 

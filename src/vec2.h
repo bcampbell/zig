@@ -29,6 +29,8 @@ public:
 
 	void Normalise()
 		{ float l=Len(); x/=l; y/=l; }
+	vec2 Normalised() const
+		{ float l=Len(); return vec2(x/l, y/l); }
 
 	void CapMagnitude( float maxmag )
 	{
