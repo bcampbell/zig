@@ -21,9 +21,11 @@
 (C) thrust sfx stays on if quit from pause while thrusting
 (A) add credits
 (A) Windows build process
-(B) show level number on highscore table
+(A) show level number on highscore table
 (A) instructions
 (B) odd spawn-in effect on zippermat
 highscore and demo page - go back to title if any key pressed
 puffer: home in on player, and be push back by laser shot
 mute sound for demo mode
+(A) tune levels
+(A) add puffer to levels
