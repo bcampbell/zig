@@ -18,11 +18,12 @@
 # ZipperMat - 
 # Invader - An invader. Possibly from space.
 # Snake - Multi-segmented homing snake
-# MineLayer - Mine-laying dude
+# Bomber - Mine-laying dude
 # FatZapper - Green and mean, fires a big energy beam
 # EdgePuller
 # Divider - double-beam thingy
 # Agitator - gets mad when you shoot it
+# Puffer - expands when shot.
 
 #1
 LEVEL
@@ -131,7 +132,7 @@ LEVEL
 	Tank 1
 
 LEVEL
-	MineLayer 2
+	Bomber 2
 	Obstacle 10
 	Grunt 10
 
@@ -146,7 +147,7 @@ LEVEL
 	Spiker 12
 
 LEVEL
-	MineLayer 1
+	Bomber 1
 	Flanker 10
 	Obstacle 5
 

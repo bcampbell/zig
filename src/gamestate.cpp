@@ -42,7 +42,7 @@ void GameState::StartNewDemo()
     KeepYourSectorTidy = false;
     BigHeadMode = false;
     NoExtraLives = false;
-    m_Level = RndI(0,g_LevelDefs.size()-1);
+    m_Level = RndI(0,g_LevelDefs.size()-2); // exclude last level
     m_WrapCnt = 0;
     m_Demo = true;
     if( m_Player )
