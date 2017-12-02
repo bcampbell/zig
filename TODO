@@ -1,9 +1,7 @@
 (D) add controls for touch devices
 (C) wallhugger: less inertia
 (B) thruster whine is a little annoying
-(A) minelayer: better visuals
 (C) minelayer: try more regular laying pattern
-(A) minelayer: bigger explosion
 (C) fatzapper: improve fire visuals
 (C) fatzapper: reuse firing elsewhere? (megazapper boss? Wallhugger!)
 (C) glow around retro dudes
@@ -23,8 +21,9 @@
 (C) thrust sfx stays on if quit from pause while thrusting
 (A) add credits
 (A) Windows build process
-(A) zippermat: better visuals
-(A) agitator: better visuals
 (B) show level number on highscore table
 (A) instructions
 (B) odd spawn-in effect on zippermat
+highscore and demo page - go back to title if any key pressed
+puffer: home in on player, and be push back by laser shot
+(A) Don't show final level in demo mode

@@ -54,7 +54,7 @@ static const DudeCreationInfo s_DudeCreationTable[] =
 	{ "ZipperMat",	ZipperMat::Create },
 	{ "Invader",	Invader::Create },
 	{ "Snake",		Snake::Create },
-	{ "MineLayer",	MineLayer::Create },
+	{ "Bomber",	    Bomber::Create },
 	{ "Boss",		Boss::Create },
 	{ "FatZapper",	FatZapper::Create },
 	{ "EdgePuller",	EdgePuller::Create },
@@ -2274,21 +2274,21 @@ void Snake::Create( std::list<Dude*>& newdudes )
 }
 
 //--------------------
-// MineLayer
+// Bomber
 //--------------------
 
-const float MineLayer::s_DropInterval = 0.5f;
-const float MineLayer::s_QuietDuration = 8.0f;
-const int MineLayer::s_DropNum = 8;
+const float Bomber::s_DropInterval = 0.5f;
+const float Bomber::s_QuietDuration = 8.0f;
+const int Bomber::s_DropNum = 8;
 
-MineLayer::MineLayer() : m_Life(10)
+Bomber::Bomber() : m_Life(16)
 {
 	SetRadius(16.0f);
 	SetFlags( flagCanHitBullet| flagCanHitPlayer| flagLocksLevel );
 	Respawn();
 }
 
-void MineLayer::OnHitBullet( Bullet& bullet )
+void Bomber::OnHitBullet( Bullet& bullet )
 {
 	m_Flash = 1.0f;
 	int absorbed = std::min( m_Life, bullet.Power() );
@@ -2309,7 +2309,7 @@ void MineLayer::OnHitBullet( Bullet& bullet )
 	bullet.ReducePower( absorbed );
 }
 
-void MineLayer::Respawn()
+void Bomber::Respawn()
 {
 	m_Spd = Rotate( vec2(0.0f, 2.0f ), Rnd(0.0f,twopi) );
 //	m_Spd = vec2::ZERO;
@@ -2321,7 +2321,7 @@ void MineLayer::Respawn()
 }
 
 
-void MineLayer::Tick()
+void Bomber::Tick()
 {
 	MoveWithinArena( *this, m_Spd );
 
@@ -2345,7 +2345,7 @@ void MineLayer::Tick()
     } else {
 		if( m_Timer >= s_DropInterval )
 		{
-			g_Agents->AddDude( new Mine( Pos() ) );
+			g_Agents->AddDude( new Bomb( Pos() ) );
             SoundMgr::Inst().Play( SFX_SMALLTHUD );
 			m_Timer = 0.0f;
             m_Pop = 1.0f;
@@ -2357,11 +2357,11 @@ void MineLayer::Tick()
 		}
 	}
 	m_Flash *= 0.95f;
-    m_Pop *= 0.95f;
+    m_Pop *= 0.90f;
 
 }
 
-void MineLayer::Draw()
+void Bomber::Draw()
 {
     StaticDraw(m_Flash,m_Pop);
 
@@ -2373,7 +2373,7 @@ static vec2 Jitter(float mag)
     return Rotate( vec2(0.0f,Rnd(mag)), Rnd(0,twopi));
 }
 
-void MineLayer::StaticDraw(float flash, float pop)
+void Bomber::StaticDraw(float flash, float pop)
 {
 	static const Colour raw[] =
 	{
@@ -2400,7 +2400,7 @@ void MineLayer::StaticDraw(float flash, float pop)
         float y0 = s + (1.0f-t)*6.0f;
         float x1 = -x0;
         float y1 = -y0;
-        const float jit=5.0f*pop; //sin(g_Time);
+        const float jit=8.0f*pop; //sin(g_Time);
 //        off += Rotate(vec2(0,4.0f),Heading());
         float foo = 0.25f; 
 	    Colour c0 = ColourLerp( rawrange.Get(g_Time + t,false), Colour::WHITE, flash );
@@ -2431,16 +2431,16 @@ void MineLayer::StaticDraw(float flash, float pop)
 }
 
 //--------------------
-// Mine
+// Bomb
 //--------------------
 
 //static
-const float Mine::s_FuseTime = 2.0f;	// seconds
-const float Mine::s_ExplosionTime = 1.0f;	// seconds
-const float Mine::s_ExplosionR0 = 5.0f;
-const float Mine::s_ExplosionR1 = 100.0f;
+const float Bomb::s_FuseTime = 2.0f;	// seconds
+const float Bomb::s_ExplosionTime = 1.0f;	// seconds
+const float Bomb::s_ExplosionR0 = 5.0f;
+const float Bomb::s_ExplosionR1 = 100.0f;
 
-Mine::Mine(vec2 const& pos) :
+Bomb::Bomb(vec2 const& pos) :
 	m_Cyc(0.0f),
 	m_Timer( 0.0f ),
 	m_Exploding( false )
@@ -2450,7 +2450,7 @@ Mine::Mine(vec2 const& pos) :
 	MoveTo(pos);
 }
 
-void Mine::Draw()
+void Bomb::Draw()
 {
 	static const Colour evilcolours[] =
 	{
@@ -2532,7 +2532,7 @@ void Mine::Draw()
 }
 
 
-void Mine::Tick()
+void Bomb::Tick()
 {
 	m_Timer += 1.0f/TARGET_FPS;
 
@@ -2571,7 +2571,7 @@ void Mine::Tick()
 }
 
 
-void Mine::OnHitBullet( Bullet& bullet )
+void Bomb::OnHitBullet( Bullet& bullet )
 {
 	if( !m_Exploding )
 	{
@@ -2581,7 +2581,7 @@ void Mine::OnHitBullet( Bullet& bullet )
 	bullet.ReducePower( 1 );
 }
 
-void Mine::Respawn()
+void Bomb::Respawn()
 {
 	Die();
 }

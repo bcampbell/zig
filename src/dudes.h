@@ -471,16 +471,16 @@ private:
 
 };
 
-class MineLayer : public Dude
+class Bomber : public Dude
 {
 public:
-	MineLayer();
+	Bomber();
 	virtual void Draw();
 	virtual void Tick();
 	virtual void OnHitBullet( Bullet& bullet );
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
-		{ newdudes.push_back( new MineLayer() ); }
+		{ newdudes.push_back( new Bomber() ); }
     static void StaticDraw(float flash, float pop);
 private:
 	static const float s_DropInterval;
@@ -495,10 +495,10 @@ private:
     enum {quiet,dropping} m_State;
 };
 
-class Mine : public Dude
+class Bomb : public Dude
 {
 public:
-	Mine( vec2 const& pos );
+	Bomb( vec2 const& pos );
 	virtual void Draw();
 	virtual void Tick();
 	virtual void OnHitBullet( Bullet& bullet );
@@ -509,8 +509,8 @@ private:
 	static const float s_ExplosionR0;
 	static const float s_ExplosionR1;
 
-	Mine();					// disable default ctor
-	Mine( Mine const& );	// disable copy ctor
+	Bomb();					// disable default ctor
+	Bomb( Bomb const& );	// disable copy ctor
 	float	m_Cyc;
 	float	m_Timer;
 	bool	m_Exploding;
