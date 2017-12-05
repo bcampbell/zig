@@ -8,10 +8,19 @@
 #include <ctype.h>
 
 #include "controller.h"
+#include "colours.h"
 #include "texture.h"
 #include "highscores.h"
 #include "highscorescreen.h"
 #include "titlescreen.h"
+
+static const Colour focuscolours[] =
+{
+	Colour( 1.0f, 1.0f, 0.0f),
+	Colour( 0.7f, 0.2f, 0.0f),
+};
+
+static const ColourRange focusrange( focuscolours, 2 );
 
 
 
@@ -55,14 +64,37 @@ void HighScoreScreen::Render()
 	for( i=0; i<g_HighScores->NumScores(); ++i )
 	{
 		char buf[ 128 ];
-		sprintf( buf, "%d %s", g_HighScores->Score(i), g_HighScores->Name(i).c_str() );
-	
+        std::string const& name = g_HighScores->Name(i);
+		int n = sprintf( buf, "%d %s", g_HighScores->Score(i), name.c_str() );
+	    const float cw = 16.0f;
+	    const float ch = 16.0f;
 		if( i==m_EntryTarget )
 		{
 			glColor4f( 1.0f, 1.0f, 0.0f, 1.0f );
 			glPushMatrix();
 				glTranslatef( 0.0f, 110.0f - (float)(i*24), 0.0f );
-				PlonkText( *g_Font, buf, true, 16, 16 );
+				PlonkText( *g_Font, buf, true, cw, ch );
+
+                glDisable(GL_TEXTURE_2D);
+	            glDisable( GL_BLEND );
+	            glShadeModel( GL_FLAT );
+
+                float x=((float)n*cw)/2.0f;
+                float y=-ch/2.0f;
+
+                const float flash=0.5f;
+			    if( name.size() < HighScores::MAX_NAME_SIZE && fmodf(g_Time,flash) <flash/2.0f)
+                {
+                    Colour c = focusrange.Get(g_Time, false);
+			        glColor3f( c.r, c.g, c.b);
+                    glBegin(GL_QUADS);
+                        glVertex2f(x,y+ch);
+                        glVertex2f(x+cw,y+ch);
+                        glVertex2f(x+cw,y);
+                        glVertex2f(x,y);
+                    glEnd();
+                }
+
 			glPopMatrix();
 		}
 		else

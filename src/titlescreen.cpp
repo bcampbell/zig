@@ -17,7 +17,7 @@
 #include "texture.h"
 #include "titlescreen.h"
 #include "zig.h"
-
+#include "dudes.h"
 
 // time before highscore/demo/whatever
 static float s_TimeOut = 5.0f;
@@ -101,6 +101,21 @@ void TitleScreen::Render()
 
 	
 	m_Menu.Draw();
+
+	glPushMatrix();
+		glTranslatef( -200.0f, 50.0f, 0.0f );
+        Baiter::StaticDraw();
+		glTranslatef( 30.0f, 0.0f, 0.0f );
+        Obstacle::StaticDraw();
+		glTranslatef( 30.0f, 0.0f, 0.0f );
+        Grunt::StaticDraw(50.0f);
+		glTranslatef( 30.0f, 0.0f, 0.0f );
+        Swarmer::StaticDraw();
+		glTranslatef( 30.0f, 0.0f, 0.0f );
+        Puffer::StaticDraw(sqrtf((Puffer::s_MinArea*2.0f)/pi), g_Time);
+		glTranslatef( 30.0f, 0.0f, 0.0f );
+        Bomber::StaticDraw(0.0f,0.2f);
+	glPopMatrix();
 }
 
 

@@ -38,9 +38,7 @@ MenuItem::MenuItem( int id, vec2 const& pos, std::string const& text, bool centr
 void MenuItem::Tick()
 {
 	m_Wibble *= 0.9f;
-	m_Cyc += 0.01f;
-	if( m_Cyc >= 1.0f )
-		m_Cyc = 0.0f;
+    m_Cyc = fmodf(g_Time, 1.0f);
 }
 
 
