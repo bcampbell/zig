@@ -72,6 +72,36 @@ void PlonkText( Texture& font,
 	glDisable( GL_TEXTURE_2D );
 }
 
+void KeyCapOutline( Texture& font,
+	std::string const& text,
+	bool centred,
+	float charw,
+	float charh )
+{
+
+	glDisable( GL_TEXTURE_2D );
+	glDisable( GL_BLEND );
+
+	float x=0.0f;
+	float y=0.0f;
+
+	float w = ( charw * text.size() );
+    float h = charh;
+    float pad = 8.0f;
+	if( centred )
+	{
+		x -= w/2;
+		y -= h/2;
+	}
+
+	glBegin( GL_LINE_LOOP );
+        glVertex2f( x-pad, y-pad );
+        glVertex2f( x+w+pad, y-pad );
+        glVertex2f( x+w+pad, y+h+pad );
+        glVertex2f( x-pad, y+h+pad );
+	glEnd();
+}
+
 
 
 void InitGLExtensions()
@@ -143,6 +173,51 @@ void DrawCircle( vec2 const& pos, float r )
 		glVertex2f( x,y );
 	}
 	glEnd();
+}
+
+
+// decode the next rune from a utf-8 string, returning rune in dest.
+// returns number of bytes consumed (1-4)
+// returns 0 at end string or error
+// upon error, dest is set to 0xfffd
+int DecodeUTF8Char(const char *src, uint32_t* dest)
+{
+    *dest = 0;
+    uint8_t b = (uint8_t)*src++;
+    if( b==0 ) {
+        return 0;
+    }
+
+    if (b<0x80) {
+        *dest = (uint32_t)b;
+        return 1;
+    }
+
+    int n;
+    if ((b&0xe0) == 0xc0) {
+        *dest |= (b&0x1f) << 6;
+        n=1; // 1 more byte
+    } else if ((b & 0xf0) == 0xe0) {
+        *dest |= (b&0x0f) << 12;
+        n=2; // 2 more bytes
+    } else if ((b & 0xf8) == 0xf0) {
+        *dest |= (b&0x07) << 18;
+        n=3; // 3 more bytes
+    } else {
+        *dest = 0xfffd;
+        return 0;   // invalid
+    }
+
+    int cnt = n+1;
+    for( ; n>0; --n) {
+        b = (uint8_t)*src++;
+        if( (b & 0xc0) != 0x80) {
+            *dest = 0xfffd;
+            return 0;   // invalid
+        }
+        *dest |= (b & 0x3f) << (n-1)*6;
+    }
+    return cnt;
 }
 
 
