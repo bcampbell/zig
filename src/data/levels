@@ -58,18 +58,18 @@ LEVEL
 
 LEVEL
 	Grunt 20
-	Spiker 1
+	Puffer 1
 	Obstacle 10
-
-LEVEL
-	Tank 1
-	Obstacle 8
-	Spiker 4
 
 LEVEL
 	Snowflake 20
 	Spiker 3
 	Obstacle 8
+
+LEVEL
+	Tank 1
+	Obstacle 8
+	Spiker 4
 
 #10
 LEVEL
@@ -132,8 +132,8 @@ LEVEL
 	Tank 1
 
 LEVEL
-	Bomber 2
-	Obstacle 10
+	Bomber 1
+	Obstacle 15
 	Grunt 10
 
 LEVEL
@@ -145,6 +145,7 @@ LEVEL
 LEVEL
 	Grunt 30
 	Spiker 12
+    Puffer 2
 
 LEVEL
 	Bomber 1
@@ -243,7 +244,8 @@ LEVEL
 LEVEL
 	Divider 2
 	Obstacle 10
-	Amoeba 5
+	Amoeba 4
+    Puffer 2
 
 LEVEL
 	Spiker 8
