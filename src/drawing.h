@@ -38,7 +38,7 @@ void PlonkText(
 	float charw=16.0f,
 	float charh=16.0f );
 
-void KeyCapOutline(
+void PlonkTextKeyCapped(
 	Texture& font,
 	std::string const& text,
 	bool centred=false,
@@ -47,7 +47,6 @@ void KeyCapOutline(
 
 void DrawCircle( vec2 const& pos, float r );
 
-int DecodeUTF8Char(const char *src, uint32_t* dest);
 
 #endif // DRAWING_H
 

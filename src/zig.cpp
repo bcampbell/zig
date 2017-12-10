@@ -18,6 +18,7 @@
 #include "soundmgr.h"
 #include "texture.h"
 #include "titlescreen.h"
+#include "instructionscreen.h"
 #include "util.h"
 #include "wobbly.h"
 #include "log.h"

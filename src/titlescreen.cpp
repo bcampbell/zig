@@ -10,6 +10,7 @@
 #include "gameover.h"
 #include "gamestate.h"
 #include "highscorescreen.h"
+#include "instructionscreen.h"
 #include "level.h"
 #include "mathutil.h"
 #include "optionsscreen.h"
@@ -19,8 +20,11 @@
 #include "zig.h"
 #include "dudes.h"
 
+
+static void drawControls( float t );
+
 // time before highscore/demo/whatever
-static float s_TimeOut = 5.0f;
+static float s_TimeOut = 8.0f;
 
 static const char* facetiouscrap[] = {
 	"WHEN GAMES GO BAD!",
@@ -73,6 +77,7 @@ void TitleScreen::Render()
 
     vec2 tl = g_Display->TopLeft();
     vec2 tr = g_Display->TopRight();
+    vec2 bl = g_Display->BottomLeft();
 	glColor4f( 0.4f, 0.4f, 0.4f, 1.0f );
 	glPushMatrix();
 		glTranslatef( tl.x + 8.0f, tl.y-12.0f, 0.0f );
@@ -82,8 +87,20 @@ void TitleScreen::Render()
 		glTranslatef( tr.x-40.0f, tr.y-12.0f, 0.0f );
 		PlonkText( *g_Font, "V" ZIGVERSION, false, 8, 10 );
 	glPopMatrix();
+
+    float idle = m_Menu.InactivityTime();
+    if( idle > 1.0f ) {
+        float fade = (idle-1.0f)*2.0f;
+        fade = zfmin(fade,1.0f);
+
+    	glColor4f( fade*0.4f, fade*0.4f, fade*0.4f, 1.0f );
+
+    	glPushMatrix();
+	    	glTranslatef( 0, bl.y + 12.0f, 0.0f );
+            drawControls(idle-1.0f);
+        glPopMatrix();
+    }
 /*
-	glColor4f( 0.4f, 0.4f, 0.4f, 1.0f );
 	glPushMatrix();
 		glTranslatef( 0.0f, -150.0f, 0.0f );
 		PlonkText( *g_Font, "INSTRUCTIONS:", true, 8, 8 );
@@ -93,6 +110,7 @@ void TitleScreen::Render()
 		PlonkText( *g_Font, "CTRL TO FIRE", true, 8, 8 );
 	glPopMatrix();
 */
+
 	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 	glPushMatrix();
 		glTranslatef( 0.0f, 100.0f, 0.0f );
@@ -155,6 +173,7 @@ Scene* TitleScreen::NextScene()
         delete this;
         g_GameState->StartNewDemo();
         return new Level();
+//        return new InstructionScreen();
     }
 
 	return this;    // still running
@@ -184,5 +203,65 @@ void TitleMenu::OnSelect( int id )
 {
 	m_Done=true;
 	m_Result=(ResultID)id;
+}
+
+
+static void drawControls( float t )
+{
+    const char* wasdKeys[4] = {"W","A","S","D"};
+    const char* cursorKeys[4] = {
+        "\xe2\x86\x91", // UP
+        "\xe2\x86\x90", // LEFT
+        "\xe2\x86\x93", // DOWN"
+        "\xe2\x86\x92"  // RIGHT
+    };
+
+
+    const float sz = 12.0f;     // font size
+
+    const float kw=sz + (sz/4.0f);   // arrow key width
+    const float kpad = sz/2;   // pad between keys
+
+    const float movew = kw+kpad+kw+kpad+kw;
+
+    const char** keys = ( fmod(t,2.0f) < 1.0f ) ? cursorKeys:wasdKeys;
+
+    const float pad = sz;
+    float totalw = movew + pad + 1*sz + pad + sz*5;
+
+    glPushMatrix();
+        glTranslatef( 0, sz*5 , 0.0f );
+        PlonkText(*g_Font, "CONTROLS", true,12,12);
+	glPopMatrix();
+
+	glPushMatrix();
+        const vec2 offsets[4] = {
+            vec2(kw+kpad,kw+kpad),
+            vec2(0,0),
+            vec2(kw+kpad,0),
+            vec2((kw+kpad)*2,0)
+        };
+        glTranslatef( -totalw/2, 0.0f, 0.0f );
+
+        int i;
+        for (i=0; i<4; ++i)
+        {
+            glPushMatrix();
+            glTranslatef( offsets[i].x, offsets[i].y, 0.0f );
+            PlonkTextKeyCapped( *g_Font, keys[i], false, sz,sz );
+            glPopMatrix();
+        }
+        glTranslatef( movew + pad, 0.0f, 0.0f );
+
+        PlonkText(*g_Font, "&", false, sz, sz);
+        glTranslatef( 1*sz + pad, 0.0f, 0.0f );
+
+        //const char* fireKeys[] = {"CTRL","\xe2\x87\xa7"" SHIFT","\xe2\x8f\x8e"" ENTER","SPACE"};
+        const char* fireKeys[] = {"CTRL","SHIFT","SPACE"};
+        const int n = sizeof(fireKeys)/sizeof(const char*);
+
+        int idx = (int)(t / 1.0f) % n;
+        PlonkTextKeyCapped( *g_Font, fireKeys[idx], false, sz,sz );
+    glPopMatrix();
 }
 

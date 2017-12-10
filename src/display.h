@@ -44,6 +44,8 @@ public:
     void Extent(vec2 (&out)[4]);
     vec2 const& TopLeft() const { return m_Extent[0]; }
     vec2 const& TopRight() const { return m_Extent[1]; }
+    vec2 const& BottomRight() const { return m_Extent[2]; }
+    vec2 const& BottomLeft() const { return m_Extent[3]; }
 private:
     bool m_Fullscreen;
     vec2 m_Extent[4];
