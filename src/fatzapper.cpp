@@ -106,7 +106,7 @@ void FatZapper::StaticDraw(float radius, float wobble, float flash)
 	{
 		float r = radius;
 		r += wobble*4.0f*sin( theta*wobble*16.0f);
-		vec2 v = Rotate( vec2(0.0f,radius), theta );
+		vec2 v = Rotate( vec2(0.0f,r), theta );
 		glColor3f( c2.r, c2.g, c2.b );
 		glVertex2f( v.x, v.y );
 	}

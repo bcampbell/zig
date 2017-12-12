@@ -38,7 +38,7 @@ void DudeGallery::Render()
 
 	glColor4f( 1,1,1,1);
 	glPushMatrix();
-		glTranslatef( 0, tl.y-16.0f, 0.0f );
+		glTranslatef( 0, 170.0f, 0.0f );
         PlonkText(*g_Font, "THE CAST", true, 12,12);
 	glPopMatrix();
 
@@ -46,8 +46,8 @@ void DudeGallery::Render()
     int i;
     for(i=0;i<8;++i) {
         glPushMatrix();
-        float dx = (float)((i%4)-2) * 100.0f;
-        float dy = (float)((i/4)-1) * -100.0f;
+        float dx = (float)((i%4)-1.5f) * 100.0f;
+        float dy = (float)((i/4)-0.5f) * -100.0f;
 
 		glTranslatef( dx,dy, 0.0f );
         float t = 1+(float)i/4.0f;
@@ -72,6 +72,18 @@ void DudeGallery::Render()
 
 void DudeGallery::DrawDude(int n)
 {
+	static const Colour raw[] =
+	{
+		Colour( 1.0f, 0.0f, 0.0f),
+		Colour( 1.0f, 1.0f, 0.0f),
+		Colour( 0.0f, 1.0f, 0.0f),
+		Colour( 0.0f, 1.0f, 1.0f),
+		Colour( 0.0f, 0.0f, 1.0f),
+		Colour( 1.0f, 0.0f, 1.0f),
+	};
+
+	static const ColourRange rawrange( raw, 6 );
+
     std::string name;
 
 	glPushMatrix();
@@ -88,17 +100,18 @@ void DudeGallery::DrawDude(int n)
             break;
         case 5: Bomber::StaticDraw(0.0f,0.2f); name = "BOMBER"; break;
         case 6: Agitator::StaticDraw(0.5f); name = "AGITATOR"; break;
-        case 7: FatZapper::StaticDraw(14.0f, 0.5f, 0.0f); name = "FATZAPPER"; break;
+        case 7: FatZapper::StaticDraw(14.0f, 0.5f + cosf(g_Time)*0.5f, 0.0f); name = "FATZAPPER"; break;
         default:
             assert(false);
             return;
     }
 	glPopMatrix();
 
-	glColor4f( 1,1,1,1);
+    Colour c = rawrange.Get(g_Time/4,false);
+	glColor4f( c.r, c.g, c.b,1);
 	glPushMatrix();
     glTranslatef(0,-32.0f, 0.0f);
-    PlonkText(*g_Font,name,true,12,12);
+    PlonkText(*g_Font,name,true,10,10);
 
 	glPopMatrix();
 }
