@@ -9,7 +9,7 @@
 // Spiker
 //--------------------
 
-Spiker::Spiker() : m_Cyc(0.0f), m_Life(2)
+Spiker::Spiker() : m_Life(2)
 {
 	SetRadius(16.0f);
 	SetFlags( flagCanHitBullet|
@@ -30,6 +30,11 @@ void Spiker::Respawn()
 
 void Spiker::Draw()
 {
+    StaticDraw(m_Flash);
+}
+
+void Spiker::StaticDraw(float flash)
+{
 	static const Colour pulsecolours[] =
 	{
 		Colour( 0.3f, 0.0f, 0.0f ),
@@ -42,11 +47,10 @@ void Spiker::Draw()
 	};
 	static const ColourRange pulserange( pulsecolours, sizeof(pulsecolours)/sizeof(Colour) );
 
-	Colour c1 = ColourLerp( Colour( 0.6f, 0.0f, 0.0f ), Colour::WHITE, m_Flash );
-	Colour c2 = ColourLerp( Colour( 1.0f, 0.7f, 0.3f ), Colour::WHITE, m_Flash );
+	Colour c1 = ColourLerp( Colour( 0.6f, 0.0f, 0.0f ), Colour::WHITE, flash );
+	Colour c2 = ColourLerp( Colour( 1.0f, 0.7f, 0.3f ), Colour::WHITE, flash );
 
-	m_Cyc += 0.01f;
-	Colour c3 = ColourLerp( pulserange.Get( m_Cyc, false ), Colour::WHITE, m_Flash );
+	Colour c3 = ColourLerp( pulserange.Get( g_Time/2, false ), Colour::WHITE, flash );
 
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );

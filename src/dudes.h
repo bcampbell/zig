@@ -9,6 +9,8 @@
 #include "agent.h"
 #include "colours.h"
 #include "soundmgr.h"
+#include "snow.h"
+#include "texture.h"
 
 class Player;
 class Bullet;
@@ -145,6 +147,7 @@ public:
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Flanker() ); }
+    static void StaticDraw(bool flanking);
 private:
 	enum {flank,charge} m_Mode;
 	float m_ChargeDist;
@@ -233,6 +236,13 @@ private:
 };
 
 
+class SnowflakeTexture : public Texture
+{
+public:
+	virtual void UploadToGL();
+private:
+	UniqueSnowFlake m_Flake;
+};
 
 
 class Snowflake : public Dude
@@ -247,6 +257,7 @@ public:
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Snowflake() ); }
+    static void StaticDraw(float size, Texture* texture);
 private:
 	static const float s_MinSpd;
 	static const float s_MaxSpd;
@@ -257,8 +268,6 @@ private:
 	float m_Size;
 	float m_RotSpd;
 	vec2 m_Vel;
-	Colour m_Colour;
-
 };
 
 
@@ -398,6 +407,7 @@ public:
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Tank() ); }
+    static void StaticDraw(float flash);
 private:
 	int m_Life;
 	int m_FireTimer;

@@ -16,6 +16,7 @@ public:
     virtual Scene* NextScene();
     virtual void HandleKeyDown( SDL_Keysym& keysym );
 private:
+    Texture* m_SnowTexture;
     void DrawDude(int n);
     bool m_Done;
     float m_Time;

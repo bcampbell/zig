@@ -11,15 +11,20 @@
 #include "titlescreen.h"
 #include "zig.h"
 #include "dudes.h"
+#include "spiker.h"
 
 
 
 DudeGallery::DudeGallery() : m_Done(false), m_Time(0.0f)
 {
+    m_SnowTexture = new SnowflakeTexture();
+	g_Display->AddTexture( m_SnowTexture );
 }
 
 DudeGallery::~DudeGallery()
 {
+	g_Display->RemoveTexture( m_SnowTexture );
+    delete m_SnowTexture;
 }
 
 
@@ -30,8 +35,8 @@ void DudeGallery::Render()
 
 	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
-    vec2 tl = g_Display->TopLeft();
-    vec2 tr = g_Display->TopRight();
+//    vec2 tl = g_Display->TopLeft();
+//    vec2 tr = g_Display->TopRight();
 
     //float w = tr.x - tl.x;
 
@@ -44,10 +49,10 @@ void DudeGallery::Render()
 
     const float speedup = 2.0f; // spawn effect looks better faster here
     int i;
-    for(i=0;i<8;++i) {
+    for(i=0;i<12;++i) {
         glPushMatrix();
         float dx = (float)((i%4)-1.5f) * 100.0f;
-        float dy = (float)((i/4)-0.5f) * -100.0f;
+        float dy = (float)((i/4)-1.0f) * -100.0f;
 
 		glTranslatef( dx,dy, 0.0f );
         float t = 1+(float)i/4.0f;
@@ -99,8 +104,12 @@ void DudeGallery::DrawDude(int n)
             name="PUFFER";
             break;
         case 5: Bomber::StaticDraw(0.0f,0.2f); name = "BOMBER"; break;
-        case 6: Agitator::StaticDraw(0.5f); name = "AGITATOR"; break;
+        case 6: Tank::StaticDraw(0.0f); name = "TANK"; break;
         case 7: FatZapper::StaticDraw(14.0f, 0.5f + cosf(g_Time)*0.5f, 0.0f); name = "FATZAPPER"; break;
+        case 8: Snowflake::StaticDraw(14.0f, m_SnowTexture); name = "SNOWFLAKE"; break;
+        case 9: Flanker::StaticDraw(false); name = "FLANKER"; break;
+        case 10: Spiker::StaticDraw(0.0f); name = "SPIKER"; break;
+        case 11: Agitator::StaticDraw(0.5f); name = "AGITATOR"; break;
         default:
             assert(false);
             return;

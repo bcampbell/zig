@@ -13,10 +13,10 @@ public:
 	virtual void Respawn();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Spiker() ); }
+    static void StaticDraw(float flash);
 private:
 	vec2	m_Spd;
 	float	m_Acceleration;
-	float	m_Cyc;
 	int		m_Life;
 	float	m_Flash;
 };

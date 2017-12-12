@@ -493,10 +493,15 @@ Flanker::Flanker() : m_Mode(flank)
 
 void Flanker::Draw()
 {
+    StaticDraw( m_Mode==flank );
+}
+
+void Flanker::StaticDraw(bool flanking)
+{
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
-	if( m_Mode == flank )
+	if( flanking )
 	{
 		glBegin( GL_TRIANGLES );
 
@@ -1014,21 +1019,15 @@ void UFOBullet::Tick()
 // Snowflake
 //--------------------
 
-class SnowflakeTexture : public Texture
+void SnowflakeTexture::UploadToGL()
 {
-public:
-	virtual void UploadToGL()
-	{
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, m_Flake.width(), m_Flake.depth(),
-			0, GL_RGBA, GL_UNSIGNED_BYTE, m_Flake.buffer() );
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	}
-private:
-	UniqueSnowFlake m_Flake;
-};
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, m_Flake.width(), m_Flake.depth(),
+        0, GL_RGBA, GL_UNSIGNED_BYTE, m_Flake.buffer() );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+}
 
 
 
@@ -1062,7 +1061,6 @@ void Snowflake::CommonInit()
 	m_Texture = new SnowflakeTexture();
 	g_Display->AddTexture( m_Texture );
 	Respawn();
-	m_Colour = Colour::WHITE;
 }
 
 
@@ -1082,28 +1080,33 @@ Snowflake::~Snowflake()
 
 void Snowflake::Draw()
 {
+    StaticDraw(m_Size, m_Texture);
+}
+
+void Snowflake::StaticDraw(float size, Texture* texture)
+{
 	glEnable( GL_BLEND );
 	glEnable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
-	glBindTexture( GL_TEXTURE_2D,m_Texture->ID() );
+	glBindTexture( GL_TEXTURE_2D,texture->ID() );
 	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-	Colour const& c = m_Colour;
+	Colour const& c = Colour::WHITE;
 
 	glColor3f( c.r, c.g, c.b );
 	glBegin( GL_QUADS );
 		glTexCoord2f(0.0f,0.0f);
-		glVertex2f( -m_Size, -m_Size );
+		glVertex2f( -size, -size );
 
 		glTexCoord2f(1.0f,0.0f);
-		glVertex2f( m_Size, -m_Size );
+		glVertex2f( size, -size );
 
 		glTexCoord2f(1.0f,1.0f);
-		glVertex2f( m_Size, m_Size );
+		glVertex2f( size, size );
 
 		glTexCoord2f(0.0f,1.0f);
-		glVertex2f( -m_Size, m_Size );
+		glVertex2f( -size, size );
 	glEnd();
 
 	glDisable( GL_TEXTURE_2D );
@@ -1837,6 +1840,11 @@ void Tank::Tick()
 
 void Tank::Draw()
 {
+    StaticDraw(m_Flash);
+}
+
+void Tank::StaticDraw(float flash)
+{
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
@@ -1844,7 +1852,7 @@ void Tank::Draw()
 	Colour c = ColourLerp(
 		Colour( 0.5f, 0.1f, 0.0f ),
 		Colour::WHITE,
-		m_Flash );
+		flash );
 
 	glColor3f( c.r, c.g, c.b );
 	glBegin( GL_TRIANGLES );
