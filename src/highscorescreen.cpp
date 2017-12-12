@@ -9,6 +9,7 @@
 
 #include "controller.h"
 #include "colours.h"
+#include "dudegallery.h"
 #include "texture.h"
 #include "highscores.h"
 #include "highscorescreen.h"
@@ -127,7 +128,7 @@ Scene* HighScoreScreen::NextScene()
     }
 
     delete this;
-    return new TitleScreen();
+    return new DudeGallery();
 }
 
 

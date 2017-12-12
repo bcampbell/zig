@@ -49,6 +49,10 @@ public:
 	~DudeSpawnEffect();
 	virtual void Draw();
 	virtual void Tick();
+
+    static float s_SpawnTime;
+    static void StaticDraw( float timer );
+
 private:
 	Dude* m_Dude;
 	float m_Timer;

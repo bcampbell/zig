@@ -66,26 +66,28 @@ void FatZapper::Tick()
 	MoveWithinArena( *this, m_Spd );
 }
 
-
-
 void FatZapper::Draw()
 {
-
 	float wobble = (m_Timer-ChargeTime) / WobbleTime;
 	if( wobble < 0.0f )
 		wobble = 0.0f;
+    StaticDraw( Radius(), wobble, m_Flash);
+}
 
+
+void FatZapper::StaticDraw(float radius, float wobble, float flash)
+{
 	Colour c1 = ColourLerp(
 			Colour(0.0f, 0.0f, 0.0f),
 			Colour( 1.0f, 1.0f, 0.4f ),
 			wobble );
-	c1 = ColourLerp( c1, Colour::WHITE, m_Flash );
+	c1 = ColourLerp( c1, Colour::WHITE, flash );
 
 	Colour c2 = ColourLerp(
 			Colour(0.0f, 0.8f, 0.0f),
 			Colour( 0.6f, 1.0f, 0.4f ),
 			wobble );
-	c2 = ColourLerp( c2, Colour::WHITE, m_Flash );
+	c2 = ColourLerp( c2, Colour::WHITE, flash );
 
 
 	glDisable( GL_BLEND );
@@ -102,9 +104,9 @@ void FatZapper::Draw()
 		theta<=(twopi-gap/2.0f)+0.001f;
 		theta += twopi/128.0f )
 	{
-		float r = Radius();
+		float r = radius;
 		r += wobble*4.0f*sin( theta*wobble*16.0f);
-		vec2 v = Rotate( vec2(0.0f,r), theta );
+		vec2 v = Rotate( vec2(0.0f,radius), theta );
 		glColor3f( c2.r, c2.g, c2.b );
 		glVertex2f( v.x, v.y );
 	}

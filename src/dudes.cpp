@@ -2632,11 +2632,12 @@ void Agitator::DrawShape( vec2 const& pos, float r )
 
 void Agitator::Draw()
 {
-    StaticDraw(m_Agitation, Radius());
+    StaticDraw(m_Agitation);
 }
 
-void Agitator::StaticDraw(float agitation, float radius)
+void Agitator::StaticDraw(float agitation)
 {
+	float radius = s_RadiusMin + agitation*(s_RadiusMax-s_RadiusMin);
 
 	glShadeModel( GL_SMOOTH );
 	glEnable( GL_BLEND );

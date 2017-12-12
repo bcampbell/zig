@@ -528,7 +528,7 @@ public:
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Agitator() ); }
 
-    static void StaticDraw(float agitation, float radius);
+    static void StaticDraw(float agitation);
     static void DrawShape( vec2 const& pos, float r );
 private:
 	static const float s_RadiusMin;

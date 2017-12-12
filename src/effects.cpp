@@ -181,6 +181,19 @@ DudeSpawnEffect::~DudeSpawnEffect()
 
 void DudeSpawnEffect::Draw()
 {
+    StaticDraw(m_Timer);
+}
+
+float DudeSpawnEffect::s_SpawnTime = 0.6666667f;
+
+void DudeSpawnEffect::StaticDraw( float timer )
+{
+    float t = timer/s_SpawnTime;
+    if (t>1.0f) {
+        return;
+    }
+
+
 	static const Colour rainbowcolours[] =
 	{
 		Colour( 1.0f, 0.0f, 0.0f),
@@ -199,24 +212,23 @@ void DudeSpawnEffect::Draw()
 
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE ); //GL_ONE_MINUS_SRC_ALPHA );
 
-	float s = (1.0f - m_Timer);
-	Colour const c = rainbowrange.Get( m_Timer*4, false );
-	float x1 = 5.0f + s*200.0f;
-	float x2 = 10.0f + s*500.0f;
+	Colour const c = rainbowrange.Get( timer*4, false );
+	float x1 = 5.0f + (1-t)*200.0f;
+	float x2 = 10.0f + (1-t)*500.0f;
 	glBegin(GL_TRIANGLES);
 	
-		glColor4f( c.r, c.g, c.b, m_Timer );
+		glColor4f( c.r, c.g, c.b, t );
 		glVertex2f( x2, 10.0f );
-		glColor4f( c.r, c.g, c.b, m_Timer );
+		glColor4f( c.r, c.g, c.b, t );
 		glVertex2f( x2, -10.0f );
-		glColor4f( c.r, c.g, c.b, m_Timer/4);
+		glColor4f( c.r, c.g, c.b, t/4);
 		glVertex2f( x1, 0.0f );
 
-		glColor4f( c.r, c.g, c.b, m_Timer );
+		glColor4f( c.r, c.g, c.b, t );
 		glVertex2f( -x2, 10.0f );
-		glColor4f( c.r, c.g, c.b, m_Timer );
+		glColor4f( c.r, c.g, c.b, t );
 		glVertex2f( -x2, -10.0f );
-		glColor4f( c.r, c.g, c.b, m_Timer/4 );
+		glColor4f( c.r, c.g, c.b, t/4 );
 		glVertex2f( -x1, 0.0f );
 	glEnd();
 
@@ -224,9 +236,8 @@ void DudeSpawnEffect::Draw()
 
 void DudeSpawnEffect::Tick()
 {
-	const float step = 0.03f;
-	m_Timer += step;
-	if( m_Timer >= 1.0f )
+	m_Timer += 1.0f/TARGET_FPS;
+	if( m_Timer >= s_SpawnTime )
 	{
 		g_Agents->AddDude(m_Dude);	// agentmanger will call Lock()
 		m_Dude->Unlock();
