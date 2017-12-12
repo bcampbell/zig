@@ -23,6 +23,18 @@ static const Colour focuscolours[] =
 
 static const ColourRange focusrange( focuscolours, 2 );
 
+static const Colour raw[] =
+{
+    Colour( 1.0f, 0.0f, 0.0f),
+    Colour( 1.0f, 1.0f, 0.0f),
+    Colour( 0.0f, 1.0f, 0.0f),
+    Colour( 0.0f, 1.0f, 1.0f),
+    Colour( 0.0f, 0.0f, 1.0f),
+    Colour( 1.0f, 0.0f, 1.0f),
+};
+
+static const ColourRange rawrange( raw, 6 );
+
 
 
 HighScoreScreen::HighScoreScreen() :
@@ -100,7 +112,9 @@ void HighScoreScreen::Render()
 		}
 		else
 		{
-			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+            Colour c = rawrange.Get(g_Time - i*0.05f,false);
+        	glColor4f( c.r, c.g, c.b,1);
+//			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 			glPushMatrix();
 				glTranslatef( 0.0f, 110.0f - (float)(i*24), 0.0f );
 				PlonkText( *g_Font, buf, true, 16-i/2.0f, 16-i/2.0f );
