@@ -25,9 +25,20 @@ echo "go!"
 
 
 
-ffmpeg -f x11grab -r 50 -s $SIZE -i :0.0+$OFFSET -vcodec gif $OUTDIR/out%04d.gif
+# ffmpeg -f x11grab -r 50 -s $SIZE -i :0.0+$OFFSET -vcodec gif $OUTDIR/out%04d.gif
+ffmpeg -f x11grab -r 50 -s $SIZE -i :0.0+$OFFSET -vcodec png $OUTDIR/out%04d.png
 
-# $ gifsicle --delay 2 --loop /tmp/bar/*.gif >animation.gif
+
+
+# best blog about imagemagick gif creation:
+# https://room208.org/blog/posts/48793543478.html
+
+# $ cd capdir
+# $ convert -resize 50% -fuzz 5% -delay 1x50 -coalesce -layers OptimizeTransparency $(seq -f out%04g.png 1 225) dude_gallery.gif
+
+
+# or 
+# $ gifsicle --delay 2 --loop *.png >animation.gif
 # $ convert -layers Optimize animation.gif animation_optimized.gif
 
 

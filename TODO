@@ -1,7 +1,7 @@
 (D) add controls for touch devices
-(C) wallhugger: less inertia
+
 (B) thruster whine is a little annoying
-(C) minelayer: try more regular laying pattern
+
 (C) fatzapper: improve fire visuals
 (C) fatzapper: reuse firing elsewhere? (megazapper boss? Wallhugger!)
 (C) glow around retro dudes
@@ -11,8 +11,7 @@
 (E) backdrops: better definition on retro grid
 (D) glow around text?
 (C) titlescreen: "music"
-(C) titlescreen: add a backdrop
-(C) title sequence: add a rougues gallery of bad dudes
+
 (B) sfx: missing thud/hit for some  big dudes (fatzapper, etc)
 (A) icon
 (D) social: achievements?
@@ -21,13 +20,13 @@
 (C) thrust sfx stays on if quit from pause while thrusting
 (A) add credits
 (A) Windows build process
-(A) instructions
 (B) odd spawn-in effect on zippermat
 highscore and demo page - go back to title if any key pressed
 mute sound for demo mode
 (A) tune levels
-(A) add puffer to levels
 (A) bump version number
-(B) linux: support XDG base dir spec
+(A) linux: support XDG base dir spec
 (A) website
 (A) tune mines and minelayers
+(A) add a few more dudes to dude gallery screen
+(B) add window sizing to commandline/config for doing gifcaps
