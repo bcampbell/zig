@@ -76,6 +76,7 @@ PathResolver* BuildConfigResolver( std::string const& appname)
     return new GenericPathResolver(dirs);
 }
 
+// config and data files in same location
 PathResolver* BuildDataResolver( std::string const& appname)
 {
     return BuildConfigResolver(appname);
@@ -98,6 +99,7 @@ PathResolver* BuildConfigResolver( std::string const& appname)
     return new GenericPathResolver(dirs);
 }
 
+// config and data files in same location
 PathResolver* BuildDataResolver( std::string const& appname)
 {
     return BuildConfigResolver(appname);
@@ -135,6 +137,32 @@ static std::vector<std::string> xdg_conf_dirs()
 }
 
 
+static std::string xdg_data_dir()
+{
+    const char *xdg_data = std::getenv("XDG_DATA_HOME");
+    if (xdg_data && xdg_data[0]!='\0') {
+        return xdg_data;
+    }
+    // missing or empty - fall back to default
+    const char *home = std::getenv("HOME");
+    if (!home) {
+        return "";  // uhoh.
+    }
+    return std::string(home) + "/.local/share";
+}
+
+static std::vector<std::string> xdg_data_dirs()
+{
+    const char* v = std::getenv("XDG_DATA_DIRS");
+    if (!v || v[0]=='\0') {
+        v = " /usr/local/share/:/usr/share/";
+    }
+
+    std::vector<std::string> dirs = Split(v,':');
+    return dirs;
+}
+
+
 PathResolver* BuildConfigResolver( std::string const& appname)
 {
     std::vector<std::string> dirs;
@@ -156,7 +184,21 @@ PathResolver* BuildConfigResolver( std::string const& appname)
 
 PathResolver* BuildDataResolver( std::string const& appname)
 {
-    return BuildConfigResolver(appname);
+    std::vector<std::string> dirs;
+
+    std::string primary = xdg_data_dir();
+    if (primary.empty()) {
+        return 0; // uhoh
+    }
+    primary = JoinPath(primary,appname);
+    dirs.push_back(primary);
+
+    std::vector<std::string> extraDirs = xdg_data_dirs();
+    for (auto const& d : extraDirs) {
+        dirs.push_back(JoinPath(d,appname));
+    }
+
+    return new GenericPathResolver(dirs);
 }
 
 #endif

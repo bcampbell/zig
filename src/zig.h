@@ -28,7 +28,7 @@ class PathResolver;
 
 extern PathResolver* g_ConfigPath;      // for config files
 extern PathResolver* g_DataPath;        // for generated data (highscores)
-extern PathResolver* g_ResourcePath;    // for read-only data (textures etc)
+//extern PathResolver* g_ResourcePath;    // for read-only data (textures etc)
 
 extern GameState* g_GameState;
 

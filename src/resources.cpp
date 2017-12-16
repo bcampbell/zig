@@ -2,6 +2,8 @@
 #include "util.h"	// for JoinPath()
 #include "log.h"
 
+// TODO: move all this into paths.cpp
+//
 // Handling for data file locations on various platforms/packaging systems,
 // as the location of the data files is platform dependent.
 //

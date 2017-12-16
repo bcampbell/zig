@@ -39,7 +39,7 @@
 
 PathResolver* g_ConfigPath = 0;      // for config files
 PathResolver* g_DataPath = 0;        // for generated data (highscores)
-PathResolver* g_ResourcePath = 0;    // for read-only data (textures etc)
+//PathResolver* g_ResourcePath = 0;    // for read-only data (textures etc)
 
 ZigConfig g_Config;
 std::vector<LevelDef> g_LevelDefs;
