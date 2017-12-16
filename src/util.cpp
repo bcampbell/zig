@@ -20,6 +20,23 @@
 #endif
 
 
+std::vector<std::string> Split( std::string const& s, char delim)
+{
+    std::vector<std::string> out;
+	std::string::const_iterator it=s.begin();
+    while( it!=s.end()) {
+        auto a = it;
+        while (it!=s.end()) {
+            if(*it++ == delim) {
+                break;
+            }
+		}
+
+		out.push_back(std::string(a,it));
+	}
+    return out;
+}
+
 
 // Splits a line of text into whitespace-delimited parts.
 // Quoted strings are handled
@@ -124,51 +141,7 @@ std::string JoinPath( std::string const& a, std::string const& b )
 
 #ifdef _WIN32
 
-// Windows version
-
-std::string PerUserDir()
-{
-	char buf[ MAX_PATH ];
-	HRESULT result = SHGetFolderPathA( 0, CSIDL_APPDATA, 0, 0, buf );
-	// |CSIDL_FLAG_CREATE
-	if( !SUCCEEDED( result ) )
-		return "";
-
-	return buf;
-}
-
-#elif defined( __APPLE__ ) && defined( __MACH__ )
-
-// OSX version
-// Use the Application Support dir (this should handle sandboxed and non-sandboxed)
-
-std::string PerUserDir()
-{
-    char buf[PATH_MAX];
-    if(!osx_get_app_support_path(buf,PATH_MAX))
-        return "";
-    return buf;
-}
-
-#else
-
-// standard unix version
-
-std::string PerUserDir()
-{
-	const char* home = getenv( "HOME");
-	if( !home )
-		return "";
-
-	return home;
-}
-
-#endif
-
-
-#ifdef _WIN32
-
-bool MakeDir( std::string const& dir )
+bool Mkdir( std::string const& dir )
 {
 	if( !CreateDirectoryA( dir.c_str(), 0 ) )
 	{
@@ -184,7 +157,7 @@ bool MakeDir( std::string const& dir )
 
 #else
 
-bool MakeDir( std::string const& dir )
+bool Mkdir( std::string const& dir )
 {
 	int r = mkdir( dir.c_str(),
 		S_IRUSR | S_IWUSR | S_IXUSR |
@@ -201,4 +174,97 @@ bool MakeDir( std::string const& dir )
 }
 
 #endif
+
+
+
+#ifdef _WIN32
+bool FileExists(std::string const& filename)
+{
+    return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
+    // TODO: check it's a file
+}
+
+bool Stat( std::string const& filename, FileInfo& fi)
+{
+    DWORD attrs = GetFileAttributesA(filename.c_str());
+    if (attrs == INVALID_FILE_ATTRIBUTES) {
+        return false;
+    }
+
+    fi.attrs = 0;
+    if (attrs&FILE_ATTRIBUTE_DIRECTORY) {
+        fi.attrs |= ATTR_DIR;
+    }
+    return true;
+}
+
+bool IsPathSeparator( char c)
+    { return c=='/' || c=='\\'; }
+
+#else
+
+bool FileExists( std::string const& filename )
+{
+    struct stat st = {0};
+    return (stat(filename.c_str(), &st) == -1) ? false:true;
+    // TODO: check it's a file
+}
+
+bool Stat( std::string const& filename, FileInfo& fi)
+{
+    struct stat st = {0};
+    if (stat(filename.c_str(), &st) == -1) {
+       return false;
+    }
+
+    fi.attrs = 0;
+    if (S_ISDIR(st.st_mode)) {
+        fi.attrs |= FileInfo::ATTR_DIR;
+    }
+    return true;
+    
+}
+
+bool IsPathSeparator( char c)
+    { return c=='/'; }
+
+#endif
+
+
+bool MkdirAll( std::string const& path )
+{
+    FileInfo fi;
+	if (Stat(path, fi)) {
+        if(fi.IsDir()) {
+            return true;
+        }
+        return false;   // exists, but not a dir
+    }
+
+    // skip trailing separator
+    std::string::const_iterator i,j;
+    i = path.end();
+  
+	while(i!=path.begin() && IsPathSeparator(*(i-1))) {
+		--i;
+	}
+
+    // get parent
+	while (i!=path.begin() && !IsPathSeparator(*(i-1))) {
+		--i;
+	}
+
+	if (i!=path.begin()) {
+		// Create parent
+        std::string parent(path.begin(),i);
+        if (!MkdirAll(parent) ) {
+            return false;
+        };
+	}
+
+	return Mkdir(path);
+}
+
+
+
 

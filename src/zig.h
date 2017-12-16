@@ -19,12 +19,16 @@ class Player;
 struct GameState;
 class ControllerMgr;
 class HighScores;
-
+class PathResolver;
 
 
 #define ZIGVERSION "1.1"
 
 
+
+extern PathResolver* g_ConfigPath;      // for config files
+extern PathResolver* g_DataPath;        // for generated data (highscores)
+extern PathResolver* g_ResourcePath;    // for read-only data (textures etc)
 
 extern GameState* g_GameState;
 
@@ -60,8 +64,6 @@ extern Texture* g_Textures[TX_NUMTEXTURES];
 #define TICK_INTERVAL (1000/TARGET_FPS)
 
 #define ARENA_RADIUS_MIN 150
-
-std::string ZigUserDir();
 
 
 

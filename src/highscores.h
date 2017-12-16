@@ -35,7 +35,6 @@ public:
 private:
 	bool Load();
 	void Save();
-	std::string SussFilename();
 
 	
 	enum { TABLE_SIZE=10 };

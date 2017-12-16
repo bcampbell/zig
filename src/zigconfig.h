@@ -35,10 +35,11 @@ struct ZigConfig
 		flatout(false)
 	{}
 
-	void Init( int ac, char* av[] );
+	void Read( std::string const& filename);
+	void ApplyArgs( int ac, char* av[] );
 
 	// just save user settings, not dev ones
-	void Save() const;
+	void Write( std::string const& filename) const;
 };
 
 

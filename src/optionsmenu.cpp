@@ -4,6 +4,7 @@
 #include "controller.h"
 #include "display.h"
 #include "drawing.h"
+#include "paths.h"
 #include "soundmgr.h"
 #include "zig.h"
 
@@ -150,7 +151,11 @@ void OptionsMenu::OnSelect( int id )
 			m_Done = true;
 			g_Config.fullscreen = m_Fullscreen;
 			g_Display->ChangeSettings(g_Config.fullscreen);
-			g_Config.Save();
+
+            std::string optsFile = g_ConfigPath->ResolveForWrite("options");
+            if( !optsFile.empty()) {
+    			g_Config.Write(optsFile);
+            }
 		}
 		break;
 	case ID_CANCEL:

@@ -1,5 +1,6 @@
 
 #include "highscores.h"
+#include "paths.h"
 #include "util.h"
 #include "zig.h"
 
@@ -57,7 +58,11 @@ void HighScores::Merge( std::string const& filename )
 
 bool HighScores::Load()
 {
-	std::ifstream in( SussFilename().c_str() );
+    std::string filename = g_DataPath->ResolveForRead("highscores");
+    if(filename.empty()) {
+        return false;   // not found
+    }
+	std::ifstream in( filename.c_str() );
 
 	if( !in.good() )
 		return false;
@@ -77,7 +82,11 @@ bool HighScores::Load()
 
 void HighScores::Save()
 {
-	std::ofstream out( SussFilename().c_str() );
+    std::string filename = g_DataPath->ResolveForWrite("highscores");
+    if(filename.empty()) {
+        return;   // no good
+    }
+	std::ofstream out( filename.c_str() );
 	if( !out.good() )
 		return;
 	int i;
@@ -109,9 +118,5 @@ int HighScores::Submit( int score )
 }
 
 
-std::string HighScores::SussFilename()
-{
-	return JoinPath( ZigUserDir(), "highscores" );
-}
 
 

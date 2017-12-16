@@ -53,33 +53,32 @@ static void ApplyOption( ZigConfig& cfg, std::vector<std::string> const& opts )
 }
 
 
-// ac and av are commandline options passed along from main()
-// Commandline options override config file options.
-void ZigConfig::Init( int ac, char* av[] )
+void ZigConfig::Read( std::string const& filename )
 {
-	// try to read in opts from file
-	{
-		std::string inname = JoinPath( ZigUserDir(), "options" );
-		std::ifstream in( inname.c_str() );
-		int linenum = 0;
-		while( in.good() )
-		{
-			std::string line;
-			std::getline( in, line );
-			++linenum;
+    std::ifstream in( filename.c_str() );
+    int linenum = 0;
+    while( in.good() )
+    {
+        std::string line;
+        std::getline( in, line );
+        ++linenum;
 
-			std::vector< std::string > opts;
-			SplitLine( line, opts );
+        std::vector< std::string > opts;
+        SplitLine( line, opts );
 
-			if( opts.empty() )		// ignore blank lines
-				continue;
+        if( opts.empty() )		// ignore blank lines
+            continue;
 
-			ApplyOption( *this, opts );
-		}
-	}
+        ApplyOption( *this, opts );
+    }
+}
 
-	// now apply commandline opts on top.
-	int i=1;
+// apply argv options.
+// ac and av are commandline options passed along from main(),
+// but with argv[0] stripped off.
+void ZigConfig::ApplyArgs( int ac, char* av[] )
+{
+	int i=0;
 	while( i<ac )
 	{
 		std::vector< std::string > opt;
@@ -98,11 +97,9 @@ void ZigConfig::Init( int ac, char* av[] )
 }
 
 
-void ZigConfig::Save() const
+void ZigConfig::Write(std::string const& filename) const
 {
-	std::string outname = JoinPath( ZigUserDir(), "options" );
-
-	std::ofstream out( outname.c_str() );
+	std::ofstream out( filename.c_str() );
 
 	if( !out.good() )
 		return;

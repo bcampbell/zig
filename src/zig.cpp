@@ -22,6 +22,7 @@
 #include "util.h"
 #include "wobbly.h"
 #include "log.h"
+#include "paths.h"
 #include <SDL.h>
 
 
@@ -35,6 +36,10 @@
 #include <unistd.h>
 #endif
 
+
+PathResolver* g_ConfigPath = 0;      // for config files
+PathResolver* g_DataPath = 0;        // for generated data (highscores)
+PathResolver* g_ResourcePath = 0;    // for read-only data (textures etc)
 
 ZigConfig g_Config;
 std::vector<LevelDef> g_LevelDefs;
@@ -53,9 +58,6 @@ HighScores* g_HighScores = 0;
 
 GameState* g_GameState = 0;
 
-static std::string s_ZigUserDir;
-
-static void InitZigUserDir();
 
 static void InitTextures();
 static void FreeTextures();
@@ -66,15 +68,37 @@ static void mainloop();
 
 void startup( int argc, char*argv[] )
 {
-    InitZigUserDir();
+    g_ConfigPath = BuildConfigResolver("zig");
+    if (!g_ConfigPath) {
+        Wobbly e("couldn't set up config path resolver\n" );
+        throw e;
+    }
+    g_DataPath = BuildDataResolver("zig");
+    if (!g_DataPath) {
+        Wobbly e("couldn't set up data path resolver\n" );
+        throw e;
+    }
+    
+
 #ifdef __EMSCRIPTEN__
     log_open("-");
 #else
-    log_open(JoinPath(ZigUserDir(),"log.txt").c_str());
+    {
+        std::string logfile = g_DataPath->ResolveForWrite("log.txt");
+        if (!logfile.empty()) {
+            log_open(logfile.c_str());
+        }
+    }
 #endif
     log_infof("Started\n");
 
-    g_Config.Init( argc, argv );
+    // load options file, if available
+    std::string optsFile = g_ConfigPath->ResolveForRead("options");
+    if (!optsFile.empty() ) {
+        g_Config.Read(optsFile);    // load() is OK even if file missing
+    }
+    // commandline args override file settings
+    g_Config.ApplyArgs( argc-1, &argv[1] );
 
 #ifdef __EMSCRIPTEN__
     g_Config.fullscreen = false;
@@ -157,6 +181,8 @@ void shutdown()
 	SDL_Quit();
 	Agent_Shutdown();
     log_close();
+    delete g_DataPath;
+    delete g_ConfigPath;
 }
 
 
@@ -194,26 +220,6 @@ void FreeTextures()
     g_Font = 0;
 }
 
-
-
-
-
-static void InitZigUserDir()
-{
-#ifdef _WIN32
-	s_ZigUserDir = JoinPath( PerUserDir(), "Zig" );
-#elif defined( __APPLE__ ) && defined( __MACH__ )
-	s_ZigUserDir = JoinPath( PerUserDir(), "Zig" );
-#else
-	s_ZigUserDir = JoinPath( PerUserDir(), ".zig" );
-#endif
-	MakeDir( s_ZigUserDir );
-}
-
-std::string ZigUserDir()
-{
-	return s_ZigUserDir;
-}
 
 
 
@@ -256,6 +262,7 @@ int main( int argc, char*argv[] )
 #else
 int main( int argc, char*argv[] )
 {
+
     int retCode = 0;
 	try
 	{
