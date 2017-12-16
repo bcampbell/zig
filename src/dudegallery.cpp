@@ -49,7 +49,7 @@ void DudeGallery::Render()
 
     const float speedup = 2.0f; // spawn effect looks better faster here
     int i;
-    for(i=0;i<12;++i) {
+    for(i=0;i<15;++i) {
         glPushMatrix();
         float dx = (float)((i%4)-1.5f) * 100.0f;
         float dy = (float)((i/4)-1.0f) * -100.0f;
@@ -100,8 +100,10 @@ void DudeGallery::DrawDude(int n)
         case 2: Grunt::StaticDraw(50.0f); name="GRUNT"; break;
         case 3: Swarmer::StaticDraw(); name="SWARMER"; break;
         case 4:
-            Puffer::StaticDraw(sqrtf((Puffer::s_MinArea*2.0f)/pi), g_Time);
-            name="PUFFER";
+            {
+                Puffer::StaticDraw(sqrtf((Puffer::s_MinArea*2.0f)/pi), g_Time);
+                name="PUFFER";
+            }
             break;
         case 5: Bomber::StaticDraw(0.0f,0.2f); name = "BOMBER"; break;
         case 6: Tank::StaticDraw(0.0f); name = "TANK"; break;
@@ -110,6 +112,18 @@ void DudeGallery::DrawDude(int n)
         case 9: Flanker::StaticDraw(false); name = "FLANKER"; break;
         case 10: Spiker::StaticDraw(0.0f); name = "SPIKER"; break;
         case 11: Agitator::StaticDraw(0.5f); name = "AGITATOR"; break;
+        case 12:
+            {
+                glPushMatrix();
+                float wiggle = sinf(g_Time*16)*0.4;
+                glRotatef( r2d(wiggle), 0.0f, 0.0f, 1.0f );
+                Wiggler::StaticDraw();
+                name = "WIGGLER";
+                glPopMatrix();
+            }
+            break;
+        case 13: Divider::StaticDraw(); name = "DIVIDER"; break;
+        case 14: WallHugger::StaticDraw(0.0f); name = "WALLHUGGER"; break;
         default:
             assert(false);
             return;

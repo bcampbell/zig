@@ -131,6 +131,7 @@ public:
 	virtual void Tick();
 	virtual void OnHitBullet( Bullet& bullet );
 	virtual void Respawn();
+	static void StaticDraw();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Wiggler() ); }
 private:
@@ -163,6 +164,7 @@ public:
 	virtual void Tick();
 	virtual void OnHitBullet( Bullet& bullet );
 	virtual void Respawn();
+	static void StaticDraw( float flash );
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new WallHugger() ); }
 private:
@@ -562,6 +564,7 @@ public:
 	virtual void Tick();
 	virtual void OnHitBullet( Bullet& bullet );
 	virtual void Respawn();
+	static void StaticDraw();
 	static void Create( std::list<Dude*>& newdudes )
 		{ newdudes.push_back( new Divider() ); }
 private:

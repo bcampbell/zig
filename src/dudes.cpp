@@ -430,6 +430,11 @@ void Wiggler::Respawn()
 
 void Wiggler::Draw()
 {
+    StaticDraw();
+}
+
+void Wiggler::StaticDraw()
+{
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
@@ -736,13 +741,18 @@ void WallHugger::OnHitBullet( Bullet& bullet )
 
 void WallHugger::Draw()
 {
+    StaticDraw(m_Flash);
+}
+
+void WallHugger:: StaticDraw(float flash)
+{
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );
 
-	Colour c1 = ColourLerp( Colour( 0.8f, 0.8f, 1.0f ), Colour::WHITE, m_Flash ); 
-	Colour c2 = ColourLerp( Colour( 0.5f, 0.5f, 8.0f ), Colour::WHITE, m_Flash ); 
-	Colour c3 = ColourLerp( Colour( 0.2f, 0.2f, 6.0f ), Colour::WHITE, m_Flash ); 
+	Colour c1 = ColourLerp( Colour( 0.8f, 0.8f, 1.0f ), Colour::WHITE, flash ); 
+	Colour c2 = ColourLerp( Colour( 0.5f, 0.5f, 8.0f ), Colour::WHITE, flash ); 
+	Colour c3 = ColourLerp( Colour( 0.2f, 0.2f, 6.0f ), Colour::WHITE, flash ); 
 
 	glColor3f( c2.r, c2.g, c2.b );
 	glBegin( GL_TRIANGLES );
@@ -2747,6 +2757,11 @@ void Divider::Respawn()
 
 
 void Divider::Draw()
+{
+    StaticDraw();
+}
+
+void Divider::StaticDraw()
 {
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
