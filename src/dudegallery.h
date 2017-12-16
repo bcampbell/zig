@@ -20,6 +20,10 @@ private:
     void DrawDude(int n);
     bool m_Done;
     float m_Time;
+
+    enum {NUM_KINDS=15, NUM_TO_SHOW=8};
+
+    int m_Picks[NUM_TO_SHOW];
 };
 
 

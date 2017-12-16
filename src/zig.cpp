@@ -288,8 +288,8 @@ void mainloop()
     if( g_Config.soundexplore) {
         scene = new SoundExplore();
     } else {
-        scene = new DudeGallery();
-        //scene = new TitleScreen();
+        //scene = new DudeGallery();
+        scene = new TitleScreen();
     }
 
 	while( 1 )

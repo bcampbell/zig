@@ -13,12 +13,23 @@
 #include "dudes.h"
 #include "spiker.h"
 
-
+#include <algorithm>
 
 DudeGallery::DudeGallery() : m_Done(false), m_Time(0.0f)
 {
     m_SnowTexture = new SnowflakeTexture();
 	g_Display->AddTexture( m_SnowTexture );
+
+
+    int deck[NUM_KINDS];
+    int i;
+    for( i=0; i<NUM_KINDS; ++i) {
+        deck[i]=i;
+    }
+    std::random_shuffle(deck, &deck[NUM_KINDS]);
+    for(i=0; i<NUM_TO_SHOW; ++i) {
+        m_Picks[i] = deck[i];
+    }
 }
 
 DudeGallery::~DudeGallery()
@@ -49,10 +60,10 @@ void DudeGallery::Render()
 
     const float speedup = 2.0f; // spawn effect looks better faster here
     int i;
-    for(i=0;i<15;++i) {
+    for(i=0;i<NUM_TO_SHOW;++i) {
         glPushMatrix();
-        float dx = (float)((i%4)-1.5f) * 100.0f;
-        float dy = (float)((i/4)-1.0f) * -100.0f;
+        float dx = (float)((i%4)-1.5f) * 120.0f;
+        float dy = (float)((i/4)-0.5f) * -100.0f;
 
 		glTranslatef( dx,dy, 0.0f );
         float t = 1+(float)i/4.0f;
@@ -67,7 +78,7 @@ void DudeGallery::Render()
 
 
         if(m_Time>t) {
-            DrawDude(i);
+            DrawDude(m_Picks[i]);
         }
         glPopMatrix();
     }
@@ -151,7 +162,7 @@ void DudeGallery::HandleKeyDown( SDL_Keysym& keysym )
 
 Scene* DudeGallery::NextScene()
 {
-    if (m_Time > 20.0f) {
+    if (m_Time > 12.0f) {
         m_Done = true;
     }
 
