@@ -72,7 +72,7 @@ PathResolver* BuildConfigResolver( std::string const& appname)
 	if( !SUCCEEDED( result ) )
 		return 0;
     std::vector<std::string> dirs;
-    dirs.push_back(JoinPath(buf,appname);
+    dirs.push_back(JoinPath(buf,appname));
     return new GenericPathResolver(dirs);
 }
 
@@ -95,7 +95,7 @@ PathResolver* BuildConfigResolver( std::string const& appname)
     if(!osx_get_app_support_path(buf,PATH_MAX))
         return 0;
     std::vector<std::string> dirs;
-    dirs.push_back(JoinPath(buf,appname);
+    dirs.push_back(JoinPath(buf,appname));
     return new GenericPathResolver(dirs);
 }
 
