@@ -17,13 +17,11 @@
 (C) thrust sfx stays on if quit from pause while thrusting
 (A) add credits
 (A) Windows build process
-(B) odd spawn-in effect on zippermat
 highscore and demo page - go back to title if any key pressed
 mute sound for demo mode
 (A) tune levels
 (A) bump version number
 (A) website
-(A) tune mines and minelayers
 (B) add window sizing to commandline/config for doing gifcaps
-
 (A) proper default highscore table
+(B) laser fire sfx is too shrill

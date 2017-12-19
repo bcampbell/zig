@@ -2454,7 +2454,7 @@ void Bomber::StaticDraw(float flash, float pop)
 
 //static
 const float Bomb::s_FuseTime = 2.0f;	// seconds
-const float Bomb::s_ExplosionTime = 1.0f;	// seconds
+const float Bomb::s_ExplosionTime = 0.5f;	// seconds
 const float Bomb::s_ExplosionR0 = 5.0f;
 const float Bomb::s_ExplosionR1 = 100.0f;
 
@@ -2580,7 +2580,8 @@ void Bomb::Tick()
 		{
 			// kaboom.
 //			SoundMgr::Inst().Play( SFX_BIGEXPLOSION );
-			SoundMgr::Inst().Play( SFX_PLAYERTOAST );
+	//		SoundMgr::Inst().Play( SFX_PLAYERTOAST );
+	SoundMgr::Inst().Play( SFX_DULLBLAST );
 			m_Timer = 0.0f;
 			m_Exploding = true;
 			SetFlags( flagCanHitPlayer );
