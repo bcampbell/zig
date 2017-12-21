@@ -22,7 +22,7 @@ public:
 
 	// returns index of place in score table, or -1 if the score isn't high
 	// enough to make it onto the table.
-	int Submit( int score );
+	int Submit( int score, int level );
 
 	void SetName( int idx, std::string const& name );
 
@@ -41,6 +41,7 @@ private:
 	struct Entry
 	{
 		int Score;
+        int Level;
 		std::string Name;
 	};
 

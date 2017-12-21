@@ -76,7 +76,7 @@ Scene* GameOver::NextScene()
 {
 	if( m_Done )
     {
-        int scoreidx = g_HighScores->Submit( g_GameState->m_Player->Score());
+        int scoreidx = g_HighScores->Submit( g_GameState->m_Player->Score(), g_GameState->m_Level + 1);
 
         delete this;
         HighScoreScreen* hs = new HighScoreScreen();

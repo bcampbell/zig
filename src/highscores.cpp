@@ -16,7 +16,8 @@ HighScores::HighScores()
 		for( i=0; i<TABLE_SIZE; ++i )
 		{
 			m_Scores[i].Score = s;
-			m_Scores[i].Name = "ABCD";
+			m_Scores[i].Level = 5 + (TABLE_SIZE - i);
+			m_Scores[i].Name = "AAA";
 			s -= 1000;
 		}
 	}
@@ -27,38 +28,12 @@ HighScores::~HighScores()
 	Save();
 }
 
-void HighScores::Merge( std::string const& filename )
-{
-	std::ifstream in( filename.c_str() );
-
-	if( !in.good() )
-		return;			// throw?
-
-	int i;
-	for( i=0; i<TABLE_SIZE; ++i )
-	{
-		std::string name;
-		int score;
-		in >> score;
-		in.get();	// skip space
-		std::getline( in, name );
-
-		int idx = Submit( score );
-		if( idx != -1 )
-		{
-			SetName( idx, name );
-		}
-	}
-
-	return;
-}
-
 
 
 
 bool HighScores::Load()
 {
-    std::string filename = g_DataPath->ResolveForRead("highscores");
+    std::string filename = g_DataPath->ResolveForRead("scores");
     if(filename.empty()) {
         return false;   // not found
     }
@@ -67,13 +42,31 @@ bool HighScores::Load()
 	if( !in.good() )
 		return false;
 
-	int i;
-	for( i=0; i<TABLE_SIZE; ++i )
-	{
-		in >> m_Scores[i].Score;
-		in.get();							// skip space
-		std::getline( in, m_Scores[i].Name );	// rest of line is name
-	}
+    std::string buf;
+    std::getline( in, buf );
+    if( buf.compare(0,4,"zig1") != 0)
+    {
+        return false;
+    }
+
+    int idx = 0;
+    while(idx<TABLE_SIZE && in.good())
+    {
+        std::getline( in, buf );
+        if (!in.good())
+        {
+            break;
+        }
+        std::vector<std::string> parts = Split(buf,'\t');
+        if( parts.size()!=3)
+        {
+            continue;
+        }
+		m_Scores[idx].Score = atoi(parts[0].c_str());
+        m_Scores[idx].Level = atoi(parts[1].c_str());
+		m_Scores[idx].Name = parts[2];
+        ++idx;
+    }
 
 	return true;
 }
@@ -82,7 +75,7 @@ bool HighScores::Load()
 
 void HighScores::Save()
 {
-    std::string filename = g_DataPath->ResolveForWrite("highscores");
+    std::string filename = g_DataPath->ResolveForWrite("scores");
     if(filename.empty()) {
         return;   // no good
     }
@@ -90,12 +83,15 @@ void HighScores::Save()
 	if( !out.good() )
 		return;
 	int i;
+    out << "zig1\n";
 	for( i=0; i<TABLE_SIZE; ++i )
-		out << m_Scores[i].Score << " " << m_Scores[i].Name << '\n';
+    {
+		out << m_Scores[i].Score << "\t" << m_Scores[i].Level << "\t" << m_Scores[i].Name << '\n';
+    }
 }
 
 
-int HighScores::Submit( int score )
+int HighScores::Submit( int score, int level )
 {
 	int pos = -1;
 	int i;
@@ -111,6 +107,7 @@ int HighScores::Submit( int score )
 		for( i=TABLE_SIZE-1; i>pos; --i )
 			m_Scores[i] = m_Scores[i-1];
 		m_Scores[pos].Score = score;
+		m_Scores[pos].Level = level;
 		m_Scores[pos].Name = "";
 	}
 
