@@ -38,7 +38,7 @@ static const ColourRange rawrange( raw, 6 );
 
 
 HighScoreScreen::HighScoreScreen() :
-	m_TimeOut( 400 ),
+	m_Time( 0.0f ),
 	m_EntryTarget( -1 )
 {
 }
@@ -123,26 +123,31 @@ void HighScoreScreen::Render()
 	}
 }
 
+
+static const float s_Timeout = 8.0f;
+
 void HighScoreScreen::Tick()
 {
+    m_Time += (1.0f/TARGET_FPS);
 	if( m_EntryTarget == -1 )
 	{
-		--m_TimeOut;
-
-		if( g_ControllerMgr->MenuController().Buttons() )
-			m_TimeOut = 0;
+        // force exit if button pressed
+		if (m_Time> 0.5f && g_ControllerMgr->MenuController().Buttons() ) {
+			m_Time = s_Timeout;
+        }
 	}
 }
 
 Scene* HighScoreScreen::NextScene()
 {
-	if( m_TimeOut > 0 )
+	if( m_EntryTarget == -1 && m_Time >= s_Timeout )
     {
-        return this;    // still running
+        // timed out
+        delete this;
+        return new DudeGallery();
     }
 
-    delete this;
-    return new DudeGallery();
+    return this;    // still running
 }
 
 
@@ -153,7 +158,7 @@ void HighScoreScreen::HandleKeyDown( SDL_Keysym& keysym )
 	if( m_EntryTarget == -1 )
 	{
 		// not in edit mode
-		m_TimeOut = 0;
+		m_Time = s_Timeout;
 		return;
 	}
 
@@ -161,6 +166,7 @@ void HighScoreScreen::HandleKeyDown( SDL_Keysym& keysym )
 
 	if (code == SDLK_RETURN)
 	{
+        m_Time = 0.0f;    // reset timeout and bask in glory for a bit
         EntryMode(-1);
 		return;
 	}

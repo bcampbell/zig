@@ -22,7 +22,7 @@ public:
 	virtual void HandleKeyDown( SDL_Keysym& keysym );
 private:
 
-	int m_TimeOut;
+	float m_Time;
 
 	// index of score being entered (-1=none)
 	int m_EntryTarget;
