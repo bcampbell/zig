@@ -2894,6 +2894,7 @@ void Puffer::Respawn()
 {
     m_Accel = Rnd(0.075f,0.2f);
     m_Area = s_MinArea;
+    m_MoveTimer = 0.0f;
     m_RespiteTimer = 0.0f;
 	RandomPos();
 	m_Vel = Rotate( vec2( 0.0f, 0.5f ), Rnd(0,twopi) );
