@@ -9,6 +9,7 @@
 #include "dudes.h"
 #include "gamestate.h"
 #include "highscores.h"
+#include "icongen.h"
 #include "image.h"
 #include "leveldef.h"
 #include "mathutil.h"
@@ -288,7 +289,7 @@ void mainloop()
     if( g_Config.soundexplore) {
         scene = new SoundExplore();
     } else {
-        //scene = new DudeGallery();
+//        scene = new IconGenScreen();
         scene = new TitleScreen();
     }
 

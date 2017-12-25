@@ -82,11 +82,13 @@ void Player::Draw()
 	if( m_Nashwan )
 		m_Nashwan->Draw();
 
+    StaticDraw(Radius());
+}
+
+void Player::StaticDraw( float r)
+{
 	Colour c(  0.0f, 0.0f, 0.8f );
 	glColor3f( c.r, c.g, c.b);
-
-	const float r = Radius();
-
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glShadeModel( GL_FLAT );

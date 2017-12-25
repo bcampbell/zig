@@ -18,6 +18,8 @@ public:
 	virtual void Draw();
 	virtual void Tick();
 
+	static void StaticDraw(float r);
+
 	void FatalDudeCollision( Dude& dude );
 
 	void GivePoints( int pts );
