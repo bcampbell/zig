@@ -8,11 +8,12 @@ deps := $(objs:.o=.d)
 
 
 CXX = g++
-CPPFLAGS = -MMD -MP -DENABLE_CHEATS
+CPPFLAGS = -MMD -MP
+CPPFLAGS += -DENABLE_CHEATS
 CXXFLAGS = -Wall -std=c++0x 
-CXXFLAGS += -ggdb
-LDFLAGS = -ggdb
-#  CXXFLAGS += -O2 
+#CXXFLAGS += -ggdb
+#LDFLAGS = -ggdb
+CXXFLAGS += -O2 
 
 ifeq ($(shell uname), Linux)
 CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
@@ -34,13 +35,15 @@ ifeq ($(shell uname), Darwin)
   LDLIBS += -Xlinker -rpath -Xlinker @executable_path/../Frameworks
 endif
 
-ifeq ($(shell uname),MINGW64_NT-10.0)
+#ifeq ($(shell uname),MINGW64_NT-10.0)
+#ifeq ($(shell uname),MINGW32_NT-10.0)
+ifeq ($(shell uname -o), Msys)
   exe = zig.exe
   CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng)
   LDLIBS += $(shell pkg-config --libs sdl2 SDL2_mixer libpng)
-  CXXFLAGS += -Dmain=SDL_main
   LDLIBS += -lopengl32
-  #LIBS += -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lopengl32 -lpng16 -lz -mwindows
+  LDFLAGS += -static-libgcc -static-libstdc++
+  objs += zig.res
 endif
 
 ifeq ($(PLATFORM),emscripten)
@@ -55,8 +58,13 @@ endif
 $(exe): $(objs)
 	$(CXX) $(LDFLAGS) -o $(exe) $(objs) $(LDLIBS)
 
+# -- mac stuff --
 %.o: %.mm
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+# -- windows resource --
+%.res: %.rc
+	windres $< -O coff -o $@
 
 .PHONY: clean
 clean: ; $(RM) $(exe) $(objs) $(deps)

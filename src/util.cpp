@@ -193,7 +193,7 @@ bool Stat( std::string const& filename, FileInfo& fi)
 
     fi.attrs = 0;
     if (attrs&FILE_ATTRIBUTE_DIRECTORY) {
-        fi.attrs |= ATTR_DIR;
+        fi.attrs |= FileInfo::ATTR_DIR;
     }
     return true;
 }
