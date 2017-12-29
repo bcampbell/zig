@@ -27,11 +27,11 @@ compress video:
 ## build checklist
 
 release build?
+strip binaries?
 cheats turned off?
 correct version number?
 soak test (with and without -flatout)
-
-
+check sounds sound right
 
 ## building stripped-down sdl2_mixer:
 
