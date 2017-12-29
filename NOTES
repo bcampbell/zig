@@ -1,33 +1,21 @@
 
 
-unicode notes:
-COMBINING ENCLOSING KEYCAP U+20E3
-RETURN SYMBOL (U+23CE)
-U+2190 through U+2193: left, up, right, down arrows
-SHIFT SYMBOL 21E7
-
-
-ideas:
+## ideas:
 dudes which join together to form bigger attacks
 reinstate edge-pullers
 
 
-recording:
 
-$ recordmydesktop --windowid $(xwininfo | awk '/Window id:/ {print $4}') -o screencast.ogv --fps 60 --overwrite --no-cursor --no-frame
+## recording:
 
-http://forum.kerbalspaceprogram.com/threads/58448-Recording-video-and-audio-on-Linux
-http://www.tecmint.com/record-ubuntu-desktop-screen-using-avconv/
-http://stackoverflow.com/questions/4292535/linux-screen-desktop-video-capture-over-network-and-vnc-framerate?rq=1
-http://www.bauer-power.net/2010/05/alternative-to-gtk-recordmydesktop-in.html
+see gifcap script.
 
-
-
+to capture with audio:
 
 Use full gnome desktop
 unplug headphones/external speakers (!)
 run pavucontrol
-use pavucontrol to set ffmpeg recording from internal stero monitor
+use pavucontrol to set ffmpeg recording from internal stereo monitor
 record losslessly:
   $ ffmpeg -framerate 60 -video_size 640x480 -f xgrab -i :0.0+10,40 -f alsa -ac 2 -i pulse -vcodec libx264 -crf 0 -preset ultrafast output.mkv
 
@@ -35,4 +23,44 @@ compress video:
   $ ffmpeg -i output.mkv -vcodec libx264 -preset slow -crf 22 -acodec copy output_tiny.mkv
 
 
+
+## build checklist
+
+release build?
+cheats turned off?
+correct version number?
+soak test (with and without -flatout)
+
+
+
+## building stripped-down sdl2_mixer:
+
+$ ./configure \
+  --disable-music-cmd \
+  --disable-music-wave \
+  --disable-music-mod \
+  --disable-music-mod-modplug \
+  --disable-music-mod-modplug-shared \
+  --disable-music-mod-mikmod \
+  --disable-music-mod-mikmod-shared \
+  --disable-music-midi \
+  --disable-music-midi-timidity \
+  --disable-music-midi-native \
+  --disable-music-midi-fluidsynth \
+  --disable-music-midi-fluidsynth-shared \
+  --disable-music-ogg \
+  --disable-music-ogg-tremor \
+  --disable-music-ogg-shared \
+  --disable-music-flac \
+  --disable-music-flac-shared \
+  --disable-music-mp3 \
+  --disable-music-mp3-smpeg \
+  --disable-music-mp3-smpeg-shared \
+  --disable-smpegtest \
+  --disable-music-mp3-mad-gpl \
+  --disable-music-mp3-mad-gpl-dithering \
+  --disable-music-mp3-mpg123 \
+  --disable-music-mp3-mpg123-shared
+
+NOTE, default configure prefix for msys2 is /mingw32 or /mingw64, not /usr/local!
 

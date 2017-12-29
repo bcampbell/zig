@@ -9,11 +9,16 @@ deps := $(objs:.o=.d)
 
 CXX = g++
 CPPFLAGS = -MMD -MP
-CPPFLAGS += -DENABLE_CHEATS
 CXXFLAGS = -Wall -std=c++0x 
+
+# debug:
 #CXXFLAGS += -ggdb
+#CPPFLAGS += -DENABLE_CHEATS
 #LDFLAGS = -ggdb
+
+# release:
 CXXFLAGS += -O2 
+
 
 ifeq ($(shell uname), Linux)
 CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
@@ -37,12 +42,14 @@ endif
 
 #ifeq ($(shell uname),MINGW64_NT-10.0)
 #ifeq ($(shell uname),MINGW32_NT-10.0)
+# NOTE: uname -o fails on osx
 ifeq ($(shell uname -o), Msys)
   exe = zig.exe
   CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng)
-  LDLIBS += $(shell pkg-config --libs sdl2 SDL2_mixer libpng)
+  LDLIBS += $(shell pkg-config --static --libs sdl2 SDL2_mixer libpng)
   LDLIBS += -lopengl32
-  LDFLAGS += -static-libgcc -static-libstdc++
+  # use static linking under windows
+  LDFLAGS += -static -static-libgcc -static-libstdc++
   objs += zig.res
 endif
 
@@ -65,6 +72,13 @@ $(exe): $(objs)
 # -- windows resource --
 %.res: %.rc
 	windres $< -O coff -o $@
+
+zig.res: zig.ico
+
+zig.ico: icon/icon.png
+	/mingw32/bin/convert $< -define icon:auto-resize=16,32,48,256 -compress zip $@
+
+
 
 .PHONY: clean
 clean: ; $(RM) $(exe) $(objs) $(deps)
