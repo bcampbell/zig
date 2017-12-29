@@ -238,6 +238,7 @@ Mix_Chunk* RealSoundMgr::ConvertToMixChunk( std::vector<float> const& src )
 
 	// plonk our data into the front of the buffer
 	// (converting to s16 while we're at it)
+    // TODO: use SDL native float->s16 conversion
 	unsigned int i;
 	Sint16* shortp = (Sint16*)cvt.buf;
 	for( i=0; i<src.size(); ++i )
@@ -249,7 +250,9 @@ Mix_Chunk* RealSoundMgr::ConvertToMixChunk( std::vector<float> const& src )
 	if( SDL_ConvertAudio( &cvt ) < 0 )
 		throw Wobbly( "Audio conversion failure!" );
 
-	Mix_Chunk* chunk = Mix_QuickLoad_RAW( cvt.buf, cvt.len );
+    int n = (int)((double)cvt.len * cvt.len_ratio);
+
+	Mix_Chunk* chunk = Mix_QuickLoad_RAW( cvt.buf, n );
 	if( !chunk )
 		throw Wobbly( "Out of memory" );
 
