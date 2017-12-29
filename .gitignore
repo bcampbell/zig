@@ -1,3 +1,7 @@
 *.o
 *.d
+# windows stuff:
+src/zig.exe
+src/zig.ico
+src/zig.res
 
