@@ -277,7 +277,6 @@ void RealSoundMgr::GenerateSounds()
 {
 	m_Sounds.resize( SFX_NUM_EFFECTS, 0 );
 
-	std::vector<float> fbuf;
 
 	SetRetromatFreq( m_DeviceFreq );
 
