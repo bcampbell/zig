@@ -11,14 +11,18 @@ CXX = g++
 CPPFLAGS = -MMD -MP
 CXXFLAGS = -Wall -std=c++0x 
 
-# debug:
-#CXXFLAGS += -ggdb
-#CPPFLAGS += -DENABLE_CHEATS
-#LDFLAGS = -ggdb
 
 # release:
-CXXFLAGS += -O2 
+.PHONY: release
+release: CXXFLAGS += -O2 
+release: $(exe)
 
+# debug:
+.PHONY: debug
+debug: CXXFLAGS += -ggdb
+debug: CPPFLAGS += -DENABLE_CHEATS
+debug: LDFLAGS = -ggdb
+debug: $(exe)
 
 ifeq ($(shell uname), Linux)
 CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
