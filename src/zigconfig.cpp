@@ -35,9 +35,9 @@ static void ApplyOption( ZigConfig& cfg, std::vector<std::string> const& opts )
 		cfg.nomultitexture = true;
 	else if( o == "flatout" )
 		cfg.flatout = true;
-	else if( o == "width" )
+	else if( o == "w" )
 		cfg.width = atoi( opts[1].c_str() );
-	else if( o == "height" )
+	else if( o == "h" )
 		cfg.height = atoi( opts[1].c_str() );
 	else if( o == "depth" )
 		cfg.depth = atoi( opts[1].c_str() );

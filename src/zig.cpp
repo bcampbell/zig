@@ -126,7 +126,7 @@ void startup( int argc, char*argv[] )
 #endif
     g_ControllerMgr = new ControllerMgr();
     g_HighScores = new HighScores();
-    g_Display = new Display( g_Config.fullscreen );
+    g_Display = new Display( g_Config.fullscreen, g_Config.width, g_Config.height );
 
     InitTextures();
 

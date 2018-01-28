@@ -74,8 +74,6 @@ private:
 	int		m_BaiterCount;	// num of baiters due to spawn next time
 
 	float	m_VictoryDuration;
-
-	bool	m_ScreenshotFlag;
 };
 
 

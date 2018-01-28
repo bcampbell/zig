@@ -78,7 +78,7 @@ void Display::ChangeSettings(bool fullscreen )
 
 
 
-Display::Display( bool fullscreen ) : m_Fullscreen(fullscreen), m_Window(0)
+Display::Display( bool fullscreen, int w, int h ) : m_Fullscreen(fullscreen), m_Window(0)
 {
     Uint32  flags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE;
     if(fullscreen) {
@@ -88,7 +88,7 @@ Display::Display( bool fullscreen ) : m_Fullscreen(fullscreen), m_Window(0)
     m_Window = SDL_CreateWindow("Zig",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        640, 480,
+        w,h,
         flags);
 	if( !m_Window )
 	{
@@ -119,7 +119,6 @@ Display::Display( bool fullscreen ) : m_Fullscreen(fullscreen), m_Window(0)
 
 	//glViewport( 0,0, res.w, res.h );
 	//glViewport( 0,0, 640,480 );
-    int w,h;	
     SDL_GetWindowSize(m_Window,&w,&h);
     HandleResize(w,h);
 }
@@ -157,7 +156,7 @@ void Display::HandleResize( int winw, int winh )
 
 void Display::TakeScreenshot()
 {
-#if 0
+#ifdef ENABLE_CHEATS
 	char filename[256];
 	int id=0;
 	while( true )
@@ -171,10 +170,9 @@ void Display::TakeScreenshot()
 			return;
 	}
 
+    int w,h;
+    SDL_GetWindowSize(m_Window, &w, &h);
 	SDL_Surface* tmp;
-	int w = m_Screen->w;
-	int h = m_Screen->h;
-
 	tmp = SDL_CreateRGBSurface( SDL_SWSURFACE, w, h,
 		24, 0x0000FF, 0x00FF00, 0xFF0000, 0x000000 );
 

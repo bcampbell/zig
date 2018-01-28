@@ -58,8 +58,7 @@ Level::Level() :
 	m_Attempt( 0 ),
 	m_BaiterDelay( 0.0f ),
 	m_BaiterCount(0),
-	m_VictoryDuration( 0.0f ),
-	m_ScreenshotFlag( false )
+	m_VictoryDuration( 0.0f )
 {
 	assert( g_CurrentLevel == 0 );	// only one level at a time please.
 	g_CurrentLevel = this;
@@ -255,14 +254,10 @@ void Level::Render()
 
 	DrawHUD();
 
-	if( m_PauseMenu && !m_ScreenshotFlag )
-		m_PauseMenu->Draw();
-
-	if( m_ScreenshotFlag )
-	{
-		m_ScreenshotFlag = false;
-		g_Display->TakeScreenshot();
-	}
+    if (m_PauseMenu)
+    {
+        m_PauseMenu->Draw();
+    }
 }
 
 
@@ -418,16 +413,6 @@ void Level::Restart()
 
 void Level::HandleKeyDown( SDL_Keysym& keysym )
 {
-
-	// screenshot?
-#if 0
-	if( keysym.sym == SDLK_PRINT ||
-		keysym.sym == SDLK_SYSREQ ||
-		keysym.sym == SDLK_F12 )
-	{
-		m_ScreenshotFlag = true;
-	}
-#endif
 
 #ifdef ENABLE_CHEATS
 	// CHEAT KEYS

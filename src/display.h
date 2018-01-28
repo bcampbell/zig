@@ -12,6 +12,7 @@ struct ZigConfig;
 #include "vec2.h"
 class Texture;
 
+#if 0
 struct Res
 {
 	Res( int width, int height ) : w(width),h(height) {}
@@ -21,12 +22,12 @@ struct Res
 		{ return w<other.w || h<other.h; }
 	int w; int h;
 };
-
+#endif
 
 class Display
 {
 public:
-	Display( bool fullscreen );
+	Display( bool fullscreen, int w, int h );
 	virtual ~Display();
 
 	void ChangeSettings( bool fullscreen );

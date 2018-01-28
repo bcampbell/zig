@@ -41,12 +41,13 @@ Scene* Scene::ExecFrame()
                 HandleTextInput(event.text);
                 break;
             case SDL_KEYDOWN:
-                switch( event.key.keysym.sym )
-                {
-                    default:
-                        HandleKeyDown( event.key.keysym );
-                        break;
+#ifdef ENABLE_CHEATS
+                if( event.key.keysym.sym == SDLK_F12 ) {
+                    g_Display->TakeScreenshot();
+                    break;
                 }
+#endif
+                HandleKeyDown( event.key.keysym );
                 break;
             case SDL_CONTROLLERDEVICEADDED:
                 //printf("controller added\n");
