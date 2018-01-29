@@ -429,6 +429,10 @@ void Level::HandleKeyDown( SDL_Keysym& keysym )
 	{
 		g_Player->GiveWeaponPowerup();
 	}
+	if( keysym.sym == SDLK_v )
+	{
+		g_Player->GiveSuperNashwan();
+	}
 #endif // ENABLE_CHEATS
 }
 
