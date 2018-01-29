@@ -12,18 +12,6 @@ CPPFLAGS = -MMD -MP
 CXXFLAGS = -Wall -std=c++0x 
 
 
-# release:
-.PHONY: release
-release: CXXFLAGS += -O2 
-release: $(exe)
-
-# debug:
-.PHONY: debug
-debug: CXXFLAGS += -ggdb
-debug: CPPFLAGS += -DENABLE_CHEATS
-debug: LDFLAGS = -ggdb
-debug: $(exe)
-
 ifeq ($(shell uname), Linux)
 CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
 LDLIBS += $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
@@ -65,6 +53,19 @@ ifeq ($(PLATFORM),emscripten)
 endif
 
 # -- Rules --
+
+# release:
+.PHONY: release
+release: CXXFLAGS += -O2 
+release: $(exe)
+
+# debug:
+.PHONY: debug
+debug: CXXFLAGS += -ggdb
+debug: CPPFLAGS += -DENABLE_CHEATS
+debug: LDFLAGS = -ggdb
+debug: $(exe)
+
 
 $(exe): $(objs)
 	$(CXX) $(LDFLAGS) -o $(exe) $(objs) $(LDLIBS)
