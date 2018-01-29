@@ -25,3 +25,5 @@ mute sound for demo mode
 (B) add window sizing to commandline/config for doing gifcaps
 (B) laser fire sfx is too shrill
 (A) checklist for builds
+(A) fix tearing
+
