@@ -26,4 +26,4 @@ mute sound for demo mode
 (B) laser fire sfx is too shrill
 (A) checklist for builds
 (A) fix tearing
-
+(E) BUG: exiting game during highscore save leaves empty entry
