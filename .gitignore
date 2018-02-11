@@ -1,5 +1,7 @@
 *.o
 *.d
+src/tags
+src/zig
 # windows stuff:
 src/zig.exe
 src/zig.res
