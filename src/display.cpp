@@ -81,6 +81,9 @@ void Display::ChangeSettings(bool fullscreen )
 Display::Display( bool fullscreen, int w, int h ) : m_Fullscreen(fullscreen), m_Window(0)
 {
     Uint32  flags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE;
+    
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+
     if(fullscreen) {
 //        flags |= SDL_WINDOW_FULLSCREEN;
         flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -97,16 +100,9 @@ Display::Display( bool fullscreen, int w, int h ) : m_Fullscreen(fullscreen), m_
 	}
     m_GLContext = SDL_GL_CreateContext(m_Window);
 
-    // TODO: call SDL_GL_SetSwapInterval()
-/*
-	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-*/
 	SDL_ShowCursor(SDL_DISABLE);	// hide the mouse
 
+    SDL_GL_SetSwapInterval(1);
 
 	//----------------------------------------------
 
