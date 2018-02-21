@@ -15,6 +15,7 @@ CXXFLAGS = -Wall -std=c++0x
 ifeq ($(shell uname), Linux)
 CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
 LDLIBS += $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
+LDFLAGS += -static-libgcc -static-libstdc++
 endif
 
 ifeq ($(shell uname), Darwin)
