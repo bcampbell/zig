@@ -22,7 +22,7 @@ class HighScores;
 class PathResolver;
 
 
-#define ZIGVERSION "1.1"
+#define ZIGVERSION "1.2"
 
 
 
