@@ -242,7 +242,11 @@ static void drawControls( float t )
         glTranslatef( 1*sz + pad, 0.0f, 0.0f );
 
         //const char* fireKeys[] = {"CTRL","\xe2\x87\xa7"" SHIFT","\xe2\x8f\x8e"" ENTER","SPACE"};
+#if defined( __APPLE__ ) && defined( __MACH__ )
+        const char* fireKeys[] = {"SHIFT","SPACE","\xe2\x8f\x8e"};
+#else
         const char* fireKeys[] = {"CTRL","SHIFT","SPACE"};
+#endif
         const int n = sizeof(fireKeys)/sizeof(const char*);
 
         int idx = (int)(t / 1.0f) % n;
