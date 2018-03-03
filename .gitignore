@@ -1,8 +1,11 @@
 *.o
 *.d
+*.swp
+build
 src/tags
 src/zig
 # windows stuff:
 src/zig.exe
 src/zig.res
-
+# osx stuff
+.DS_Store

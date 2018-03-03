@@ -2,55 +2,65 @@
 
 set -e
 
-bundle=osx/zig.app
 
-extralibs="libpng12.0.dylib"
+DESTDIR=`pwd`/build
+echo "building in $DESTDIR"
+bundle=$DESTDIR/zig.app
 
+extralibs="/usr/local/opt/libpng/lib/libpng16.16.dylib"
+
+pushd src >/dev/null
+
+echo "set up bundle structure..."
 mkdir -p $bundle
 mkdir -p $bundle/Contents
 mkdir -p $bundle/Contents/MacOS
 mkdir -p $bundle/Contents/Resources
 mkdir -p $bundle/Contents/Frameworks
 
-make clean depend all OSX=1 RELEASE=1
+echo "compile..."
+make release
 cp zig $bundle/Contents/MacOS
 cp osx/Info.plist $bundle/Contents/
 
+echo "install/patch extra dylibs..."
 # copy the extra libs into the bundle and patch them up
 for e in $extralibs
 do
-cp "/usr/local/lib/$e" "$bundle/Contents/Frameworks/"
-
-install_name_tool \
-    -id @executable_path/../Frameworks/$e \
-    $bundle/Contents/Frameworks/$e
+    l=`basename $e`
+    cp "$e" "$bundle/Contents/Frameworks/"
+    chmod ug+w "$bundle/Contents/Frameworks/$l"
+    install_name_tool \
+        -id @executable_path/../Frameworks/$l \
+        $bundle/Contents/Frameworks/$l
 done
 
-cp -r /Library/Frameworks/SDL.framework $bundle/Contents/Frameworks/
-cp -r /Library/Frameworks/SDL_mixer.framework $bundle/Contents/Frameworks/
+echo "add frameworks..."
+cp -r ~/Library/Frameworks/SDL2.framework $bundle/Contents/Frameworks/
+cp -r ~/Library/Frameworks/SDL2_mixer.framework $bundle/Contents/Frameworks/
 
 
 # TODO check versionnumber in Info.plist
 
 
+echo "add data files..."
 # add in the data files
-for f in $datafiles
-do
-    cp data/$f $bundle/Contents/Resources/
-done
-
+cp -r data $bundle/Contents/Resources/
 
 
 # fix up the dylib refs in the executable
 
-for e in $extralibs
-do
-    install_name_tool \
-        -change /usr/local/lib/$e \
-        @executable_path/../Frameworks/$e \
-        $bundle/Contents/MacOS/zig
-done
+#for e in $extralibs
+#do
+#    install_name_tool \
+#        -change /usr/local/lib/$e \
+#        @executable_path/../Frameworks/$e \
+#        $bundle/Contents/MacOS/zig
+#done
 
+echo "build dmg..."
+hdiutil create -ov -fs HFS+ -srcfolder $bundle $DESTDIR/zig.dmg
 
-hdiutil create -ov -fs HFS+ -srcfolder $bundle osx/zig.dmg
+popd >/dev/null
+echo "done."
 
