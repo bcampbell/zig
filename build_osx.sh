@@ -9,6 +9,25 @@ bundle=$DESTDIR/zig.app
 
 extralibs="/usr/local/opt/libpng/lib/libpng16.16.dylib"
 
+
+
+build_icon() {
+    infile="$1"
+    outfile="$2"
+    t=$(mktmp -d)
+
+    cp $infile $t/icon_512x512.png
+    convert $infile -resize 16x16\!  $t/icon_16x16.png
+    convert $infile -resize 32x32\!  $t/icon_16x16@2x.png
+    convert $infile -resize 32x32\!  $t/icon_32x32.png
+    convert $infile -resize 64x64\!  $t/icon_32x32@2x.png
+
+    iconutil --convert icns --output $outfile $t
+    rm -r $t
+}
+
+
+
 pushd src >/dev/null
 
 echo "set up bundle structure..."
@@ -17,6 +36,9 @@ mkdir -p $bundle/Contents
 mkdir -p $bundle/Contents/MacOS
 mkdir -p $bundle/Contents/Resources
 mkdir -p $bundle/Contents/Frameworks
+
+echo "build icon..."
+build_icon src/icon/icon.png $bundle/Contents/Resources/zig.icns
 
 echo "compile..."
 make release
