@@ -52,9 +52,14 @@ do
     l=`basename $e`
     cp "$e" "$bundle/Contents/Frameworks/"
     chmod ug+w "$bundle/Contents/Frameworks/$l"
+    # fix up the dylib refs in the executable
     install_name_tool \
-        -id @executable_path/../Frameworks/$l \
-        $bundle/Contents/Frameworks/$l
+        -change $e \
+        @rpath/$l \
+        $bundle/Contents/MacOS/zig
+
+    # fix up the self-reference in the dylib itself
+    install_name_tool -id @rpath/$l $bundle/Contents/Frameworks/$l
 done
 
 echo "add frameworks..."
@@ -69,19 +74,8 @@ echo "add data files..."
 # add in the data files
 cp -r data $bundle/Contents/Resources/
 
-
-# fix up the dylib refs in the executable
-
-#for e in $extralibs
-#do
-#    install_name_tool \
-#        -change /usr/local/lib/$e \
-#        @executable_path/../Frameworks/$e \
-#        $bundle/Contents/MacOS/zig
-#done
-
-echo "build dmg..."
-hdiutil create -ov -fs HFS+ -srcfolder $bundle $DESTDIR/zig.dmg
+#echo "build dmg..."
+#hdiutil create -ov -fs HFS+ -srcfolder $bundle $DESTDIR/zig.dmg
 
 popd >/dev/null
 echo "done."
