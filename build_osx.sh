@@ -14,7 +14,7 @@ extralibs="/usr/local/opt/libpng/lib/libpng16.16.dylib"
 build_icon() {
     infile="$1"
     outfile="$2"
-    t=$(mktmp -d)
+    t=$(mktemp -d /tmp/zig.XXXXXX.iconset)
 
     cp $infile $t/icon_512x512.png
     convert $infile -resize 16x16\!  $t/icon_16x16.png
@@ -38,7 +38,7 @@ mkdir -p $bundle/Contents/Resources
 mkdir -p $bundle/Contents/Frameworks
 
 echo "build icon..."
-build_icon src/icon/icon.png $bundle/Contents/Resources/zig.icns
+build_icon icon/icon.png $bundle/Contents/Resources/zig.icns
 
 echo "compile..."
 make release
