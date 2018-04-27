@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <cstdio>
+#include <ctype.h>
 
 using std::string;
 using std::ifstream;
