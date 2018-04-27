@@ -12,13 +12,15 @@ CPPFLAGS = -MMD -MP
 CXXFLAGS = -Wall -std=c++0x 
 
 
-ifeq ($(shell uname), Linux)
+PLATFORM=$(shell ./zig-platform)
+
+ifeq ($(PLATFORM),linux)
 CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng zlib gl)
 LDLIBS += $(shell pkg-config --libs sdl2 SDL2_mixer libpng zlib gl)
 LDFLAGS += -static-libgcc -static-libstdc++
 endif
 
-ifeq ($(shell uname), Darwin)
+ifeq ($(PLATFORM),osx)
   objs += osx_glue.o
   CXXFLAGS += $(shell pkg-config --cflags libpng)
   CXXFLAGS += -F ~/Library/Frameworks
@@ -36,7 +38,8 @@ endif
 #ifeq ($(shell uname),MINGW64_NT-10.0)
 #ifeq ($(shell uname),MINGW32_NT-10.0)
 # NOTE: uname -o fails on osx
-ifeq ($(shell uname -o), Msys)
+#ifeq ($(shell uname -o), Msys)
+ifeq ($(PLATFORM), win32)
   exe = zig.exe
   CXXFLAGS += $(shell pkg-config --cflags sdl2 SDL2_mixer libpng)
   LDLIBS += $(shell pkg-config --static --libs sdl2 SDL2_mixer libpng)
@@ -49,7 +52,8 @@ endif
 ifeq ($(PLATFORM),emscripten)
   exe = zig.html
   CXX = em++
-  CXXFLAGS = --embed-file data -s DISABLE_EXCEPTION_CATCHING=0 -s LEGACY_GL_EMULATION=1 -s USE_SDL=2 -s USE_ZLIB=1 -s USE_LIBPNG=1 -I /home/ben/proj/zig/dependencies/SDL2_mixer/installdir/include/SDL2
+  CXXFLAGS = --embed-file data -s DISABLE_EXCEPTION_CATCHING=0 -s LEGACY_GL_EMULATION=1 -s USE_SDL=2 -s USE_ZLIB=1 -s USE_LIBPNG=1 -s USE_SDL_MIXER=2
+  LDFLAGS = $(CXXFLAGS)
   LIBS = --emrun
 endif
 
