@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <string>
 
+#include "controller.h"
 #include "display.h"
 #include "drawing.h"
 #include "gameover.h"
@@ -153,6 +154,10 @@ void DudeGallery::DrawDude(int n)
 void DudeGallery::Tick()
 {
     m_Time += 1.0f/TARGET_FPS;
+    if( g_ControllerMgr->MenuController().Buttons() )
+    {
+        m_Done = true;
+    }
 }
 
 void DudeGallery::HandleKeyDown( SDL_Keysym& keysym )

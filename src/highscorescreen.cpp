@@ -36,10 +36,12 @@ static const Colour raw[] =
 static const ColourRange rawrange( raw, 6 );
 
 
+static const char* stickchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZ*!$";
 
 HighScoreScreen::HighScoreScreen() :
 	m_Time( 0.0f ),
-	m_EntryTarget( -1 )
+	m_EntryTarget( -1 ),
+    m_StickIdx( 0 )
 {
 }
 
@@ -96,18 +98,32 @@ void HighScoreScreen::Render()
                 float y=-ch/2.0f;
 
                 const float flash=0.5f;
-			    if( name.size() < HighScores::MAX_NAME_SIZE && fmodf(g_Time,flash) <flash/2.0f)
-                {
-                    Colour c = focusrange.Get(g_Time, false);
-			        glColor3f( c.r, c.g, c.b);
-                    glBegin(GL_QUADS);
-                        glVertex2f(x,y+ch);
-                        glVertex2f(x+cw,y+ch);
-                        glVertex2f(x+cw,y);
-                        glVertex2f(x,y);
-                    glEnd();
+			    if( name.size() < HighScores::MAX_NAME_SIZE) {
+                   
+                    if (fmodf(g_Time,flash) <flash/2.0f) {
+                        Colour c = focusrange.Get(g_Time, false);
+                        glColor3f( c.r, c.g, c.b);
+                        glBegin(GL_QUADS);
+                            glVertex2f(x,y+ch);
+                            glVertex2f(x+cw,y+ch);
+                            glVertex2f(x+cw,y);
+                            glVertex2f(x,y);
+                        glEnd();
+                    } else {
+                        // show currently-selected char
+                        char buf[2] = {0};
+                        buf[0] = stickchars[m_StickIdx];
+				        glTranslatef( x, y, 0.0f );
+                        if( buf[0] == '$' ) {
+    				        PlonkText( *g_Font, "\xe2\x8f\x8e", false, cw, ch );
+                        } else {
+                            PlonkText( *g_Font, buf, false, cw, ch );
+                        }
+                    }
+                } else {
+                    glTranslatef( x, y, 0.0f );
+    		        PlonkText( *g_Font, "\xe2\x8f\x8e", false, cw, ch );
                 }
-
 			glPopMatrix();
 		}
 		else
@@ -135,7 +151,65 @@ void HighScoreScreen::Tick()
 		if (m_Time> 0.5f && g_ControllerMgr->MenuController().Buttons() ) {
 			m_Time = s_Timeout;
         }
+        return;
 	}
+
+    // TODO: hacked in. This needs a good overhaul!
+    // update input via gamepad
+
+    // TODO: KILLKILLKILL!!!
+    // latched controller uses WASD keys, so we need this.
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
+    if( keys[SDL_SCANCODE_W] ||
+        keys[SDL_SCANCODE_A] ||
+        keys[SDL_SCANCODE_S] ||
+        keys[SDL_SCANCODE_D] )
+    {
+        // bail out, to avoid clashing with keyboard entry...
+        return;
+    }
+    int n = strlen(stickchars);
+    float x = g_ControllerMgr->MenuController().XAxis();
+    float y = g_ControllerMgr->MenuController().YAxis();
+    int b = g_ControllerMgr->MenuController().Pressed();
+    if( y>0.0f )
+    {
+        m_StickIdx++;
+        if (m_StickIdx>=n) {
+            m_StickIdx = 0;
+        }
+    }
+    else if( y<0.0f )
+    {
+        m_StickIdx--;
+        if (m_StickIdx<0) {
+            m_StickIdx = n-1;
+        }
+    }
+   
+    std::string name = g_HighScores->Name( m_EntryTarget );
+    if ( b & CTRL_BTN_ESC || x<0.0f)
+    {
+        // delete last char
+        if( !name.empty() )
+        {
+            name = name.substr( 0, name.size()-1 );
+            g_HighScores->SetName( m_EntryTarget, name );
+        }
+    }
+	if( b & CTRL_BTN_FIRE )
+    {
+        char c= stickchars[m_StickIdx];
+        if( c=='$' || name.size() >= HighScores::MAX_NAME_SIZE ) {
+
+            m_Time = 0.0f;    // reset timeout and bask in glory for a bit
+            EntryMode(-1);
+        } else {
+            name += c;
+            m_StickIdx=0;
+            g_HighScores->SetName( m_EntryTarget, name );
+        }
+    }
 }
 
 Scene* HighScoreScreen::NextScene()

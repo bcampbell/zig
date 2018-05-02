@@ -26,6 +26,9 @@ private:
 
 	// index of score being entered (-1=none)
 	int m_EntryTarget;
+
+    // current index of char for gamepad-based entry
+    int m_StickIdx;
 };
 
 
