@@ -95,13 +95,13 @@ PathResolver* BuildDataResolver( std::string const& appname)
 {
     // order is:
     // 1) per-user APPDATA dir (also for writing).
-    // 2) current dir, where exe was run from (readonly).
+    // 2) ./data (readonly).
     std::string appdata = getAPPDATA();
     if(!appdata.empty())
     {
         dirs.push_back(JoinPath(appdata, appname));
     }
-    dirs.push_back(".");
+    dirs.push_back("data");
     return new GenericPathResolver(dirs);
 }
 
