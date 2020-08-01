@@ -4,8 +4,8 @@
 #include "colours.h"
 #include "loadpng.h"
 #include "wobbly.h"
-#include "zigtypes.h"
 
+#include <cstdint>
 #include <string.h>	// for memset
 #include <assert.h>
 #include <SDL.h>

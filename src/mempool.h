@@ -3,11 +3,11 @@
 #ifndef MEMPOOL_H
 #define MEMPOOL_H
 
-#include "zigtypes.h"
+#include <cstdint>
+#include <cstddef>  // for size_t
 #include <assert.h>
 #include <list>
 #include <vector>
-#include <cstddef>  // for size_t
 
 // Use MemPool to provide low-overhead allocation and freeing of
 // small objects. All the objects allocated must be smaller than

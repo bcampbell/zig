@@ -8,7 +8,7 @@
 
 #include <assert.h>
 #include <string>
-#include "zigtypes.h"
+#include <cstdint>
 
 enum PixelFormat
 {
