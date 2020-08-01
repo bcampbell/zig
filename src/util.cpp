@@ -2,6 +2,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#include <algorithm>
+
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
@@ -20,20 +22,27 @@
 #endif
 
 
+// Split string at delim character.
+// eg
+// Split("/usr/local/share/:/usr/share/", ':')
+//   => ["/usr/local/share/", "/usr/share/"]
+// Split("foobar", ',')
+//   => [""]
+// Split(",,foo,,bar,", ',')
+//   => ["", "", "foo", "", "bar", ""]
 std::vector<std::string> Split( std::string const& s, char delim)
 {
     std::vector<std::string> out;
-	std::string::const_iterator it=s.begin();
-    while( it!=s.end()) {
-        auto a = it;
-        while (it!=s.end()) {
-            if(*it++ == delim) {
-                break;
-            }
-		}
-
-		out.push_back(std::string(a,it));
-	}
+    auto anchor = s.begin();
+    while(1) {
+        const auto hit = std::find(anchor, s.end(), delim);
+        if (hit == s.end()) {
+            break;
+        }
+        out.push_back(std::string(anchor, hit));
+        anchor = hit + 1;
+    }
+    out.push_back(std::string(anchor, s.end()));
     return out;
 }
 
