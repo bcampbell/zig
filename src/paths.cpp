@@ -35,9 +35,12 @@ std::string GenericPathResolver::ResolveForRead(std::string const& filename)
     {
         std::string f = JoinPath(dir,filename);
         if (FileExists(f)) {
+            //printf("FOUND %s\n",f.c_str());
             return f;
         }
+        //printf("NOPE %s\n",f.c_str());
     }
+    //printf("%s NOT FOUND\n",filename.c_str());
     return "";
 }
 
@@ -62,24 +65,44 @@ std::string GenericPathResolver::ResolveForWrite(std::string const& filename)
 #ifdef _WIN32
 
 // Windows versions
-// user the APPDATA setting
+
+// get the APPDATA dir (eg C:/users/<username>/AppData/Local)
+static std::string getAPPDATA()
+{
+	char buf[MAX_PATH];
+	HRESULT result = SHGetFolderPathA( 0, CSIDL_APPDATA, 0, 0, buf );
+	// |CSIDL_FLAG_CREATE
+	if(!SUCCEEDED(result) )
+    {
+        buf[0] = '\0';
+    }
+    return std::string(buf);
+}
 
 PathResolver* BuildConfigResolver( std::string const& appname)
 {
-	char buf[ MAX_PATH ];
-	HRESULT result = SHGetFolderPathA( 0, CSIDL_APPDATA, 0, 0, buf );
-	// |CSIDL_FLAG_CREATE
-	if( !SUCCEEDED( result ) )
-		return 0;
-    std::vector<std::string> dirs;
-    dirs.push_back(JoinPath(buf,appname));
+    // per-user APPDATA dir for both reading and writing.
+    std::string appdata = getAPPDATA();
+    if(appdata.empty())
+    {
+        return nullptr;
+    }
+    dirs.push_back(JoinPath(appdata, appname));
     return new GenericPathResolver(dirs);
 }
 
-// config and data files in same location
 PathResolver* BuildDataResolver( std::string const& appname)
 {
-    return BuildConfigResolver(appname);
+    // order is:
+    // 1) per-user APPDATA dir (also for writing).
+    // 2) current dir, where exe was run from (readonly).
+    std::string appdata = getAPPDATA();
+    if(!appdata.empty())
+    {
+        dirs.push_back(JoinPath(appdata, appname));
+    }
+    dirs.push_back(".");
+    return new GenericPathResolver(dirs);
 }
 
 
@@ -87,14 +110,15 @@ PathResolver* BuildDataResolver( std::string const& appname)
 #elif defined( __APPLE__ ) && defined( __MACH__ )
 
 // OSX version
-// Use the Application Support dir (this should handle sandboxed and non-sandboxed)
 
 PathResolver* BuildConfigResolver( std::string const& appname)
 {
+    // Use the Application Support dir (this should handle sandboxed
+    // and non-sandboxed)
+    std::vector<std::string> dirs;
     char buf[PATH_MAX];
     if(!osx_get_app_support_path(buf,PATH_MAX))
-        return 0;
-    std::vector<std::string> dirs;
+        return nullptr;
     dirs.push_back(JoinPath(buf,appname));
     return new GenericPathResolver(dirs);
 }
@@ -102,7 +126,23 @@ PathResolver* BuildConfigResolver( std::string const& appname)
 // config and data files in same location
 PathResolver* BuildDataResolver( std::string const& appname)
 {
-    return BuildConfigResolver(appname);
+    // ordering:
+    // 1) local per-user Application Support dir (read/write)
+    // 2) data dir inside bundle (resource path)
+    std::vector<std::string> dirs;
+
+    char buf[PATH_MAX];
+    if(!osx_get_app_support_path(buf,PATH_MAX))
+        return nullptr;
+    dirs.push_back(JoinPath(buf, appname));
+
+    if(osx_get_resource_path(buf,PATH_MAX) ) {
+        dirs.push_back(buf));
+    } else {
+        // We're not running in a bundle maybe? Try current dir.
+        dirs.push_back(".");
+    }
+    return new GenericPathResolver(dirs);
 }
 
 #else
@@ -155,7 +195,7 @@ static std::vector<std::string> xdg_data_dirs()
 {
     const char* v = std::getenv("XDG_DATA_DIRS");
     if (!v || v[0]=='\0') {
-        v = " /usr/local/share/:/usr/share/";
+        v = "/usr/local/share/:/usr/share/";
     }
 
     std::vector<std::string> dirs = Split(v,':');
@@ -165,14 +205,16 @@ static std::vector<std::string> xdg_data_dirs()
 
 PathResolver* BuildConfigResolver( std::string const& appname)
 {
+    // default ordering (if no XDG env vars set):
+    // 1) $HOME/.config/<appname> (read/write)
+    // 2) /etc/xdg/<appname>
     std::vector<std::string> dirs;
 
     std::string primary = xdg_conf_dir();
     if (primary.empty()) {
         return 0; // uhoh
     }
-    primary = JoinPath(primary,appname);
-    dirs.push_back(primary);
+    dirs.push_back(JoinPath(primary, appname));
 
     std::vector<std::string> extraDirs = xdg_conf_dirs();
     for (auto const& d : extraDirs) {
@@ -184,6 +226,10 @@ PathResolver* BuildConfigResolver( std::string const& appname)
 
 PathResolver* BuildDataResolver( std::string const& appname)
 {
+    // default ordering (if no XDG env vars set):
+    // 1) $HOME/.local/share/<appname> (read/write)
+    // 2) /usr/local/share/<appname>
+    // 3) /usr/share/<appname>
     std::vector<std::string> dirs;
 
     std::string primary = xdg_data_dir();

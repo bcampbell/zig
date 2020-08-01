@@ -4,7 +4,6 @@
 #include "retromat/retromat.h"
 #include "retromat/gen.h"
 #endif
-#include "resources.h"
 #include "wobbly.h"
 #include "zigconfig.h"
 #include "zig.h"

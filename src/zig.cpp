@@ -15,7 +15,6 @@
 #include "mathutil.h"
 #include "player.h"
 #include "proceduraltextures.h"
-#include "resources.h"
 #include "soundmgr.h"
 #include "texture.h"
 #include "titlescreen.h"
@@ -40,7 +39,6 @@
 
 PathResolver* g_ConfigPath = 0;      // for config files
 PathResolver* g_DataPath = 0;        // for generated data (highscores)
-//PathResolver* g_ResourcePath = 0;    // for read-only data (textures etc)
 
 ZigConfig g_Config;
 std::vector<LevelDef> g_LevelDefs;
@@ -79,7 +77,7 @@ void startup( int argc, char*argv[] )
         Wobbly e("couldn't set up data path resolver\n" );
         throw e;
     }
-    
+   
 
 #ifdef __EMSCRIPTEN__
     log_open("-");
@@ -110,7 +108,6 @@ void startup( int argc, char*argv[] )
     Agent_Startup();
 
     //log_open("-");
-    Resources::Init();
 
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK|SDL_INIT_GAMECONTROLLER) != 0)
     {
@@ -154,7 +151,10 @@ void startup( int argc, char*argv[] )
 
     //----------------------------------------------
     {
-        std::string levelfile = Resources::Map( "levels" );
+        std::string levelfile = g_DataPath->ResolveForRead("levels");
+        if (levelfile.empty()) {
+            throw Wobbly("Can't load levels file");
+        }
         LevelParser parser( levelfile, g_LevelDefs );
     }
 
@@ -191,9 +191,18 @@ void shutdown()
 // create/load global textures
 void InitTextures()
 {
-    g_Font = new FileTexture( Resources::Map( "font.png" ).c_str() );
+    std::string fontFile = g_DataPath->ResolveForRead("font.png");
+    if (fontFile.empty()) {
+        throw Wobbly("Couldn't find font.png\n");
+    }
+    g_Font = new FileTexture(fontFile.c_str());
     g_Textures[TX_FONT] = g_Font;
-    g_Textures[TX_INVADER] = new FileTexture( Resources::Map( "invaders.png").c_str() );
+
+    std::string invadersFile = g_DataPath->ResolveForRead("invaders.png");
+    if (invadersFile.empty()) {
+        throw Wobbly("Couldn't find invaders.png\n");
+    }
+    g_Textures[TX_INVADER] = new FileTexture(invadersFile.c_str());
     g_Textures[TX_BLUEGLOW] = new BlueGlow( 64,64 );
     g_Textures[TX_NARROWBEAMGRADIENT] = new NarrowBeamGradient( 64,64 );
     g_Textures[TX_WIDEBEAMGRADIENT] = new WideBeamGradient( 64,64 );

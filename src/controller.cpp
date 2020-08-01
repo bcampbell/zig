@@ -4,10 +4,11 @@
 #include <SDL.h>
 
 #include "controller.h"
-#include "mathutil.h"
-#include "resources.h"
-#include "wobbly.h"
 #include "log.h"
+#include "mathutil.h"
+#include "paths.h"
+#include "wobbly.h"
+#include "zig.h"
 
 Controller::Controller() :
     m_BtnState(0),
@@ -316,9 +317,9 @@ ControllerMgr::ControllerMgr() :
 {
     m_GameCtrl.Add(&m_KBCtrl);
 
-    std::string mappings = Resources::Map("gamecontrollerdb.txt");
+    std::string mappings = g_DataPath->ResolveForRead("gamecontrollerdb.txt");
     if(SDL_GameControllerAddMappingsFromFile(mappings.c_str())<0 ) {
-        log_errorf("Couldn't load %s. Some controllers might not work.\n",mappings.c_str());
+        log_errorf("Couldn't load gamecontrollerdb.txt. Some controllers might not work.\n");
     }
 
     // scan for already-attached controllers
