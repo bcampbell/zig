@@ -1,7 +1,10 @@
 #!/bin/bash
 
-set -e
+# NOTE: THIS SCRIPT NOT CURRENT OR WORKING!!!
+# left in purely for reference, an example of creating an OSX app bundle.
+exit(1)
 
+set -e
 
 DESTDIR=`pwd`/build
 echo "building in $DESTDIR"
