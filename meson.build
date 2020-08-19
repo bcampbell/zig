@@ -65,6 +65,12 @@ gldep = dependency('GL')
 sdldep = dependency('SDL2')
 sdlmixerdep = dependency('SDL2_mixer')
 
+# generate config.h
+conf = configuration_data()
+datadir = join_paths([ get_option('prefix'), get_option('datadir')])
+conf.set_quoted('ZIG_DATA_DIR', datadir)
+configure_file(output : 'config.h', configuration : conf)
+
 executable('zig', srcs, dependencies : [zdep, pngdep, gldep, sdldep, sdlmixerdep])
 
 # install everything inside 'data' at '$PREFIX/share/zig/'

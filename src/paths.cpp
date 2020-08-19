@@ -137,7 +137,7 @@ PathResolver* BuildDataResolver( std::string const& appname)
     dirs.push_back(JoinPath(buf, appname));
 
     if(osx_get_resource_path(buf,PATH_MAX) ) {
-        dirs.push_back(buf));
+        dirs.push_back(buf);
     } else {
         // We're not running in a bundle maybe? Try current dir.
         dirs.push_back(".");
@@ -146,6 +146,8 @@ PathResolver* BuildDataResolver( std::string const& appname)
 }
 
 #else
+
+#include "config.h" // for ZIG_DATA_DIR
 
 // unix version
 // Use the XDG standards:
@@ -238,6 +240,9 @@ PathResolver* BuildDataResolver( std::string const& appname)
     }
     primary = JoinPath(primary,appname);
     dirs.push_back(primary);
+
+    std::string hardwired = JoinPath(ZIG_DATA_DIR, appname);
+    dirs.push_back(hardwired);
 
     std::vector<std::string> extraDirs = xdg_data_dirs();
     for (auto const& d : extraDirs) {
