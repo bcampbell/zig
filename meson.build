@@ -71,7 +71,9 @@ datadir = join_paths([ get_option('prefix'), get_option('datadir')])
 conf.set_quoted('ZIG_DATA_DIR', datadir)
 configure_file(output : 'config.h', configuration : conf)
 
-executable('zig', srcs, dependencies : [zdep, pngdep, gldep, sdldep, sdlmixerdep])
+executable('zig', srcs,
+  dependencies : [zdep, pngdep, gldep, sdldep, sdlmixerdep],
+  install : true)
 
 # install everything inside 'data' at '$PREFIX/share/zig/'
 
