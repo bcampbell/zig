@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.2
+Name=Zig
+Comment=Zig. It's a game where you shoot stuff.
+Exec=zig
+Icon=zig
+Terminal=false
+Categories=Game;Application;
