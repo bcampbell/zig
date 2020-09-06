@@ -84,4 +84,5 @@ install_data(['packaging/icons/zig48.png', 'packaging/icons/zig512.png'],
   rename: ['48x48/apps/zig.png', '512x512/apps/zig.png'],
   install_dir : 'share/icons/hicolor')
 install_data('packaging/zig.desktop', install_dir : 'share/applications')
+install_man('packaging/zig.6')
 
