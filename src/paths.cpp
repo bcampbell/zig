@@ -83,10 +83,10 @@ PathResolver* BuildConfigResolver( std::string const& appname)
 {
     // per-user APPDATA dir for both reading and writing.
     std::string appdata = getAPPDATA();
-    if(appdata.empty())
-    {
+    if(appdata.empty()) {
         return nullptr;
     }
+    std::vector<std::string> dirs;
     dirs.push_back(JoinPath(appdata, appname));
     return new GenericPathResolver(dirs);
 }
@@ -96,9 +96,9 @@ PathResolver* BuildDataResolver( std::string const& appname)
     // order is:
     // 1) per-user APPDATA dir (also for writing).
     // 2) ./data (readonly).
+    std::vector<std::string> dirs;
     std::string appdata = getAPPDATA();
-    if(!appdata.empty())
-    {
+    if(!appdata.empty()) {
         dirs.push_back(JoinPath(appdata, appname));
     }
     dirs.push_back("data");
