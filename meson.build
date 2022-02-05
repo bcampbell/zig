@@ -29,6 +29,7 @@ srcs = ['src/agent.cpp',
     'src/level.cpp',
     'src/leveldef.cpp',
     'src/loadpng.cpp',
+    'src/lodepng.cpp',
     'src/log.cpp',
     'src/mempool.cpp',
     'src/menusupport.cpp',
@@ -59,8 +60,8 @@ srcs = ['src/agent.cpp',
     'src/retromat/sidstyle.cpp',
     'src/retromat/gen.cpp' ]
 
-zdep = dependency('zlib')
-pngdep = dependency('libpng')
+#zdep = dependency('zlib')
+#pngdep = dependency('libpng')
 gldep = dependency('GL')
 sdldep = dependency('SDL2')
 sdlmixerdep = dependency('SDL2_mixer')
@@ -72,7 +73,7 @@ conf.set_quoted('ZIG_DATA_DIR', datadir)
 configure_file(output : 'config.h', configuration : conf)
 
 executable('zig', srcs,
-  dependencies : [zdep, pngdep, gldep, sdldep, sdlmixerdep],
+  dependencies : [gldep, sdldep, sdlmixerdep],
   install : true)
 
 # install everything inside 'data' at '$PREFIX/share/zig/'
