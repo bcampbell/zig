@@ -76,7 +76,7 @@ public:
         Advance();
         float samp;
         if (m_t<=0.5f)
-            samp = (m_t*4.0)-1.0f;
+            samp = (m_t*4.0f)-1.0f;
         else
             samp = 3.0f-(m_t*4.0f);
 //        printf("%8f %f\n",m_t,samp);

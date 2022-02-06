@@ -2925,7 +2925,7 @@ void wrapfloats(const float *in, float* out, int n)
     for (i=0; i<ease; ++i)
     {
         float t = (float)i/(float)ease;
-        out[i] = in[i]*(0.5f+t/2) + in[(n-i)-1]*(0.5-t/2);
+        out[i] = in[i]*(0.5f+t/2) + in[(n-i)-1]*(0.5f-t/2);
     }
     for (i=ease; i<n-ease; ++i)
     {
@@ -2934,7 +2934,7 @@ void wrapfloats(const float *in, float* out, int n)
     for (i=n-ease; i<n; ++i)
     {
         float t = (float)(ease-(n-i))/(float)ease;
-        out[i] = in[i]*(0.5f+t/2) + in[(n-i)-1]*(0.5-t/2);
+        out[i] = in[i]*(0.5f+t/2) + in[(n-i)-1]*(0.5f-t/2);
     }
 }
 

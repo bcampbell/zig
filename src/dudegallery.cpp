@@ -127,7 +127,7 @@ void DudeGallery::DrawDude(int n)
         case 12:
             {
                 glPushMatrix();
-                float wiggle = sinf(g_Time*16)*0.4;
+                float wiggle = sinf(g_Time*16.0f)*0.4f;
                 glRotatef( r2d(wiggle), 0.0f, 0.0f, 1.0f );
                 Wiggler::StaticDraw();
                 name = "WIGGLER";

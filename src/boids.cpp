@@ -83,7 +83,7 @@ void Boid::Tick()
 		avoidboundaryacc *= 0.1f;
 	}
 
-	vec2 acc = 0.3f*groupingacc + 0.6f*velmatchacc + 0.1f*attackacc + 0.4*avoidboundaryacc;
+	vec2 acc = 0.3f*groupingacc + 0.6f*velmatchacc + 0.1f*attackacc + 0.4f*avoidboundaryacc;
 	m_Vel += acc;
 
 	const float maxvel=1.0f;

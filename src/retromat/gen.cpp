@@ -4,7 +4,7 @@
 
 void Loopum(std::vector<float>& buf, float fadeTime)
 {
-    int len = fadeTime * g_RFreq;
+    int len = (int)(fadeTime * g_RFreq);
 
     assert(len < (int)buf.size());
 
@@ -224,7 +224,7 @@ void GenerateElectric( std::vector<float>& out )
 
 
         w1.setFrequency(10.0f + t*t*1.0f );
-        v += (w1.tick()*0.2);
+        v += (w1.tick()*0.2f);
         v = filt.tick(v);
 
         high.setFrequency( 5000 - t*t*t*50.0f );

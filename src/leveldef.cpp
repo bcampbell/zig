@@ -109,7 +109,7 @@ void LevelParser::Process( std::vector<std::string> const& args )
 		}
 		else
 		{
-			float val = atof( args[1].c_str() );
+			float val = (float)atof( args[1].c_str() );
 
 			if( args[0] == "@ufo_probability" )
 				m_Defs.back().m_UFOProbability = val;

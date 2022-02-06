@@ -132,8 +132,8 @@ void Display::HandleResize( int winw, int winh )
         // tallscreen
         vh *= (1.0f/r);
     }
-    float xmag = vw/2.0;
-    float ymag = vh/2.0;
+    float xmag = vw/2.0f;
+    float ymag = vh/2.0f;
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 

@@ -5,6 +5,9 @@ build
 src/tags
 src/zig
 # windows stuff:
+Release
+Debug
+.vs
 src/zig.exe
 src/zig.res
 # osx stuff

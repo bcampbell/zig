@@ -2,7 +2,7 @@
 #define MATHUTIL_H
 
 #include <cstdlib>
-#define _USE_MATH_DEFINES
+//#define _USE_MATH_DEFINES
 #include <cmath>
 
 const float pi = 3.14159265358979323846f;

@@ -9,7 +9,7 @@ float g_RStep = 0.0;
 
 void SetRetromatFreq( int samplerate ) 
 {
-    g_RFreq = samplerate;
+    g_RFreq = (float)samplerate;
     g_RStep = 1.0f / (float)samplerate;
 }
 

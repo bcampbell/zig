@@ -48,7 +48,7 @@ SDL_Surface* LoadPNG(const char* filename) {
     throw Wobbly("out of memory (SDL_CreateRGBSurface() failed)");
   }
   uint8_t const* src = out;
-  for (int y = 0; y < h; ++y) {
+  for (unsigned y = 0; y < h; ++y) {
     uint8_t *dest = (Uint8*)surface->pixels + (y * surface->pitch);
     memcpy(dest, src, w*4);
     src += w*4;
