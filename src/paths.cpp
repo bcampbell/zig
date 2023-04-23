@@ -107,7 +107,9 @@ PathResolver* BuildDataResolver( std::string const& appname)
 
 
 
-#elif defined( __APPLE__ ) && defined( __MACH__ )
+#elif 0 
+// This block is for making a proper Mac installer, which doens't work right now
+// # defined( __APPLE__ ) && defined( __MACH__ )
 
 // OSX version
 
