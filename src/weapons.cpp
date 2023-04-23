@@ -212,7 +212,7 @@ void SuperNashwanPower::Draw()
 	if( remainingsecs<= 5)
 	{
 
-		char buf[8];
+		char buf[16];
 		sprintf( buf,"%d", remainingsecs );
 
 		glPushMatrix();

@@ -74,7 +74,6 @@ void TitleScreen::Render()
 		PlonkText( *g_Font, "ZIG", true, 64, 64 );
 	glPopMatrix();
 
-    vec2 tl = g_Display->TopLeft();
     vec2 tr = g_Display->TopRight();
     vec2 bl = g_Display->BottomLeft();
 	glColor4f( 0.4f, 0.4f, 0.4f, 1.0f );
