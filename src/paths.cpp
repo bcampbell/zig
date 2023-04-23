@@ -107,7 +107,10 @@ PathResolver* BuildDataResolver( std::string const& appname)
 
 
 
-#elif defined( __APPLE__ ) && defined( __MACH__ )
+#elif 0 
+// This block is for making a proper Mac app bundle, which needs more work.
+// For now, we just treat OSX as any other unix.
+// # defined( __APPLE__ ) && defined( __MACH__ )
 
 // OSX version
 
