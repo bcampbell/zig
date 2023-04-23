@@ -59,11 +59,13 @@ srcs = ['src/agent.cpp',
     'src/retromat/retromat.cpp',
     'src/retromat/sidstyle.cpp',
     'src/retromat/gen.cpp' ]
+link_args = []
 
 host_system = host_machine.system()
 if host_system == 'darwin'
   add_languages('objcpp')
   srcs += 'src/osx_glue.mm'
+  link_args += ['-framework', 'Foundation']
 endif
 
 #zdep = dependency('zlib')
@@ -81,7 +83,7 @@ configure_file(output : 'config.h', configuration : conf)
 executable('zig', srcs,
   dependencies : [gldep, sdldep, sdlmixerdep],
   install : true,
-  link_args: ['-framework', 'Foundation'])
+  link_args: link_args)
 
 # install everything inside 'data' at '$PREFIX/share/zig/'
 
