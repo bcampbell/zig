@@ -1,4 +1,4 @@
-project('zig', 'cpp')
+project('zig', 'cpp', default_options: ['cpp_std=c++11'])
 
 srcs = ['src/agent.cpp',
     'src/agentmanager.cpp',
@@ -60,6 +60,12 @@ srcs = ['src/agent.cpp',
     'src/retromat/sidstyle.cpp',
     'src/retromat/gen.cpp' ]
 
+host_system = host_machine.system()
+if host_system == 'darwin'
+  add_languages('objcpp')
+  srcs += 'src/osx_glue.mm'
+endif
+
 #zdep = dependency('zlib')
 #pngdep = dependency('libpng')
 gldep = dependency('GL')
@@ -74,7 +80,8 @@ configure_file(output : 'config.h', configuration : conf)
 
 executable('zig', srcs,
   dependencies : [gldep, sdldep, sdlmixerdep],
-  install : true)
+  install : true,
+  link_args: ['-framework', 'Foundation'])
 
 # install everything inside 'data' at '$PREFIX/share/zig/'
 

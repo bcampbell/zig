@@ -35,12 +35,12 @@ std::string GenericPathResolver::ResolveForRead(std::string const& filename)
     {
         std::string f = JoinPath(dir,filename);
         if (FileExists(f)) {
-            //printf("FOUND %s\n",f.c_str());
+            printf("FOUND %s\n",f.c_str());
             return f;
         }
-        //printf("NOPE %s\n",f.c_str());
+        printf("NOPE %s\n",f.c_str());
     }
-    //printf("%s NOT FOUND\n",filename.c_str());
+    printf("%s NOT FOUND\n",filename.c_str());
     return "";
 }
 
