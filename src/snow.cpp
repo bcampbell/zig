@@ -75,8 +75,8 @@ UniqueSnowFlake::UniqueSnowFlake() :
 		point(x+dx,y+dy);
 		point(y+dy,x+dx);
 
-		++*p;
-		++*(myBMP+y+BMP_WIDTH*x);
+		*p ^= true;
+		*(myBMP+y+BMP_WIDTH*x) ^= true;
 
 		point(x,y);
 		point(y,x);
