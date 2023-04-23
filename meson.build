@@ -1,4 +1,4 @@
-project('zig', 'cpp', default_options: ['cpp_std=c++11'])
+project('zig', 'cpp')
 
 srcs = ['src/agent.cpp',
     'src/agentmanager.cpp',
